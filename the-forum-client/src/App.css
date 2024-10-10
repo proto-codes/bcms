@@ -1,0 +1,121 @@
+:root {
+    --bg-blue: #052c65;
+}
+
+/* Bootstrap Customization */
+.form-check-input:checked {
+    background-color: var(--bg-blue) !important;
+    border-color: var(--bg-blue) !important;
+}
+
+.dropdown-item.active, .dropdown-item:active {
+    background-color: var(--bg-blue) !important;
+}
+
+.list-group-item.active {
+    background-color: var(--bg-blue) !important;
+    border-color: var(--bg-blue) !important;
+}
+
+.nav-link:hover {
+    color: #fff !important;
+}
+
+.nav-tab:hover {
+    transform: scale(.90);
+    transition: transform 0.3s ease;
+}
+
+.active-link {
+  font-weight: bold;
+  border-bottom: 2px solid var(--bg-blue) !important;
+}
+
+.active-tab {
+    font-weight: bold;
+}
+
+.active-icon {
+    border-bottom: 2px solid #fff !important;
+}
+
+.img {
+    width: 5rem;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.cst-height {
+    height: calc(100% - 4.5rem);
+}
+
+.text-blue {
+    color: var(--bg-blue) !important;
+}
+
+.bg-blue {
+    background-color: var(--bg-blue) !important;
+}
+
+.btn-blue {
+    color: #ffffff !important;
+    background-color: var(--bg-blue) !important;
+}
+
+.background-img {
+    position: relative;
+    background-image: url('/src/assets/img/forum-cover-bg.webp');
+    background-size: cover;
+    background-position: center;
+}
+
+.background-img::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 1;
+}
+
+.Forum-info {
+    position: relative;
+    z-index: 2;
+}
+
+.icon:hover {
+  transform: scale(1.1);
+  transition: transform 0.3s ease;
+}
+
+.footer-links a:hover {
+  text-decoration: underline !important;
+}
+
+@media (max-width: 992px) {
+    .active-link {
+        border-bottom: none !important;
+    }
+}
+
+@media (max-width: 767.98px) {
+    .active-link {
+        border-bottom: none !important;
+    }
+
+    .Forum-info {
+        width: 100% !important;
+    }
+
+    .about-img {
+        width: 80% !important;
+    }    
+
+    .dashboard-menu {
+        position: fixed;
+        right: 100%;
+        transition: right 0.5s ease-in-out;
+    }
+}
