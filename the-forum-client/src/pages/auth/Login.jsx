@@ -56,7 +56,7 @@ function Login() {
     <>
       <div className="d-flex justify-content-center align-items-center my-3">
         <div className="card border-0 p-4 shadow-lg" style={{ width: '350px' }}>
-          <h2 className="text-center text-info mb-4">Login</h2>
+          <h2 className="text-center text-gold-dark mb-4">Login</h2>
           <form onSubmit={login}>
             <div className="mb-3">
               <label htmlFor="email" className="form-label">Email address</label>
@@ -86,13 +86,13 @@ function Login() {
               />
             </div>
             {error && <p className="text-danger">{error}</p>} {/* Display error message */}
-            <button type="submit" className="btn btn-info w-100" disabled={loading}>
+            <button type="submit" className="btn btn-gold-dark w-100" disabled={loading}>
               {loading ? 'Logging in...' : 'Login'}
             </button>
           </form>
-          <small className='mt-3 text-center'><Link to="#" className='text-info'>Forgotten password?</Link></small>
+          <small className='mt-3 text-center'><Link to="#" className='text-gold-dark'>Forgotten password?</Link></small>
           <div className="text-center mt-3">
-            <small>Don't have an account? <Link to="/auth/register" className='text-info'>Register</Link></small>
+            <small>Don't have an account? <Link to="/auth/register" className='text-gold-dark'>Register</Link></small>
           </div>
         </div>
       </div>

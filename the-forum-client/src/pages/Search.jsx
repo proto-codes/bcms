@@ -58,22 +58,20 @@ const Search = () => {
   };
 
   return (
-    <Container className="my-5">
-      <h2 className="text-center mb-4 text-blue">Explore Clubs, People, or More</h2>
+    <Container className="my-4">
+      <h2 className="text-center mb-4 text-gold-dark">Explore Clubs, People, or More</h2>
 
       <Form onSubmit={handleSubmit}>
-        <InputGroup className="mb-4 shadow-lg rounded-pill">
+        <InputGroup className="mb-4 shadow-lg">
           <FormControl
             placeholder="Start typing or press search..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="p-3 border-0 rounded-pill"
             style={{ borderTopRightRadius: '0', borderBottomRightRadius: '0' }}
           />
           <Button
             type="submit"
-            variant="blue"
-            className="px-4 py-2 rounded-pill"
+            variant="gold-dark"
             style={{ borderTopLeftRadius: '0', borderBottomLeftRadius: '0' }}
           >
             Search
@@ -83,7 +81,7 @@ const Search = () => {
 
       {loading ? (
         <div className="text-center">
-          <Spinner animation="border" role="status" variant="blue">
+          <Spinner animation="border" role="status" variant="gold-dark">
             <span className="visually-hidden">Loading...</span>
           </Spinner>
         </div>

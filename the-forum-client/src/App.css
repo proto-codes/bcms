@@ -1,24 +1,48 @@
 :root {
-    --bg-blue: #052c65;
+    /* --light-purple: #6F42C1; */
+    --dark-purple: #4B0082;
+    /* --light-gold: #F7E7A0;
+    --medium-gold: #FFD700; */
+    --dark-gold: #B8860B;
+    /* --secondary: #008080; */
+    --light: #ffffff;
+}
+
+.puma-theme {
+    background-color: var(--dark-purple);
+    color: var(--light);
+}
+
+.text-gold-dark {   
+    color: var(--dark-gold) !important;
+}
+
+.bg-gold-dark {
+    background-color: var(--dark-gold) !important;
+}
+
+.btn-gold-dark {
+    color: var(--light) !important;
+    background-color: var(--dark-gold) !important;
 }
 
 /* Bootstrap Customization */
 .form-check-input:checked {
-    background-color: var(--bg-blue) !important;
-    border-color: var(--bg-blue) !important;
+    background-color: var(--dark-gold) !important;
+    border-color: var(--dark-gold) !important;
 }
 
 .dropdown-item.active, .dropdown-item:active {
-    background-color: var(--bg-blue) !important;
+    background-color: var(--dark-gold) !important;
 }
 
 .list-group-item.active {
-    background-color: var(--bg-blue) !important;
-    border-color: var(--bg-blue) !important;
+    background-color: var(--dark-gold) !important;
+    border-color: var(--dark-gold) !important;
 }
 
 .nav-link:hover {
-    color: #fff !important;
+    color: var(--light) !important;
 }
 
 .nav-tab:hover {
@@ -28,7 +52,7 @@
 
 .active-link {
   font-weight: bold;
-  border-bottom: 2px solid var(--bg-blue) !important;
+  border-bottom: 2px solid var(--dark-gold) !important;
 }
 
 .active-tab {
@@ -49,19 +73,6 @@
     height: calc(100% - 4.5rem);
 }
 
-.text-blue {
-    color: var(--bg-blue) !important;
-}
-
-.bg-blue {
-    background-color: var(--bg-blue) !important;
-}
-
-.btn-blue {
-    color: #ffffff !important;
-    background-color: var(--bg-blue) !important;
-}
-
 .background-img {
     position: relative;
     background-image: url('/src/assets/img/forum-cover-bg.webp');
@@ -78,11 +89,6 @@
     bottom: 0;
     background-color: rgba(0, 0, 0, 0.5);
     z-index: 1;
-}
-
-.Forum-info {
-    position: relative;
-    z-index: 2;
 }
 
 .icon:hover {
@@ -103,19 +109,17 @@
 @media (max-width: 767.98px) {
     .active-link {
         border-bottom: none !important;
-    }
-
-    .Forum-info {
-        width: 100% !important;
-    }
-
-    .about-img {
-        width: 80% !important;
-    }    
+    } 
 
     .dashboard-menu {
         position: fixed;
         right: 100%;
         transition: right 0.5s ease-in-out;
+    }
+}
+
+@media (max-width: 576px) {
+    .the-forum {
+        font-size: calc(1rem + .9vw) !important;
     }
 }

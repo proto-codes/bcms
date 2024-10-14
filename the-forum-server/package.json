@@ -9,7 +9,7 @@
     "migrate": "node migration.js"
   },
   "keywords": [
-    "forum",
+    "the forum",
     "node",
     "server",
     "express",

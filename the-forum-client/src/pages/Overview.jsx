@@ -1,95 +1,54 @@
-import React, { useState, useEffect } from 'react';
-import { Table, Form, Container, Row, Col, Card } from 'react-bootstrap';
+import React from 'react';
 
-const Logs = () => {
-  const [logs, setLogs] = useState([
-    {
-      id: 1,
-      user: 'John Doe',
-      action: 'Logged in',
-      timestamp: '2024-10-08T14:20:00Z',
-    },
-    {
-      id: 2,
-      user: 'Jane Smith',
-      action: 'Updated profile',
-      timestamp: '2024-10-07T10:15:00Z',
-    },
-    {
-      id: 3,
-      user: 'Admin',
-      action: 'Deleted user account',
-      timestamp: '2024-10-06T09:05:00Z',
-    },
-  ]);
-
-  const [searchQuery, setSearchQuery] = useState('');
-
-  // Search filter for logs
-  const filteredLogs = logs.filter(
-    (log) =>
-      log.user.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      log.action.toLowerCase().includes(searchQuery.toLowerCase())
-  );
-
-  const formatTimestamp = (timestamp) => {
-    const date = new Date(timestamp);
-    return date.toLocaleString();
-  };
-
+const Overview = () => {
   return (
-    <Container className="my-4">
-      <Row className="mb-3">
-        <Col>
-          <h2 className="text-center text-blue">Activity Logs</h2>
-        </Col>
-      </Row>
-      <Card className="shadow-lg border-0">
-        <Card.Body>
-          <Row className="mb-3">
-            <Col md={4}>
-              <Form.Group>
-                <Form.Control
-                  type="text"
-                  placeholder="Search by user or action..."
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                />
-              </Form.Group>
-            </Col>
-          </Row>
-          <Table striped bordered hover responsive>
-            <thead className="table-primary">
-              <tr>
-                <th>#</th>
-                <th>User</th>
-                <th>Action</th>
-                <th>Timestamp</th>
-              </tr>
-            </thead>
-            <tbody>
-              {filteredLogs.length > 0 ? (
-                filteredLogs.map((log) => (
-                  <tr key={log.id}>
-                    <td>{log.id}</td>
-                    <td>{log.user}</td>
-                    <td>{log.action}</td>
-                    <td>{formatTimestamp(log.timestamp)}</td>
-                  </tr>
-                ))
-              ) : (
-                <tr>
-                  <td colSpan="4" className="text-center">
-                    No logs found
-                  </td>
-                </tr>
-              )}
-            </tbody>
-          </Table>
-        </Card.Body>
-      </Card>
-    </Container>
+    <div className="container my-4">
+      <h1 className="h2">Dashboard Overview</h1>
+      <div className="row">
+        {/* Sample Card 1 */}
+        <div className="col-md-4 mb-4">
+          <div className="card text-white bg-primary">
+            <div className="card-body">
+              <h5 className="card-title">Total Users</h5>
+              <p className="card-text">150 users</p>
+            </div>
+          </div>
+        </div>
+        {/* Sample Card 2 */}
+        <div className="col-md-4 mb-4">
+          <div className="card text-white bg-success">
+            <div className="card-body">
+              <h5 className="card-title">Total Events</h5>
+              <p className="card-text">20 events</p>
+            </div>
+          </div>
+        </div>
+        {/* Sample Card 3 */}
+        <div className="col-md-4 mb-4">
+          <div className="card text-white bg-warning">
+            <div className="card-body">
+              <h5 className="card-title">Pending Approvals</h5>
+              <p className="card-text">5 approvals</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <h2 className="h4">Recent Activities</h2>
+      {/* Activity Log */}
+      <div className="list-group mb-4">
+        <a href="#" className="list-group-item list-group-item-action">
+          User John Doe registered
+        </a>
+        <a href="#" className="list-group-item list-group-item-action">
+          Event "Tech Conference" created
+        </a>
+        <a href="#" className="list-group-item list-group-item-action">
+          User Jane Smith updated profile
+        </a>
+      </div>
+    </div>
   );
 };
 
-export default Logs;
+export default Overview;

@@ -17,6 +17,7 @@ import Notifications from './pages/Notifications';
 import Messages from './pages/Messages';
 import Tasks from './pages/Tasks';
 import Clubs from './pages/Clubs';
+import Events from './pages/Events';
 import Search from './pages/Search';
 import Statistics from './pages/Statistics';
 import Settings from './pages/Settings';
@@ -34,6 +35,7 @@ function App() {
           <Route path='messages' element={<Messages />} />
           <Route path="tasks" element={<Tasks />} />
           <Route path="clubs" element={<Clubs />} />
+          <Route path="events" element={<Events />} />
           <Route path="search" element={<Search />} />
           <Route path="statistics" element={<Statistics />} />
           <Route path="settings" element={<Settings />} />

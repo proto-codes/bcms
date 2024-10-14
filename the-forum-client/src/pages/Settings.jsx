@@ -89,7 +89,7 @@ const Settings = () => {
     <Container className="my-4">
       <Card className="shadow-lg border-0">
         <Card.Body>
-          <h2 className="mb-4 text-blue">Settings</h2>
+          <h2 className="mb-4 text-gold-dark">Settings</h2>
 
           {/* Password Change Section */}
           <Form onSubmit={handlePasswordSubmit} className="mb-4">
@@ -127,7 +127,7 @@ const Settings = () => {
               />
             </Form.Group>
 
-            <Button variant="blue" type="submit">
+            <Button variant="gold-dark" type="submit">
               Change Password
             </Button>
           </Form>
@@ -150,7 +150,7 @@ const Settings = () => {
               onChange={handleNotificationChange}
             />
 
-            <Button variant="success" type="submit" className="mt-3">
+            <Button variant="secondary" type="submit" className="mt-3">
               Save Notification Preferences
             </Button>
           </Form>

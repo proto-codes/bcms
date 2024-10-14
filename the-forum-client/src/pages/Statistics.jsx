@@ -66,7 +66,7 @@ const StatisticsPage = () => {
     <Container fluid className="my-4">
       <Row className="mb-4">
         <Col>
-          <h2 className="text-center text-blue">Statistics Dashboard</h2>
+          <h2 className="text-center text-gold-dark">Statistics Dashboard</h2>
         </Col>
       </Row>
       <Row>

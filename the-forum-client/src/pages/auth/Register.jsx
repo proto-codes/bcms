@@ -68,7 +68,7 @@ function Register() {
     <>
       <div className="d-flex justify-content-center align-items-center my-3">
         <div className="card border-0 p-4 shadow-lg" style={{ width: '350px' }}>
-          <h2 className="text-center text-info mb-4">Register</h2>
+          <h2 className="text-center text-gold-dark mb-4">Register</h2>
           <form onSubmit={register}>
             <div className="mb-3">
               <label htmlFor="name" className="form-label">Full Name</label>
@@ -125,12 +125,12 @@ function Register() {
               />
             </div>
             {error && <p className="text-danger">{error}</p>} {/* Display error message */}
-            <button type="submit" className="btn btn-info w-100" disabled={loading}>
+            <button type="submit" className="btn btn-gold-dark w-100" disabled={loading}>
               {loading ? 'Registering...' : 'Register'} {/* Button text changes based on loading state */}
             </button>
           </form>
           <div className="text-center mt-3">
-            <small>Already have an account? <Link to="/auth/login" className='text-info'>Login</Link></small>
+            <small>Already have an account? <Link to="/auth/login" className='text-gold-dark'>Login</Link></small>
           </div>
         </div>
       </div>

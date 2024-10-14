@@ -1,86 +1,58 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
-import Technicalexcellence from '../assets/img/technical-excellence.png'
-import Educationaltransparency from '../assets/img/educational-transparency.png'
-import Community from '../assets/img/community.png'
-import Socialresponsibility from '../assets/img/social-responsibility.png'
 
 function Home() {
   return (
-    <>
-      <section className="background-img p-3">
-        <div className="Forum-info w-75">
-          <p className='fs-5 fw-bold text-light'>Welcome to The Forum</p>
-          <p className="fs-5 fw-bold text-light">Connect with like-minded individuals, join clubs that align with your interets, and participate in meaningful discussions. The Forum is a platform designed to foster community engagement, learning and growth.</p>
-          <Link to='/login' className="btn btn-blue p-3 rounded-pill fs-5 mb-4">Learn more</Link>
-        </div>
-      </section>
+    <div className="container-fluid my-2 p-3">
+      <header className="background-img bg-gold-dark text-white text-center p-5">
+        <h1 className="position-relative z-2">Welcome to The Forum</h1>
+        <p className="fs-5 position-relative z-2">Your Hub for Collaboration, Learning, and Engagement</p>
+      </header>
 
-      {/* Features */}
-      <section className='p-3'>
-        <h2 className='text-blue fw-bold mb-3'>Features</h2>
+      <div className="section my-4">
+        <h2 className='text-gold-dark mb-3'>About Us</h2>
+        <p className="fs-5">
+          The Forum is a vibrant community dedicated to fostering collaboration among individuals interested in various topics, including software development, design, and technology. Our mission is to provide a platform for members to connect, share knowledge, and grow together.
+        </p>
+      </div>
+
+      <div className="section my-4">
+        <h2 className='text-gold-dark mb-3'>Our Vision</h2>
+        <p className="fs-5">
+          To create an inclusive environment where every member feels valued and empowered to contribute to discussions, share resources, and participate in events that enhance their learning experience.
+        </p>
+      </div>
+
+      <div className="section my-4">
+        <h2 className='text-gold-dark mb-3'>User Roles</h2>
         <ul>
-          <li className='fs-5'>Discover and join clubs that match your passion</li>
-          <li className='fs-5'>Attend events, webinars, and meetups</li>
-          <li className='fs-5'>Engage in discussion, share ideas, and learn from others</li>
-          <li className='fs-5'>Access resources, materials and expert insights</li>
-          <li className='fs-5'>Connect with members, leaders, and mentors</li>
+          <li><strong>Admin:</strong> Manage users, create events, oversee discussions, and generate reports.</li>
+          <li><strong>Club Leader:</strong> Manage club activities, approve member requests, and communicate with members.</li>
+          <li><strong>Member:</strong> Join clubs, participate in discussions, RSVP for events, and access resources.</li>
         </ul>
-      </section>
+      </div>
 
-      {/* Benefits */}
-      <section className='p-3'>
-        <h2 className='text-blue fw-bold mb-3'>Benefits</h2>
+      <div className="section my-4">
+        <h2 className='text-gold-dark mb-3'>Features</h2>
+        <p className="fs-5">Our club offers a range of features for all users:</p>
         <ul>
-          <li className='fs-5'>Expand your network and build meaningful relationships</li>
-          <li className='fs-5'>Develop new skills and knowledge</li>
-          <li className='fs-5'>Enhance your personal and professional growth</li>
-          <li className='fs-5'>Find support, encouragement, and motivation</li>
-          <li className='fs-5'>Be part of a vibrant and diverse community</li>
+          <li>User authentication with login/signup options.</li>
+          <li>Dashboard tailored for Admins, Club Leaders, and Members.</li>
+          <li>Club and event management tools.</li>
+          <li>Discussion forums for engagement.</li>
+          <li>Access to valuable resources and materials.</li>
+          <li>Internal messaging for effective communication.</li>
+          <li>Reporting and analytics for insights.</li>
         </ul>
-      </section>
+      </div>
 
-      {/* What is it for? */}
-      <section className='p-3'>
-        <h2 className='text-blue fw-bold mb-3'>What is it for?</h2>
-        <ul>
-          <li className='fs-5'>Anyone looking to connect with others who share similar interests</li>
-          <li className='fs-5'>Individuals seeking personal and professional development</li>
-          <li className='fs-5'>Club leaders and organizers wanting to manage their group efficiently</li>
-          <li className='fs-5'>Event planners and speaker looking to reach a target audience</li>
-        </ul>
-      </section>
-
-      {/* Goals */}
-      <section className='p-3'>
-        <h2 className='text-blue fw-bold mb-3'>Goals</h2>
-        <div className='row'>
-          <div className="col-md-6 px-3 mb-3">
-            <img src={Technicalexcellence} alt="Forum Goals" style={{width: '3rem'}} />
-            <h4 className='text-blue fw-bold'>Inspire</h4>
-            <p className="fs-5">Create a supportive environment that inspire creativity, innovation, and progress</p>
-          </div>
-          <div className="col-md-6 px-3 mb-3">
-            <img src={Educationaltransparency} alt="Forum Goals" style={{width: '3rem'}} />
-            <h4 className='text-blue fw-bold'>Empower</h4>
-            <p className="fs-5">Equip members with tools, skills, and confidence to achieve their goals</p>
-          </div>  
-        </div>
-        <div className='row'>
-          <div className="col-md-6 px-3 mb-3">
-            <img src={Community} alt="Forum Goals" style={{width: '3rem'}} />
-            <h4 className='text-blue fw-bold'>Connect</h4>
-            <p className="fs-5">Foster meaningful connection among members with shared interests</p>
-          </div>
-          <div className="col-md-6 px-3">
-            <img src={Socialresponsibility} alt="Forum Goals" style={{width: '3rem'}} />
-            <h4 className='text-blue fw-bold'>Engage</h4>
-            <p className="fs-5">Encourage active participation in discussion, events, and activities.</p>
-          </div>
-        </div>
-      </section>
-    </>
-  )
+      <div className="section my-4">
+        <h2 className='text-gold-dark mb-3'>Join Us!</h2>
+        <p className="fs-5">If you're passionate about learning and collaboration, we invite you to become a part of our community. Together, we can achieve great things!</p>
+        <Link to='/auth/register' className="btn btn-gold-dark">Get Started</Link>
+      </div>
+    </div>
+  );
 }
 
 export default Home

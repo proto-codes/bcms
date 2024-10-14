@@ -38,7 +38,7 @@ const Notifications = () => {
       case 'reminder':
         return 'warning';
       case 'welcome':
-        return 'primary';
+        return 'blue';
       default:
         return 'secondary';
     }

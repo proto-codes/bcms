@@ -128,7 +128,7 @@ const Profile = () => {
               <p><strong>Address:</strong> {userData.address}</p>
               <p><strong>Phone:</strong> {userData.phone}</p>
               <p><strong>Date of Birth:</strong> {userData.dob}</p>
-              <Button variant="blue" onClick={() => setEditing(true)}>Edit Profile</Button>
+              <Button variant="gold-dark" onClick={() => setEditing(true)}>Edit Profile</Button>
             </div>
           ) : (
             <Form onSubmit={handleFormSubmit}>

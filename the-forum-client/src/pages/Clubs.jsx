@@ -1,104 +1,71 @@
 import React, { useState, useEffect } from 'react';
-import { Card, Container, Button, Form, ListGroup, Modal } from 'react-bootstrap';
 
 const Clubs = () => {
-  const [clubs, setClubs] = useState([]); // List of clubs
-  const [selectedClub, setSelectedClub] = useState(null); // Current club for messaging
-  const [newMessage, setNewMessage] = useState(''); // Message input
-  const [showMessageModal, setShowMessageModal] = useState(false); // Message modal visibility
-  const [events, setEvents] = useState([]); // Events for the selected club
+  // Hardcoded dummy data
+  const dummyClubs = [
+    { id: 1, name: 'Tech Innovators', description: 'A club for tech enthusiasts to share ideas and collaborate.', privacy: 'public' },
+    { id: 2, name: 'Book Lovers', description: 'Join us to discuss and share your favorite books.', privacy: 'public' },
+    { id: 3, name: 'Outdoor Adventures', description: 'Explore the great outdoors and meet new friends.', privacy: 'private' },
+    { id: 4, name: 'Photography Club', description: 'Capture the world through your lens.', privacy: 'public' },
+    { id: 5, name: 'Fitness Fanatics', description: 'Stay fit and motivated together.', privacy: 'private' },
+  ];
 
-  useEffect(() => {
-    // Hardcoded sample clubs data
-    const sampleClubs = [
-      { id: 1, name: 'Tech Enthusiasts' },
-      { id: 2, name: 'Art Lovers' },
-      { id: 3, name: 'Fitness Freaks' },
-      { id: 4, name: 'Music Masters' },
-    ];
-    setClubs(sampleClubs); // Set hardcoded clubs
-  }, []);
+  const [clubs, setClubs] = useState(dummyClubs); // Use dummy data directly
+  const [searchTerm, setSearchTerm] = useState("");
 
-  const fetchEvents = async (clubId) => {
-    // Hardcoded sample events data
-    const sampleEvents = [
-      { id: 1, title: 'Weekly Meetup', description: 'Discuss the latest tech trends.' },
-      { id: 2, title: 'Hackathon', description: '24-hour coding competition.' },
-    ];
-    setEvents(sampleEvents); // Set hardcoded events for demonstration
+  const filteredClubs = clubs.filter(club => 
+    club.name.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+  const joinClub = (clubId) => {
+    alert(`You have joined the club: ${clubId}!`);
   };
 
-  const handleMessageSubmit = async (e) => {
-    e.preventDefault();
-    if (!newMessage.trim()) return;
-
-    // For now, we won't be making a real API request
-    setNewMessage('');
-    setShowMessageModal(false);
-  };
-
-  const handleClubClick = (club) => {
-    setSelectedClub(club.id);
-    fetchEvents(club.id); // Fetch events for the selected club
-    setShowMessageModal(true); // Open the messaging modal
+  const requestToJoinClub = (clubId) => {
+    alert(`Join request sent for club: ${clubId}!`);
   };
 
   return (
-    <Container className="my-5">
-      <h2 className="text-center mb-4">Clubs</h2>
-      
-      {clubs.length > 0 ? ( // Check if clubs are available
-        <ListGroup>
-          {clubs.map((club) => (
-            <ListGroup.Item key={club.id} className="d-flex justify-content-between align-items-center">
-              <span>{club.name}</span>
-              <Button variant="primary" onClick={() => handleClubClick(club)}>
-                Join
-              </Button>
-            </ListGroup.Item>
-          ))}
-        </ListGroup>
-      ) : (
-        <p className="text-center text-muted">No clubs available. Please check back later.</p> // Message when no clubs
-      )}
+    <div className="container my-4">
+      <h2 className="mb-4 text-gold-dark">Explore Clubs</h2>
 
-      <Modal show={showMessageModal} onHide={() => setShowMessageModal(false)}>
-        <Modal.Header closeButton>
-          <Modal.Title>Messages for Club {selectedClub}</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          <h5>Events</h5>
-          <ListGroup>
-            {events.length > 0 ? (
-              events.map((event) => (
-                <ListGroup.Item key={event.id}>
-                  <strong>{event.title}</strong>
-                  <p>{event.description}</p>
-                </ListGroup.Item>
-              ))
-            ) : (
-              <p>No events available for this club.</p> // Message when no events
-            )}
-          </ListGroup>
-          
-          <h5 className="mt-4">Send a Message</h5>
-          <Form onSubmit={handleMessageSubmit}>
-            <Form.Group>
-              <Form.Control
-                type="text"
-                placeholder="Type your message..."
-                value={newMessage}
-                onChange={(e) => setNewMessage(e.target.value)}
-                required
-              />
-            </Form.Group>
-            <Button variant="primary" type="submit" className="mt-2">
-              Send Message
-            </Button>
-          </Form>
-        </Modal.Body>
-      </Modal>
-    </Container>
+      {/* Search bar */}
+      <div className="input-group mb-4">
+        <input
+          type="text"
+          className="form-control"
+          placeholder="Search for clubs..."
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+        />
+      </div>
+
+      {/* Display clubs */}
+      <div className="row">
+        {filteredClubs.length > 0 ? (
+          filteredClubs.map(club => (
+            <div key={club.id} className="col-md-4 mb-4">
+              <div className="card h-100">
+                <div className="card-body">
+                  <h5 className="card-title">{club.name}</h5>
+                  <p className="card-text">{club.description}</p>
+                  <p className="card-text"><strong>Privacy:</strong> {club.privacy === 'public' ? 'Public' : 'Private'}</p>
+                  
+                  {/* Join button */}
+                  {club.privacy === 'public' ? (
+                    <button className="btn btn-gold-dark" onClick={() => joinClub(club.id)}>Join Club</button>
+                  ) : (
+                    <button className="btn btn-secondary" onClick={() => requestToJoinClub(club.id)}>Request to Join</button>
+                  )}
+                </div>
+              </div>
+            </div>
+          ))
+        ) : (
+          <p>No clubs available.</p>
+        )}
+      </div>
+    </div>
   );
 };
 

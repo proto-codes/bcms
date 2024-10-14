@@ -97,7 +97,7 @@ const Tasks = () => {
     <Container className="my-4">
       <Card className="shadow-lg border-0">
         <Card.Body>
-          <h2 className="mb-4 text-blue">{editingTask ? 'Edit Task' : 'Add New Task'}</h2>
+          <h2 className="mb-4 text-gold-dark">{editingTask ? 'Edit Task' : 'Add New Task'}</h2>
           <Form onSubmit={editingTask ? handleUpdateTask : handleAddTask} className="mb-4">
             <Form.Group className="mb-3">
               <Form.Label>Task Title</Form.Label>
@@ -155,7 +155,7 @@ const Tasks = () => {
             )}
           </Form>
 
-          <h4 className="mb-3 text-blue">Task List</h4>
+          <h4 className="mb-3 text-gold-dark">Task List</h4>
           <ListGroup>
             {tasks.map((task) => (
               <ListGroup.Item key={task.id} className="d-flex justify-content-between align-items-center">
