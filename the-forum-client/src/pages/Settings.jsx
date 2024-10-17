@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
-import { Form, Button, Card, Container } from 'react-bootstrap';
-import axios from 'axios';
+import React, { useState, useEffect } from 'react';
+import { Form, Button, Card, Container, Alert } from 'react-bootstrap';
+import PageLoader from '../components/PageLoader';
+import api from '../api/axios';
 
 const Settings = () => {
   const [passwordData, setPasswordData] = useState({
@@ -14,6 +15,31 @@ const Settings = () => {
     smsNotifications: false,
   });
 
+  const [message, setMessage] = useState(null); // State for server messages
+  const [loading, setLoading] = useState(true); // State to handle loading
+
+  // Fetch user's notification preferences from the database
+  useEffect(() => {
+    const fetchPreferences = async () => {
+        try {
+            const { data } = await api.get('/notification-preferences');
+            // Convert to boolean values
+            setNotificationPreferences({
+                emailNotifications: Boolean(data.email_notifications), // Convert to boolean
+                smsNotifications: Boolean(data.sms_notifications),     // Convert to boolean
+            });
+        } catch (error) {
+            console.error('Error fetching notification preferences:', error);
+            setMessage('Failed to load notification preferences.');
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    fetchPreferences();
+  }, []);
+
+  // Handle input changes for password fields
   const handlePasswordChange = (e) => {
     const { name, value } = e.target;
     setPasswordData((prevState) => ({
@@ -22,6 +48,7 @@ const Settings = () => {
     }));
   };
 
+  // Handle checkbox changes for notification preferences
   const handleNotificationChange = (e) => {
     const { name, checked } = e.target;
     setNotificationPreferences((prevState) => ({
@@ -30,19 +57,21 @@ const Settings = () => {
     }));
   };
 
+  // Handle password change form submission
   const handlePasswordSubmit = async (e) => {
     e.preventDefault();
+
     if (passwordData.newPassword !== passwordData.confirmPassword) {
-      alert("Passwords do not match!");
+      setMessage("Passwords do not match!");
       return;
     }
-    
+
     try {
-      await axios.put('http://localhost:8000/api/change-password', {
+      await api.put('/change-password', {
         currentPassword: passwordData.currentPassword,
         newPassword: passwordData.newPassword,
       });
-      alert('Password changed successfully!');
+      setMessage('Password changed successfully!');
       setPasswordData({
         currentPassword: '',
         newPassword: '',
@@ -50,40 +79,48 @@ const Settings = () => {
       });
     } catch (error) {
       console.error('Error changing password:', error);
-      alert('Error changing password. Please try again.');
+      setMessage('Error changing password. Please try again.');
     }
   };
 
+  // Handle notification preferences form submission
   const handleNotificationSubmit = async (e) => {
     e.preventDefault();
+    // Check if at least one notification preference is selected
+    if (!notificationPreferences.emailNotifications && !notificationPreferences.smsNotifications) {
+      setMessage('At least one notification preference must be selected.');
+      return; // Prevent form submission
+    }
     try {
-      await axios.put('http://localhost:8000/api/notification-preferences', notificationPreferences);
-      alert('Notification preferences updated successfully!');
+      await api.put('/notification-preferences', notificationPreferences);
+      setMessage('Notification preferences updated successfully!');
     } catch (error) {
       console.error('Error updating notification preferences:', error);
-      alert('Error updating notification preferences. Please try again.');
+      // Check if the error response has a message and set it
+      const errorMessage = error.response?.data?.error || 'Error updating notification preferences. Please try again.';
+      setMessage(errorMessage);
     }
   };
 
+  // Handle account deletion
   const handleDeleteAccount = async () => {
     const confirmDelete = window.confirm("Are you sure you want to delete your account? This action cannot be undone.");
     if (!confirmDelete) return;
 
     try {
-      await axios.delete('http://localhost:8000/api/delete-account', {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem('token')}` // Include the user's token
-        }
-      });
-      alert('Your account has been deleted.');
-      localStorage.removeItem('token'); // Optionally, remove the token from local storage
-      // Redirect the user after account deletion
+      await api.delete('/delete-account');
+      setMessage('Your account has been deleted.');
+      localStorage.removeItem('token');
       window.location.href = '/';
     } catch (error) {
       console.error('Error deleting account:', error);
-      alert('Error deleting account. Please try again.');
+      setMessage('Error deleting account. Please try again.');
     }
   };
+
+  if (loading) {
+    return <PageLoader />;
+  }
 
   return (
     <Container className="my-4">
@@ -154,9 +191,12 @@ const Settings = () => {
               Save Notification Preferences
             </Button>
           </Form>
+          
+          {/* Display server messages */}
+          {message && <Alert variant="info" className='mt-4' onClose={() => setMessage(null)} dismissible>{message}</Alert>}
 
           {/* Delete Account Section */}
-          <div className="mt-5">
+          <div className="mt-4">
             <h5>Danger Zone</h5>
             <Button variant="danger" onClick={handleDeleteAccount}>
               Delete Account

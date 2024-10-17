@@ -3,12 +3,6 @@ import { Link } from 'react-router-dom';
 import api from '../../api/axios';
 
 function Login() {
-  // const isAuthenticated = !!localStorage.getItem('token');
-
-  // if (isAuthenticated) {
-  //   window.location.href = '/'
-  // }
-  
   const [userData, setUserData] = useState({
     email: '',
     password: '',

@@ -34,8 +34,10 @@ connection.connect((err) => {
       name VARCHAR(50) NOT NULL,
       email VARCHAR(100) NOT NULL UNIQUE,
       password VARCHAR(255) NOT NULL,
+      email_notifications BOOLEAN DEFAULT TRUE,
+      sms_notifications BOOLEAN DEFAULT FALSE,
       created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-    )
+    );
   `;
 
   // SQL query to create the active_tokens table if it doesn't exist
@@ -81,11 +83,27 @@ connection.connect((err) => {
     )
   `;
 
+  // SQL query to create the tasks table if it doesn't exist
+  const createTasksTableQuery = `
+    CREATE TABLE IF NOT EXISTS tasks (
+      id INT AUTO_INCREMENT PRIMARY KEY,
+      user_id INT NOT NULL,
+      title VARCHAR(255) NOT NULL,
+      description TEXT,
+      due_date DATE NOT NULL,
+      priority ENUM('High', 'Medium', 'Low') DEFAULT 'Medium',
+      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+      updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+      FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+    );
+  `;
+
   // Run migrations
   runMigration(createUsersTableQuery, 'Users table');
   runMigration(createActiveTokensTableQuery, 'Active tokens table');
   runMigration(createProfileTableQuery, 'Profile table');
   runMigration(createMessagesTableQuery, 'Messages table');
+  runMigration(createTasksTableQuery, 'Tasks table');
 
   // Close the connection after all migrations
   connection.end((err) => {
