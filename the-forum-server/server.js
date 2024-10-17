@@ -13,7 +13,8 @@ app.use(cors({
 app.use(express.json());
 
 // Routes
-app.use('/api', apiRoutes, webRoutes);
+app.use('/api', apiRoutes);
+app.use('/api', webRoutes);
 
 // Start the server
 const PORT = process.env.PORT || 5000;

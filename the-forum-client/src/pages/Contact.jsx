@@ -66,7 +66,7 @@ function Contact() {
           </div>
           <div className="col-md-6">
             <h4>Contact Information</h4>
-            <p><strong>Email:</strong> info@forumclub.com</p>
+            <p><strong>Email:</strong> info@theforum.com</p>
             <p><strong>Phone:</strong> +123 456 7890</p>
             <p><strong>Address:</strong> 3 Bende Rd By finbarrs Rd, Umuahia, 440236, Abia</p>
             <h4>Find Us Here</h4>

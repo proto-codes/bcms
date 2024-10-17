@@ -26,6 +26,60 @@
     background-color: var(--dark-gold) !important;
 }
 
+/* Loader */
+.loader {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
+
+.spinner {
+  border: 8px solid #e2e2e2; /* Light grey */
+  border-top: 8px solid var(--dark-purple); /* Purple */
+  border-radius: 50%;
+  width: 60px;
+  height: 60px;
+  animation: spin 1.5s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Online status effect */
+.status-online {
+  position: relative; /* To position the pseudo-element */
+  padding-left: 15px; /* Space for the rounded indicator */
+}
+
+.status-online::before {
+  content: '';
+  width: 10px; /* Size of the rounded indicator */
+  height: 10px; /* Size of the rounded indicator */
+  border-radius: 50%; /* Makes the div circular */
+  background-color: var(--dark-gold); /* Gold color for the online indicator */
+  position: absolute; /* Positioning relative to the text */
+  left: 0; /* Align to the left */
+  top: 50%; /* Center vertically */
+  transform: translateY(-50%); /* Adjust for vertical centering */
+  animation: pulse 1.5s infinite; /* Apply the pulse animation */
+}
+
+/* Keyframes for the pulse effect */
+@keyframes pulse {
+  0% {
+    transform: translateY(-50%) scale(1); /* Normal size */
+  }
+  50% {
+    transform: translateY(-50%) scale(1.2); /* Scale up */
+  }
+  100% {
+    transform: translateY(-50%) scale(1); /* Scale back to normal */
+  }
+}
+
 /* Bootstrap Customization */
 .form-check-input:checked {
     background-color: var(--dark-gold) !important;
@@ -71,6 +125,12 @@
 
 .cst-height {
     height: calc(100% - 4.5rem);
+    overflow: auto;
+}
+
+.msg-height {
+    max-height: calc(100vh - 20.5rem);
+    overflow: auto;
 }
 
 .background-img {

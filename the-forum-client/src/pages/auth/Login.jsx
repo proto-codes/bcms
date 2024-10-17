@@ -3,11 +3,11 @@ import { Link } from 'react-router-dom';
 import api from '../../api/axios';
 
 function Login() {
-  const isAuthenticated = !!localStorage.getItem('token');
+  // const isAuthenticated = !!localStorage.getItem('token');
 
-  if (isAuthenticated) {
-    window.location.href = '/dashboard'
-  }
+  // if (isAuthenticated) {
+  //   window.location.href = '/'
+  // }
   
   const [userData, setUserData] = useState({
     email: '',
@@ -41,7 +41,7 @@ function Login() {
       localStorage.setItem('token', response.data.token);
       
       // Redirect to the dashboard page
-      window.location.href = '/dashboard';
+      window.location.href = '/';
     } catch (error) {
       console.error('Login failed:', error.response?.data?.error || error.message);
       

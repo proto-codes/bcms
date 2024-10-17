@@ -34,7 +34,7 @@ const register = async (req, res) => {
         const hasSpecialChars = /[!@#$%^&*(),.?":{}|<>]/.test(password);
 
         if (password.length < minLength || !hasUpperCase || !hasLowerCase || !hasNumbers || !hasSpecialChars) {
-            return 'Password must contain at least one uppercase letter, one lowercase letter, one number and one special character and be at least 8 characters long';
+            return 'Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character and be at least 8 characters long';
         }
         return null; // No issues found, password is strong enough
     };
@@ -55,18 +55,22 @@ const register = async (req, res) => {
         // Hash the password
         const hashedPassword = await bcrypt.hash(password, 12);
 
-        // Insert the new user
+        // Insert the new user and retrieve the inserted user's ID
         const query = 'INSERT INTO users (name, email, password) VALUES (?, ?, ?)';
-        await queryAsync(query, [name, email, hashedPassword]);
+        const insertResult = await queryAsync(query, [name, email, hashedPassword]);
 
-        // Respond with success message
-        res.status(201).json({ message: 'User registered successfully' });
-        
-        const token = jwt.sign({ id: user.id }, process.env.JWT_SECRET, { expiresIn: '1h' });
+        // Get the inserted user ID from the result
+        const userId = insertResult.insertId;
+
+        // Generate the JWT token
+        const token = jwt.sign({ id: userId }, process.env.JWT_SECRET, { expiresIn: '1h' });
+
+        // Store the token in the active_tokens table
         const expiresAt = new Date(Date.now() + 3600000);
-        await queryAsync('INSERT INTO active_tokens (user_id, token, expires_at) VALUES (?, ?, ?)', [user.id, token, expiresAt]);
+        await queryAsync('INSERT INTO active_tokens (user_id, token, expires_at) VALUES (?, ?, ?)', [userId, token, expiresAt]);
 
-        res.json({ token });
+        // Respond with the token to automatically log in the user
+        res.status(201).json({ message: 'User registered successfully', token });
     } catch (err) {
         console.error('Error registering user:', err);
         res.status(500).json({ error: 'Server error' });

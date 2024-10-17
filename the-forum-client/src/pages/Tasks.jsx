@@ -145,7 +145,7 @@ const Tasks = () => {
                 </Form.Group>
               </Col>
             </Row>
-            <Button variant={editingTask ? 'success' : 'blue'} type="submit">
+            <Button variant={editingTask ? 'success' : 'gold-dark'} type="submit">
               {editingTask ? 'Update Task' : 'Add Task'}
             </Button>
             {editingTask && (

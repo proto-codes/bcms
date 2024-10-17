@@ -65,6 +65,7 @@ const Search = () => {
         <InputGroup className="mb-4 shadow-lg">
           <FormControl
             placeholder="Start typing or press search..."
+            className='p-3'
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             style={{ borderTopRightRadius: '0', borderBottomRightRadius: '0' }}

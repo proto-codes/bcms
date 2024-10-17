@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Form, Button, Card, Container, Row, Col } from 'react-bootstrap';
-import axios from 'axios';
 import { FaUpload, FaTrash } from 'react-icons/fa';
+import api from '../api/axios';
 
 const Profile = () => {
   const [userData, setUserData] = useState({
@@ -16,21 +16,16 @@ const Profile = () => {
 
   const [editing, setEditing] = useState(false);
   const [file, setFile] = useState(null);
+  const [preview, setPreview] = useState('');
 
-  // Fetch user data when component mounts
+  // Fetch user data from server on component mount
   useEffect(() => {
     const fetchUserData = async () => {
       try {
-        const response = {
-          name: 'John Doe',
-          email: 'john@example.com',
-          bio: 'Software Developer & Design Enthusiast',
-          avatar: 'https://via.placeholder.com/150',
-          address: '123 Main St, City, Country',
-          phone: '+1234567890',
-          dob: '1990-01-01',
-        };
-        setUserData(response);
+        const response = await api.get('/profile'); // Adjust URL as necessary
+        const data = response.data;
+        setUserData(data);
+        setPreview(data.avatar); // Set the preview to the fetched avatar
       } catch (error) {
         console.error('Error fetching user data:', error);
       }
@@ -50,20 +45,27 @@ const Profile = () => {
 
   // Handle file change for profile picture
   const handleFileChange = (e) => {
-    setFile(e.target.files[0]);
+    const selectedFile = e.target.files[0];
+    if (selectedFile) {
+      setFile(selectedFile);
+      setPreview(URL.createObjectURL(selectedFile)); // Create a preview URL
+    }
   };
 
   // Handle delete profile picture
   const handleDeleteAvatar = () => {
     setUserData((prevState) => ({
       ...prevState,
-      avatar: 'https://via.placeholder.com/150', // Reset to default placeholder
+      avatar: 'https://via.placeholder.com/150',
     }));
+    setFile(null);
+    setPreview('');
   };
 
   // Handle form submission to update user data
   const handleFormSubmit = async (e) => {
     e.preventDefault();
+
     const formData = new FormData();
     formData.append('name', userData.name);
     formData.append('email', userData.email);
@@ -72,19 +74,22 @@ const Profile = () => {
     formData.append('phone', userData.phone);
     formData.append('dob', userData.dob);
     if (file) {
-      formData.append('avatar', file);
+      formData.append('avatar', file); // Append the selected file
     }
 
     try {
-      await axios.put('http://localhost:8000/api/profile', formData, {
+      await api.put('/profile', formData, {
         headers: {
-          'Content-Type': 'multipart/form-data',
+          'Content-Type': 'multipart/form-data', // Important for file uploads
         },
       });
-      setEditing(false);
-      alert('Profile updated successfully!');
+      setEditing(false); // Exit editing mode
+      // Optionally, refetch the data or update local state to reflect changes
+      const response = await api.get('/profile');
+      setUserData(response.data);
+      setPreview(response.data.avatar); // Update preview with new avatar
     } catch (error) {
-      console.error('Error updating profile:', error);
+      console.error('Error updating user data:', error);
     }
   };
 
@@ -94,7 +99,7 @@ const Profile = () => {
         <Card.Body>
           <div className="d-flex align-items-center mb-4">
             <img
-              src={userData.avatar}
+              src={preview || userData.avatar || 'https://via.placeholder.com/150'}
               alt="User Avatar"
               className="rounded-circle me-3"
               style={{ width: '150px', height: '150px', objectFit: 'cover', border: '5px solid #052c65' }}
@@ -210,7 +215,7 @@ const Profile = () => {
               </Form.Group>
 
               <div className="d-flex justify-content-between">
-                <Button variant="success" type="submit">
+                <Button variant="gold-dark" type="submit">
                   Save Changes
                 </Button>
                 <Button variant="secondary" onClick={() => setEditing(false)}>

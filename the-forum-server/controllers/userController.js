@@ -10,6 +10,11 @@ const queryAsync = (query, params) => {
 };
 
 const getUserDetails = async (req, res) => {
+    // Ensure req.user is defined (comes from the authenticateToken middleware)
+    if (!req.user || !req.user.id) {
+        return res.status(401).json({ error: 'User not authenticated' });
+    }
+
     try {
         const results = await queryAsync('SELECT id, name, email FROM users WHERE id = ?', [req.user.id]);
         if (results.length === 0) {

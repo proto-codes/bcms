@@ -6,7 +6,7 @@ function Register() {
   const isAuthenticated = localStorage.getItem('token');
 
   if (isAuthenticated) {
-    window.location.href = '/dashboard'
+    window.location.href = '/'
   }
   
   const [userData, setUserData] = useState({
@@ -55,7 +55,7 @@ function Register() {
       localStorage.setItem('token', response.data.token);
 
       // Redirect to dashboard page
-      window.location.href = '/dashboard';
+      window.location.href = '/';
     } catch (error) {
       console.error('Registration failed:', error.response?.data?.error || error.message);
       setError(error.response?.data?.error || 'An unexpected error occurred. Please try again.');

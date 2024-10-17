@@ -15,7 +15,7 @@ connection.connect((err) => {
     return console.error('Error connecting to the database: ' + err.stack);
   }
   console.log('Connected to MySQL');
-  
+
   // Function to run migration queries
   const runMigration = (query, description) => {
     connection.query(query, (err, results) => {
@@ -50,7 +50,7 @@ connection.connect((err) => {
   `;
 
   // SQL query to create the profile table if it doesn't exist
-  const createPofileTableQuery = `
+  const createProfileTableQuery = `
     CREATE TABLE IF NOT EXISTS profile (
       id INT AUTO_INCREMENT PRIMARY KEY,
       user_id INT NOT NULL,
@@ -84,7 +84,7 @@ connection.connect((err) => {
   // Run migrations
   runMigration(createUsersTableQuery, 'Users table');
   runMigration(createActiveTokensTableQuery, 'Active tokens table');
-  runMigration(createPofileTableQuery, 'Profile table');
+  runMigration(createProfileTableQuery, 'Profile table');
   runMigration(createMessagesTableQuery, 'Messages table');
 
   // Close the connection after all migrations

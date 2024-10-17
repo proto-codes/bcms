@@ -13,11 +13,14 @@ function Footer() {
         </div>
 
         {/* Contact Information */}
-        <p className="m-0 pb-2">info@forumclub.com | +123 456 7890</p>
+        <p className="m-0 pb-2">info@theforum.com | +123 456 7890</p>
 
         {/* Copyright */}
-        <p className="m-0">&copy; {new Date().getFullYear()} 
-          <a href="https://protocodes.vercel.app/" target="_blank" rel="noopener noreferrer" className='text-decoration-none text-light'> Protocodes</a> All Rights Reserved
+        <p className="m-0">&copy; {new Date().getFullYear()} The Forum All Rights Reserved
+        </p>
+        <p className="m-0">
+          Powered by
+          <a href="https://protocodes.vercel.app/" target="_blank" rel="noopener noreferrer" className='text-decoration-none text-light'> Protocodes</a>
         </p>
       </div>
     </footer>

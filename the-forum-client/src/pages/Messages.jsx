@@ -76,7 +76,7 @@ const Messages = () => {
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
           />
-          <ul className="list-group flex-grow-1 overflow-auto">
+          <ul className="msg-height list-group flex-grow-1 overflow-auto">
             {filteredConversations.length > 0 ? (
               filteredConversations.map((conversation) => (
                 <li
@@ -106,7 +106,7 @@ const Messages = () => {
               </div>
 
               <h5>Chat with {conversations.find((c) => c.id === selectedConversation).name}</h5>
-              <div className="border p-3 mb-3 flex-grow-1 overflow-auto" style={{ maxHeight: '30rem' }}>
+              <div className="msg-area-height border p-3 mb-3 flex-grow-1">
                 {conversations.find((c) => c.id === selectedConversation).messages.map((message, index) => (
                   <div key={index} className={`mb-2 d-flex ${message.sender === currentUser ? 'justify-content-end' : 'justify-content-start'}`}>
                     <div className={`p-2 rounded ${message.sender === currentUser ? 'bg-gold-dark text-white' : 'bg-light text-dark'}`} style={{ maxWidth: '60%' }}>
