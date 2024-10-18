@@ -6,7 +6,6 @@ function Home() {
     <div className="container-fluid my-2 p-3">
       <header className="background-img bg-gold-dark text-white text-center p-5">
         <h1 className="position-relative z-2">Welcome to The Forum</h1>
-        <p className="fs-5 position-relative z-2">Your Hub for Collaboration, Learning, and Engagement</p>
       </header>
 
       <div className="section my-4">
@@ -40,39 +39,9 @@ function Home() {
         </ul>
         <h4 className='text-gold-dark mb-3'>Leadership:</h4>
         <ul className='fs-5'>
-          <li>Barr Sam Hart: Mni - President</li>
+          <li>Barr Sam Hart: Mni - Ugwu Ngwu President</li>
           <li>Dr Pastra Arinze Etie. Ochiagha - Sec - Gen</li>
           <li>Mazi Austin Akuma. Ugwu Atani - Treasury</li>
-        </ul>
-      </div>
-
-      <div className="section my-4">
-        <h4 className='text-gold-dark mb-3'>Our Vision</h4>
-        <p className="fs-5">
-          To create an inclusive environment where every member feels valued and empowered to contribute to discussions, share resources, and participate in events that enhance their learning experience.
-        </p>
-      </div>
-
-      <div className="section my-4">
-        <h4 className='text-gold-dark mb-3'>User Roles</h4>
-        <ul className='fs-5'>
-          <li><strong>Admin:</strong> Manage users, create events, oversee discussions, and generate reports.</li>
-          <li><strong>Club Leader:</strong> Manage club activities, approve member requests, and communicate with members.</li>
-          <li><strong>Member:</strong> Join clubs, participate in discussions, RSVP for events, and access resources.</li>
-        </ul>
-      </div>
-
-      <div className="section my-4">
-        <h4 className='text-gold-dark mb-3'>Features</h4>
-        <p className="fs-5">Our club offers a range of features for all users:</p>
-        <ul className='fs-5'>
-          <li>User authentication with login/signup options.</li>
-          <li>Dashboard tailored for Admins, Club Leaders, and Members.</li>
-          <li>Club and event management tools.</li>
-          <li>Discussion forums for engagement.</li>
-          <li>Access to valuable resources and materials.</li>
-          <li>Internal messaging for effective communication.</li>
-          <li>Reporting and analytics for insights.</li>
         </ul>
       </div>
 

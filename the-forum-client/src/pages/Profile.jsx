@@ -22,7 +22,7 @@ const Profile = () => {
   useEffect(() => {
     const fetchUserData = async () => {
       try {
-        const response = await api.get('/profile'); // Adjust URL as necessary
+        const response = await api.get('/profile');
         const data = response.data;
         setUserData(data);
         setPreview(data.avatar); // Set the preview to the fetched avatar
@@ -56,7 +56,7 @@ const Profile = () => {
   const handleDeleteAvatar = () => {
     setUserData((prevState) => ({
       ...prevState,
-      avatar: 'https://via.placeholder.com/150',
+      avatar: '', // Reset avatar to empty
     }));
     setFile(null);
     setPreview('');

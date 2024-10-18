@@ -2,7 +2,7 @@ require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const apiRoutes = require('./routes/api');
-const webRoutes = require('./routes/web');
+// const webRoutes = require('./routes/web');
 
 // Initialize Express app
 const app = express();
@@ -14,7 +14,7 @@ app.use(express.json());
 
 // Routes
 app.use('/api', apiRoutes);
-app.use('/api', webRoutes);
+// app.use('/web', webRoutes);
 
 // Start the server
 const PORT = process.env.PORT || 5000;
