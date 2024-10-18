@@ -37,7 +37,7 @@ function Home() {
             </ul>
           </li>
         </ul>
-        <h4 className='text-gold-dark mb-3'>Leadership:</h4>
+        <h4 className='text-gold-dark mb-3'>The Executives:</h4>
         <ul className='fs-5'>
           <li>Barr Sam Hart: Mni - Ugwu Ngwu President</li>
           <li>Dr Pastra Arinze Etie. Ochiagha - Sec - Gen</li>
