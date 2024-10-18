@@ -2,6 +2,24 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 
 function Home() {
+  const executives = [
+    {
+      name: 'Barr Sam Hart: Mni',
+      title: 'Ugwu Ngwu President',
+      image: '/src/assets/img/sam-hart.jpeg' // Replace with actual image path
+    },
+    {
+      name: 'Dr Pastra Arinze Etie. Ochiagha',
+      title: 'Sec - Gen',
+      image: '/src/assets/img/pastra-arinze.jpeg' // Replace with actual image path
+    },
+    {
+      name: 'Mazi Austin Akuma. Ugwu Atani',
+      title: 'Treasury',
+      image: '/src/assets/img/austin-akuma.jpeg' // Replace with actual image path
+    }
+  ];
+
   return (
     <div className="container-fluid my-2 p-3">
       <header className="background-img bg-gold-dark text-white text-center p-5">
@@ -38,11 +56,20 @@ function Home() {
           </li>
         </ul>
         <h4 className='text-gold-dark mb-3'>The Executives:</h4>
-        <ul className='fs-5'>
-          <li>Barr Sam Hart: Mni - Ugwu Ngwu President</li>
-          <li>Dr Pastra Arinze Etie. Ochiagha - Sec - Gen</li>
-          <li>Mazi Austin Akuma. Ugwu Atani - Treasury</li>
-        </ul>
+        <div className="row">
+          {executives.map((exec, index) => (
+            <div className="col-md-4 text-center" key={index}>
+              <img 
+                src={exec.image} 
+                alt={exec.name} 
+                className="img-fluid rounded-circle mb-3" 
+                style={{ width: '150px', height: '150px', objectFit: 'fill' }}
+              />
+              <h5>{exec.name}</h5>
+              <p>{exec.title}</p>
+            </div>
+          ))}
+        </div>
       </div>
 
       <div className="section my-4">
@@ -54,4 +81,4 @@ function Home() {
   );
 }
 
-export default Home
+export default Home;
