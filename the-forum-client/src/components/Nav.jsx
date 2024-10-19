@@ -60,6 +60,12 @@ function Nav() {
             <li className="nav-item">
               <NavLink
                 className={({ isActive }) => isActive ? 'nav-link text-gold fs-5 active-link' : 'nav-link text-gold fs-5'}
+                to="/info/gallery">Gallery
+              </NavLink>
+            </li>
+            <li className="nav-item">
+              <NavLink
+                className={({ isActive }) => isActive ? 'nav-link text-gold fs-5 active-link' : 'nav-link text-gold fs-5'}
                 to="/info/contact">Contact Us
               </NavLink>
             </li>

@@ -38,7 +38,7 @@ function Contact() {
 
   return (
     <>
-      <section className="container p-3">
+      <section className="container my-4">
         <h2 className='text-center text-gold fw-bold mb-5'>Contact Us</h2>
         <div className="row">
           <div className="col-md-6 mb-4">

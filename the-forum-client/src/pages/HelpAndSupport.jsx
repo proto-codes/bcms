@@ -2,7 +2,7 @@ import React from 'react';
 
 const HelpAndSupport = () => {
   return (
-    <div className="my-3 p-3">
+    <div className="container my-4">
       <h3 className="text-center mb-4">Help & Support</h3>
 
       {/* FAQs Section */}

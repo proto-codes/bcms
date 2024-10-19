@@ -9,13 +9,14 @@ import { AuthProvider } from './context/AuthContext'; // Import AuthProvider
 import ProtectedRoute from './components/ProtectedRoute'; // Import ProtectedRoute
 
 // Lazy load the pages
-const Auth = lazy(() => import('./pages/auth/Auth'));
+const Auth = lazy(() => import('./components/Auth'));
 const Login = lazy(() => import('./pages/auth/Login'));
 const Register = lazy(() => import('./pages/auth/Register'));
 const ForgotPassword = lazy(() => import('./pages/auth/ForgotPassword'));
 const Layout = lazy(() => import('./components/Layout'));
 const Info = lazy(() => import('./pages/Info'));
 const Contact = lazy(() => import('./pages/Contact'));
+const Gallery = lazy(() => import('./pages/Gallery'));
 const HelpAndSupport = lazy(() => import('./pages/HelpAndSupport'));
 const Dashboard = lazy(() => import('./components/Dashboard'));
 const DashboardHome = lazy(() => import('./pages/DashboardHome'));
@@ -55,6 +56,7 @@ function App() {
             <Route path="/info/" element={<Layout />}>
               <Route index element={<Info />} />
               <Route path="contact" element={<Contact />} />
+              <Route path="gallery" element={<Gallery />} />
               <Route path="help-support" element={<HelpAndSupport />} />
               <Route path="*" element={<NotFound />} />
             </Route>

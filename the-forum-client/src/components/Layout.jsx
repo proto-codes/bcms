@@ -9,11 +9,10 @@ function Layout() {
       <div className='vh-100 vw-100 overflow-auto'>
         <Nav />
 
-        <main style={{minHeight: '100%'}}>
+        <main className='h-100 d-flex flex-column justify-content-between'>
           <Outlet />
+          <Footer />
         </main>
-
-        <Footer />
       </div>
     </>
   )

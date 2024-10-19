@@ -2,6 +2,11 @@ import React from 'react';
 import SamHart from '../assets/img/sam-hart.jpeg'
 import PastraArinzeEtie from '../assets/img/pastra-arinze.jpeg'
 import AustinAkuma from '../assets/img/austin-akuma.jpeg'
+import Gallery1 from '../assets/img/gallery1.jpeg'
+import Gallery2 from '../assets/img/gallery2.jpeg'
+import Gallery3 from '../assets/img/gallery3.jpeg'
+import Gallery4 from '../assets/img/gallery4.jpeg'
+import { Link } from 'react-router-dom';
 
 function Info() {
   const executives = [
@@ -23,10 +28,10 @@ function Info() {
   ];
 
   const galleryImages = [
-    { src: '/src/assets/img/gallery1.jpeg', alt: 'AGM Image 1' },
-    { src: '/src/assets/img/gallery2.jpeg', alt: 'AGM Image 2' },
-    { src: '/src/assets/img/gallery3.jpeg', alt: 'AGM Image 3' },
-    { src: '/src/assets/img/gallery4.jpeg', alt: 'AGM Image 4' } 
+    { src: Gallery1, alt: 'AGM Image 1' },
+    { src: Gallery2, alt: 'AGM Image 2' },
+    { src: Gallery3, alt: 'AGM Image 3' },
+    { src: Gallery4, alt: 'AGM Image 4' } 
   ];
 
   return (
@@ -42,7 +47,9 @@ function Info() {
       <div className="container-fluid">
         {/* About Us Section */}
         <section className="container my-5">
-          <h2 className="text-center text-gold mb-4">About Us</h2>
+          <div className="text-center mb-4">
+            <h3 className="text-gold title-underline">About Us</h3>
+          </div>
           <p className="lead text-center mb-4">
             We are the members of “The Forum for Support, Wellness and Philanthropy” (also known as “The League of Gentlemen”), a not-for-profit organization with a registered office at Umuahia, Abia State Nigeria, and registered as a Not-for-Profit organization under Part F of the Companies and Allied Matters Act, (C.A.M.A) 2020, Laws of the Federation of Nigeria.
           </p>
@@ -75,7 +82,9 @@ function Info() {
 
         {/* Executives Section */}
         <section className="container my-5">
-          <h3 className="text-center text-gold mb-4">Meet the Executives</h3>
+          <div className="text-center mb-4">
+            <h3 className="text-gold title-underline">Meet the Executives</h3>
+          </div>
           <div className="row justify-content-center">
             {executives.map((exec, index) => (
               <div className="col-lg-3 col-md-4 col-sm-6 mb-4" key={index}>
@@ -98,7 +107,9 @@ function Info() {
 
         {/* AGM Image Gallery Section */}
         <section className="container my-5">
-          <h3 className="text-center text-gold mb-4">The Forum's AGM</h3>
+          <div className="text-center mb-4">
+            <h3 className="text-gold title-underline">The Forum's AGM</h3>
+          </div>
           <p className="text-center text-muted mb-4">January 5th, 2024</p>
           <div className="row g-3">
             {galleryImages.map((img, index) => (
@@ -115,6 +126,10 @@ function Info() {
             ))}
           </div>
         </section>
+
+        <div className="text-center mb-5">
+          <Link to="/info/gallery" className="btn btn-gold">View Gallery</Link>
+        </div>
       </div>
     </div>
   );

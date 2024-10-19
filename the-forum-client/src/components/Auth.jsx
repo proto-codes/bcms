@@ -1,6 +1,6 @@
 import React from 'react'
 import { Outlet } from 'react-router-dom'
-import Footer from '../../components/Footer'
+import Footer from './Footer'
 
 const Auth = () => {
   return (
