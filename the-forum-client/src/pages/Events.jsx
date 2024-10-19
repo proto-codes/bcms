@@ -22,7 +22,7 @@ const Events = () => {
 
   return (
     <div className="container my-4">
-      <h2 className="mb-4 text-gold-dark">Upcoming Events</h2>
+      <h2 className="mb-4 text-gold">Upcoming Events</h2>
 
       {/* Search bar */}
       <div className="input-group mb-4">
@@ -48,7 +48,7 @@ const Events = () => {
                   <p className="card-text">{event.description}</p>
                   
                   {/* RSVP button */}
-                  <button className="btn btn-gold-dark" onClick={() => rsvpForEvent(event.id)}>RSVP</button>
+                  <button className="btn btn-gold" onClick={() => rsvpForEvent(event.id)}>RSVP</button>
                 </div>
               </div>
             </div>

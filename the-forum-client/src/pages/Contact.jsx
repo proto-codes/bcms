@@ -39,7 +39,7 @@ function Contact() {
   return (
     <>
       <section className="container p-3">
-        <h2 className='text-center text-gold-dark fw-bold mb-5'>Contact Us</h2>
+        <h2 className='text-center text-gold fw-bold mb-5'>Contact Us</h2>
         <div className="row">
           <div className="col-md-6 mb-4">
             <h4>Get in Touch</h4>
@@ -56,7 +56,7 @@ function Contact() {
                 <label htmlFor="message" className="form-label">Message</label>
                 <textarea className="form-control" id="message" name="message" rows="4" placeholder="Your Message" required></textarea>
               </div>
-              <button type="submit" className="btn btn-gold-dark" disabled={isSending}>
+              <button type="submit" className="btn btn-gold" disabled={isSending}>
                 {isSending ? 'Sending...' : 'Send Message'}
               </button>
             </form>

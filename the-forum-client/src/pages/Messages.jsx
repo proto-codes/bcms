@@ -63,7 +63,7 @@ const Messages = () => {
 
   return (
     <div className="container my-4 d-flex flex-column">
-      <h2 className="mb-4 text-gold-dark">Messages</h2>
+      <h2 className="mb-4 text-gold">Messages</h2>
 
       <div className="row flex-grow-1">
         {/* Conversations List */}
@@ -109,7 +109,7 @@ const Messages = () => {
               <div className="msg-area-height border p-3 mb-3 flex-grow-1">
                 {conversations.find((c) => c.id === selectedConversation).messages.map((message, index) => (
                   <div key={index} className={`mb-2 d-flex ${message.sender === currentUser ? 'justify-content-end' : 'justify-content-start'}`}>
-                    <div className={`p-2 rounded ${message.sender === currentUser ? 'bg-gold-dark text-white' : 'bg-light text-dark'}`} style={{ maxWidth: '60%' }}>
+                    <div className={`p-2 rounded ${message.sender === currentUser ? 'bg-gold text-white' : 'bg-light text-dark'}`} style={{ maxWidth: '60%' }}>
                       <strong>{message.sender}:</strong> {message.text}
                       <div className="small">{message.date}</div>
                     </div>
@@ -126,7 +126,7 @@ const Messages = () => {
                     value={newMessage}
                     onChange={(e) => setNewMessage(e.target.value)}
                   />
-                  <button className="btn btn-gold-dark" type="submit">
+                  <button className="btn btn-gold" type="submit">
                     Send
                   </button>
                 </div>

@@ -3,8 +3,8 @@ import { Link } from 'react-router-dom';
 
 function Footer() {
   return (
-    <footer>
-      <div className="container-fluid puma-theme text-light text-center p-3">
+    <footer className='bg-purple'>
+      <div className="container py-3 text-light text-center">
         {/* Quick Links */}
         <div className="footer-links d-flex flex-wrap justify-content-center text-center">
           <Link to="/info" className="text-light mx-1 my-1 text-decoration-none">Info</Link>

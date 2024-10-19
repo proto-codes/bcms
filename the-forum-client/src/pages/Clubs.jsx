@@ -27,7 +27,7 @@ const Clubs = () => {
 
   return (
     <div className="container my-4">
-      <h2 className="mb-4 text-gold-dark">Explore Clubs</h2>
+      <h2 className="mb-4 text-gold">Explore Clubs</h2>
 
       {/* Search bar */}
       <div className="input-group mb-4">
@@ -53,7 +53,7 @@ const Clubs = () => {
                   
                   {/* Join button */}
                   {club.privacy === 'public' ? (
-                    <button className="btn btn-gold-dark" onClick={() => joinClub(club.id)}>Join Club</button>
+                    <button className="btn btn-gold" onClick={() => joinClub(club.id)}>Join Club</button>
                   ) : (
                     <button className="btn btn-secondary" onClick={() => requestToJoinClub(club.id)}>Request to Join</button>
                   )}

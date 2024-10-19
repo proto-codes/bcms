@@ -65,76 +65,75 @@ function Register() {
   };
 
   return (
-    <>
-      <div className="d-flex justify-content-center align-items-center my-3">
-        <div className="card border-0 p-4 shadow-lg" style={{ width: '350px' }}>
-          <h2 className="text-center text-gold-dark mb-4">Register</h2>
-          <form onSubmit={register}>
-            <div className="mb-3">
-              <label htmlFor="name" className="form-label">Full Name</label>
-              <input
-                type="text"
-                name="name"
-                className="form-control"
-                id="name"
-                placeholder="Enter full name"
-                required
-                autoComplete='on'
-                value={userData.name}
-                onChange={handleInputChange}
-              />
-            </div>
-            <div className="mb-3">
-              <label htmlFor="email" className="form-label">Email address</label>
-              <input
-                type="email"
-                name="email"
-                className="form-control"
-                id="email"
-                placeholder="Enter email"
-                required                
-                autoComplete='on'
-                value={userData.email}
-                onChange={handleInputChange}
-              />
-            </div>
-            <div className="mb-3">
-              <label htmlFor="password" className="form-label">Password</label>
-              <input
-                type="password"
-                name="password"
-                className="form-control"
-                id="password"
-                placeholder="Enter password"
-                required
-                value={userData.password}
-                onChange={handleInputChange}
-              />
-            </div>
-            <div className="mb-3">
-              <label htmlFor="password_confirmation" className="form-label">Confirm Password</label>
-              <input
-                type="password"
-                name="password_confirmation"
-                className="form-control"
-                id="password_confirmation"
-                placeholder="Confirm password"
-                required
-                value={userData.password_confirmation}
-                onChange={handleInputChange}
-              />
-            </div>
-            {error && <p className="text-danger">{error}</p>} {/* Display error message */}
-            <button type="submit" className="btn btn-gold-dark w-100" disabled={loading}>
-              {loading ? 'Registering...' : 'Register'} {/* Button text changes based on loading state */}
-            </button>
-          </form>
-          <div className="text-center mt-3">
-            <small>Already have an account? <Link to="/auth/login" className='text-gold-dark'>Login</Link></small>
+    <div className="d-flex justify-content-center align-items-center vh-100 bg-light py-5">
+      <div className="card border-0 p-4 shadow-lg" style={{ width: '350px' }}>
+        <h2 className="text-center text-gold mb-3">The Forum</h2>
+        <p className="text-center mb-4">Create Your Account</p>
+        <form onSubmit={register}>
+          <div className="mb-3">
+            <label htmlFor="name" className="form-label">Full Name</label>
+            <input
+              type="text"
+              name="name"
+              className="form-control"
+              id="name"
+              placeholder="Enter full name"
+              required
+              autoComplete='on'
+              value={userData.name}
+              onChange={handleInputChange}
+            />
           </div>
+          <div className="mb-3">
+            <label htmlFor="email" className="form-label">Email address</label>
+            <input
+              type="email"
+              name="email"
+              className="form-control"
+              id="email"
+              placeholder="Enter email"
+              required                
+              autoComplete='on'
+              value={userData.email}
+              onChange={handleInputChange}
+            />
+          </div>
+          <div className="mb-3">
+            <label htmlFor="password" className="form-label">Password</label>
+            <input
+              type="password"
+              name="password"
+              className="form-control"
+              id="password"
+              placeholder="Enter password"
+              required
+              value={userData.password}
+              onChange={handleInputChange}
+            />
+          </div>
+          <div className="mb-3">
+            <label htmlFor="password_confirmation" className="form-label">Confirm Password</label>
+            <input
+              type="password"
+              name="password_confirmation"
+              className="form-control"
+              id="password_confirmation"
+              placeholder="Confirm password"
+              required
+              value={userData.password_confirmation}
+              onChange={handleInputChange}
+            />
+          </div>
+          {error && <p className="text-danger">{error}</p>} {/* Display error message */}
+          <button type="submit" className="btn btn-gold w-100" disabled={loading}>
+            {loading ? 'Registering...' : 'Register'}
+          </button>
+        </form>
+        <div className="text-center mt-3">
+          <small>Already have an account? <Link to="/auth/login" className='text-gold'>Login</Link></small>
         </div>
       </div>
-    </>
+    </div>
   );
 }
 

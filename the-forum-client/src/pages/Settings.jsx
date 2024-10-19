@@ -126,7 +126,7 @@ const Settings = () => {
     <Container className="my-4">
       <Card className="shadow-lg border-0">
         <Card.Body>
-          <h2 className="mb-4 text-gold-dark">Settings</h2>
+          <h2 className="mb-4 text-gold">Settings</h2>
 
           {/* Password Change Section */}
           <Form onSubmit={handlePasswordSubmit} className="mb-4">
@@ -164,7 +164,7 @@ const Settings = () => {
               />
             </Form.Group>
 
-            <Button variant="gold-dark" type="submit">
+            <Button variant="gold" type="submit">
               Change Password
             </Button>
           </Form>

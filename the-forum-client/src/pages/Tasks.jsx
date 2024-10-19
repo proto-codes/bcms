@@ -161,7 +161,7 @@ const Tasks = () => {
     <Container className="my-4">
       <Card className="shadow-lg border-0">
         <Card.Body>
-          <h4 className="mb-3 text-gold-dark">{editingTask ? 'Edit Task' : 'Add New Task'}</h4>
+          <h4 className="mb-3 text-gold">{editingTask ? 'Edit Task' : 'Add New Task'}</h4>
 
           {/* Button to toggle form visibility */}
           <Button onClick={() => setIsFormVisible(!isFormVisible)} className="mb-3">
@@ -217,7 +217,7 @@ const Tasks = () => {
                   </Form.Group>
                 </Col>
               </Row>
-              <Button variant={editingTask ? 'success' : 'gold-dark'} type="submit">
+              <Button variant={editingTask ? 'success' : 'gold'} type="submit">
                 {editingTask ? 'Update Task' : 'Add Task'}
               </Button>
               {editingTask && (
@@ -244,7 +244,7 @@ const Tasks = () => {
               {error && <Alert variant="danger">{error}</Alert>}
 
               {/* Task List */}
-              <h4 className="mb-3 text-gold-dark">Task List</h4>
+              <h4 className="mb-3 text-gold">Task List</h4>
               {loading ? (
                 <p>Loading tasks...</p>
               ) : filteredTasks.length === 0 ? (

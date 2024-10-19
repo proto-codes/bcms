@@ -59,7 +59,7 @@ const Search = () => {
 
   return (
     <Container className="my-4">
-      <h2 className="text-center mb-4 text-gold-dark">Explore Clubs, People, or More</h2>
+      <h2 className="text-center mb-4 text-gold">Explore Clubs, People, or More</h2>
 
       <Form onSubmit={handleSubmit}>
         <InputGroup className="mb-4 shadow-lg">
@@ -72,7 +72,7 @@ const Search = () => {
           />
           <Button
             type="submit"
-            variant="gold-dark"
+            variant="gold"
             style={{ borderTopLeftRadius: '0', borderBottomLeftRadius: '0' }}
           >
             Search
@@ -82,7 +82,7 @@ const Search = () => {
 
       {loading ? (
         <div className="text-center">
-          <Spinner animation="border" role="status" variant="gold-dark">
+          <Spinner animation="border" role="status" variant="gold">
             <span className="visually-hidden">Loading...</span>
           </Spinner>
         </div>

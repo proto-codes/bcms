@@ -39,12 +39,12 @@ function Dashboard() {
   return (
     <>
       <div className="row m-0">
-        <div className="dashboard-menu vh-100 col-md-3 p-0 puma-theme z-3" style={{ right: showMenu ? '0' : '100%' }}>
-          <div className="w-100 p-3 d-none d-md-flex align-items-center gap-2 puma-theme-subtle" style={{ height: '8rem' }}>
+        <div className="dashboard-menu vh-100 col-md-3 p-0 bg-purple z-3" style={{ right: showMenu ? '0' : '100%' }}>
+          <div className="w-100 p-3 d-none d-md-flex align-items-center gap-2 bg-purple-subtle" style={{ height: '8rem' }}>
             <img src={UserImg} alt="User img" className='img' />
             <div className="d-flex flex-column">
               <strong className='h5 m-0'>{userName || 'Loading...'}</strong>
-              <span className='text-gold-dark fw-bold status-online'>Online</span>
+              <span className='text-gold fw-bold status-online'>Online</span>
             </div>
           </div>
           <div className="p-3 text-light border-bottom d-flex align-items-center justify-content-between">
@@ -79,24 +79,24 @@ function Dashboard() {
         </div>
 
         <div className="vh-100 col-md-9 p-0">
-          <div className="w-100 px-3 d-flex align-items-center justify-content-between puma-theme" style={{ height: '4.5rem' }}>
+          <div className="w-100 px-3 d-flex align-items-center justify-content-between bg-purple" style={{ height: '4.5rem' }}>
             <div className="d-flex align-items-center gap-2">
               <button className='btn p-1 d-block d-md-none' onClick={handleMenuVisibility}>
                 <FaBars size={30} color="#fff" />
               </button>
-              <h2 className='the-forum m-0 text-gold-dark'>The Forum</h2>
+              <h2 className='the-forum m-0 text-gold'>The Forum</h2>
             </div>
             <div className="d-flex align-items-center gap-2">
               <NavLink
-                className={({ isActive }) => isActive ? 'text-gold-dark fs-5 active-icon' : 'text-gold-dark fs-5'}
+                className={({ isActive }) => isActive ? 'text-gold fs-5 active-icon' : 'text-gold fs-5'}
                 to="/notifications"><MdNotifications size={30} color="#fff" className='icon' />
               </NavLink>
               <NavLink
-                className={({ isActive }) => isActive ? 'text-gold-dark fs-5 active-icon' : 'text-gold-dark fs-5'}
+                className={({ isActive }) => isActive ? 'text-gold fs-5 active-icon' : 'text-gold fs-5'}
                 to="/info/help-support"><MdHelp size={30} color="#fff" className='icon' />
               </NavLink>
               <NavLink
-                className={({ isActive }) => isActive ? 'text-gold-dark fs-5 active-icon' : 'text-gold-dark fs-5'}
+                className={({ isActive }) => isActive ? 'text-gold fs-5 active-icon' : 'text-gold fs-5'}
                 to="/messages"><MdMail size={30} color="#fff" className='icon' />
               </NavLink>
               <div className="dropdown">

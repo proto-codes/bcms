@@ -28,16 +28,16 @@ function Nav() {
   const isLoggedIn = !!localStorage.getItem('token'); // true if token exists, false otherwise
 
   return (
-    <nav className="navbar navbar-expand-lg navbar-light puma-theme position-sticky top-0 shadow z-3">
-      <div className="container-fluid px-3">
+    <nav className="navbar navbar-expand-lg navbar-light bg-purple position-sticky top-0 shadow z-3">
+      <div className="container">
         <div className="d-flex align-items-center">
-          <a className="navbar-brand text-gold-dark fs-3 fw-bold" href="/">The Forum</a>
+          <a className="navbar-brand text-gold fs-3 fw-bold" href="/">The Forum</a>
         </div>
 
         {/* Toggle button for small screens */}
         <button
           ref={btnRef}
-          className="navbar-toggler text-gold-dark"
+          className="navbar-toggler text-gold"
           type="button"
           data-bs-toggle="collapse"
           data-bs-target="#navbarNav"
@@ -53,13 +53,13 @@ function Nav() {
           <ul className="navbar-nav ms-auto" onFocus={handleFocus}>
             <li className="nav-item">
               <NavLink
-                className={({ isActive }) => isActive ? 'nav-link text-gold-dark fs-5 active-link' : 'nav-link text-gold-dark fs-5'}
+                className={({ isActive }) => isActive ? 'nav-link text-gold fs-5 active-link' : 'nav-link text-gold fs-5'}
                 to="/">Dashboard
               </NavLink>
             </li>
             <li className="nav-item">
               <NavLink
-                className={({ isActive }) => isActive ? 'nav-link text-gold-dark fs-5 active-link' : 'nav-link text-gold-dark fs-5'}
+                className={({ isActive }) => isActive ? 'nav-link text-gold fs-5 active-link' : 'nav-link text-gold fs-5'}
                 to="/info/contact">Contact Us
               </NavLink>
             </li>
@@ -69,13 +69,13 @@ function Nav() {
               <>
                 <li className="nav-item">
                   <NavLink
-                    className={({ isActive }) => isActive ? 'nav-link text-gold-dark fs-5 active-link' : 'nav-link text-gold-dark fs-5'}
+                    className={({ isActive }) => isActive ? 'nav-link text-gold fs-5 active-link' : 'nav-link text-gold fs-5'}
                     to="/auth/login">Login
                   </NavLink>
                 </li>
                 <li className="nav-item">
                   <NavLink
-                    className={({ isActive }) => isActive ? 'nav-link text-gold-dark fs-5 active-link' : 'nav-link text-gold-dark fs-5'}
+                    className={({ isActive }) => isActive ? 'nav-link text-gold fs-5 active-link' : 'nav-link text-gold fs-5'}
                     to="/auth/register">Register
                   </NavLink>
                 </li>

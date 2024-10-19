@@ -1,29 +1,29 @@
 :root {
-    /* --light-purple: #6F42C1; */
-    --dark-purple: #4B0082;
-    /* --light-gold: #F7E7A0;
-    --medium-gold: #FFD700; */
-    --dark-gold: #B8860B;
-    /* --secondary: #008080; */
-    --light: #ffffff;
+  /* --light-purple: #6F42C1; */
+  --purple: #4B0082;
+  /* --light-gold: #F7E7A0;
+  --medium-gold: #FFD700; */
+  --gold: #B8860B;
+  /* --secondary: #008080; */
+  --light: #ffffff;
 }
 
-.puma-theme {
-    background-color: var(--dark-purple);
-    color: var(--light);
+.bg-purple, .btn-purple {
+  background-color: var(--purple);
+  color: var(--light);
 }
 
-.text-gold-dark {   
-    color: var(--dark-gold) !important;
+.text-gold {   
+  color: var(--gold) !important;
 }
 
-.bg-gold-dark {
-    background-color: var(--dark-gold) !important;
+.bg-gold {
+  background-color: var(--gold) !important;
 }
 
-.btn-gold-dark {
-    color: var(--light) !important;
-    background-color: var(--dark-gold) !important;
+.btn-gold {
+  color: var(--light) !important;
+  background-color: var(--gold) !important;
 }
 
 /* Loader */
@@ -36,7 +36,7 @@
 
 .spinner {
   border: 8px solid #e2e2e2; /* Light grey */
-  border-top: 8px solid var(--dark-purple); /* Purple */
+  border-top: 8px solid var(--purple); /* Purple */
   border-radius: 50%;
   width: 60px;
   height: 60px;
@@ -59,7 +59,7 @@
   width: 10px; /* Size of the rounded indicator */
   height: 10px; /* Size of the rounded indicator */
   border-radius: 50%; /* Makes the div circular */
-  background-color: var(--dark-gold); /* Gold color for the online indicator */
+  background-color: var(--gold); /* Gold color for the online indicator */
   position: absolute; /* Positioning relative to the text */
   left: 0; /* Align to the left */
   top: 50%; /* Center vertically */
@@ -82,17 +82,17 @@
 
 /* Bootstrap Customization */
 .form-check-input:checked {
-    background-color: var(--dark-gold) !important;
-    border-color: var(--dark-gold) !important;
+    background-color: var(--gold) !important;
+    border-color: var(--gold) !important;
 }
 
 .dropdown-item.active, .dropdown-item:active {
-    background-color: var(--dark-gold) !important;
+    background-color: var(--gold) !important;
 }
 
 .list-group-item.active {
-    background-color: var(--dark-gold) !important;
-    border-color: var(--dark-gold) !important;
+    background-color: var(--gold) !important;
+    border-color: var(--gold) !important;
 }
 
 .nav-link:hover {
@@ -106,7 +106,7 @@
 
 .active-link {
   font-weight: bold;
-  border-bottom: 2px solid var(--dark-gold) !important;
+  border-bottom: 2px solid var(--gold) !important;
 }
 
 .active-tab {

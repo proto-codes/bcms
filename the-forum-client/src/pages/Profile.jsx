@@ -133,7 +133,7 @@ const Profile = () => {
               <p><strong>Address:</strong> {userData.address}</p>
               <p><strong>Phone:</strong> {userData.phone}</p>
               <p><strong>Date of Birth:</strong> {userData.dob}</p>
-              <Button variant="gold-dark" onClick={() => setEditing(true)}>Edit Profile</Button>
+              <Button variant="gold" onClick={() => setEditing(true)}>Edit Profile</Button>
             </div>
           ) : (
             <Form onSubmit={handleFormSubmit}>
@@ -215,7 +215,7 @@ const Profile = () => {
               </Form.Group>
 
               <div className="d-flex justify-content-between">
-                <Button variant="gold-dark" type="submit">
+                <Button variant="gold" type="submit">
                   Save Changes
                 </Button>
                 <Button variant="secondary" onClick={() => setEditing(false)}>

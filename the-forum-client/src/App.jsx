@@ -12,6 +12,7 @@ import ProtectedRoute from './components/ProtectedRoute'; // Import ProtectedRou
 const Auth = lazy(() => import('./pages/auth/Auth'));
 const Login = lazy(() => import('./pages/auth/Login'));
 const Register = lazy(() => import('./pages/auth/Register'));
+const ForgotPassword = lazy(() => import('./pages/auth/ForgotPassword'));
 const Layout = lazy(() => import('./components/Layout'));
 const Info = lazy(() => import('./pages/Info'));
 const Contact = lazy(() => import('./pages/Contact'));
@@ -62,6 +63,7 @@ function App() {
               <Route index element={<Login />} />
               <Route path="login" element={<Login />} />
               <Route path="register" element={<Register />} />
+              <Route path="forgot-password" element={<ForgotPassword />} />
               <Route path="*" element={<NotFound />} />
             </Route>
           </Routes>

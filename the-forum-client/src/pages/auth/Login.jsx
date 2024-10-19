@@ -47,50 +47,49 @@ function Login() {
   };
 
   return (
-    <>
-      <div className="d-flex justify-content-center align-items-center my-3">
-        <div className="card border-0 p-4 shadow-lg" style={{ width: '350px' }}>
-          <h2 className="text-center text-gold-dark mb-4">Login</h2>
-          <form onSubmit={login}>
-            <div className="mb-3">
-              <label htmlFor="email" className="form-label">Email address</label>
-              <input
-                type="email"
-                name="email"
-                className="form-control"
-                id="email"
-                placeholder="Enter email"
-                required
-                autoComplete='on'
-                value={userData.email}
-                onChange={handleInputChange}
-              />
-            </div>
-            <div className="mb-3">
-              <label htmlFor="password" className="form-label">Password</label>
-              <input
-                type="password"
-                name="password"
-                className="form-control"
-                id="password"
-                placeholder="Enter password"
-                required
-                value={userData.password}
-                onChange={handleInputChange}
-              />
-            </div>
-            {error && <p className="text-danger">{error}</p>} {/* Display error message */}
-            <button type="submit" className="btn btn-gold-dark w-100" disabled={loading}>
-              {loading ? 'Logging in...' : 'Login'}
-            </button>
-          </form>
-          <small className='mt-3 text-center'><Link to="#" className='text-gold-dark'>Forgotten password?</Link></small>
-          <div className="text-center mt-3">
-            <small>Don't have an account? <Link to="/auth/register" className='text-gold-dark'>Register</Link></small>
+    <div className="d-flex justify-content-center align-items-center vh-100 bg-light">
+      <div className="card border-0 p-4 shadow-lg" style={{ width: '350px' }}>
+        <h2 className="text-center text-gold mb-3">The Forum</h2>
+        <p className="text-center mb-4">Login to Your Account</p>
+        <form onSubmit={login}>
+          <div className="mb-3">
+            <label htmlFor="email" className="form-label">Email address</label>
+            <input
+              type="email"
+              name="email"
+              className="form-control"
+              id="email"
+              placeholder="Enter email"
+              required
+              autoComplete='on'
+              value={userData.email}
+              onChange={handleInputChange}
+            />
           </div>
+          <div className="mb-3">
+            <label htmlFor="password" className="form-label">Password</label>
+            <input
+              type="password"
+              name="password"
+              className="form-control"
+              id="password"
+              placeholder="Enter password"
+              required
+              value={userData.password}
+              onChange={handleInputChange}
+            />
+          </div>
+          {error && <p className="text-danger">{error}</p>} {/* Display error message */}
+          <button type="submit" className="btn btn-gold w-100" disabled={loading}>
+            {loading ? 'Logging in...' : 'Login'}
+          </button>
+        </form>
+        <small className='mt-3 text-center'><Link to="/auth/forgot-password" className='text-gold'>Forgot password?</Link></small>
+        <div className="text-center mt-3">
+          <small>Don't have an account? <Link to="/auth/register" className='text-gold'>Register</Link></small>
         </div>
       </div>
-    </>
+    </div>
   );
 }
 
