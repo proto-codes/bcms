@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react';
 import { MdMenu } from 'react-icons/md';
 import { NavLink } from 'react-router-dom';
+import Logo from '../assets/img/the-forum-logo.jpeg';
 
 function Nav() {
   const btnRef = React.createRef();
@@ -31,7 +32,9 @@ function Nav() {
     <nav className="navbar navbar-expand-lg navbar-light bg-purple position-sticky top-0 shadow z-3">
       <div className="container">
         <div className="d-flex align-items-center">
-          <a className="navbar-brand text-gold fs-3 fw-bold" href="/">The Forum</a>
+          <NavLink className="navbar-brand d-flex align-items-center gap-2 text-gold fw-bold" to="/">
+          <img src={Logo} alt="The Forum" height="40" className='rounded' /> <span>The Forum</span>
+          </NavLink>
         </div>
 
         {/* Toggle button for small screens */}

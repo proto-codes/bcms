@@ -31,7 +31,7 @@ function ForgotPassword() {
   };
 
   return (
-    <div className="d-flex justify-content-center align-items-center vh-100 bg-light">
+    <div className="d-flex justify-content-center align-items-center vh-100 bg-light py-5">
       <div className="card border-0 p-4 shadow-lg" style={{ width: '350px' }}>
         <h2 className="text-center text-gold mb-4">Forgot Password</h2>
         <form onSubmit={handleSubmit}>

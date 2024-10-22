@@ -8,6 +8,7 @@ function Footer() {
         {/* Quick Links */}
         <div className="footer-links d-flex flex-wrap justify-content-center text-center">
           <Link to="/info" className="text-light mx-1 my-1 text-decoration-none">Info</Link>
+          <Link to="/info/gallery" className="text-light mx-1 my-1 text-decoration-none">Gallery</Link>
           <Link to="/info/contact" className="text-light mx-1 my-1 text-decoration-none">Contact Us</Link>
           <Link to="/info/help-support" className="text-light mx-1 my-1 text-decoration-none">Help & Support</Link>
         </div>

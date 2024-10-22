@@ -1,12 +1,11 @@
-// src/App.js
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { Suspense, lazy } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap/dist/js/bootstrap.bundle.min.js';
 import './App.css';
 import PageLoader from './components/PageLoader';
-import { AuthProvider } from './context/AuthContext'; // Import AuthProvider
-import ProtectedRoute from './components/ProtectedRoute'; // Import ProtectedRoute
+import { AuthProvider } from './context/AuthContext';
+import ProtectedRoute from './components/ProtectedRoute';
 
 // Lazy load the pages
 const Auth = lazy(() => import('./components/Auth'));
@@ -16,7 +15,7 @@ const ForgotPassword = lazy(() => import('./pages/auth/ForgotPassword'));
 const Layout = lazy(() => import('./components/Layout'));
 const Info = lazy(() => import('./pages/Info'));
 const Contact = lazy(() => import('./pages/Contact'));
-const Gallery = lazy(() => import('./pages/Gallery'));
+const GalleryView = lazy(() => import('./pages/GalleryView'));
 const HelpAndSupport = lazy(() => import('./pages/HelpAndSupport'));
 const Dashboard = lazy(() => import('./components/Dashboard'));
 const DashboardHome = lazy(() => import('./pages/DashboardHome'));
@@ -56,7 +55,7 @@ function App() {
             <Route path="/info/" element={<Layout />}>
               <Route index element={<Info />} />
               <Route path="contact" element={<Contact />} />
-              <Route path="gallery" element={<Gallery />} />
+              <Route path="gallery" element={<GalleryView />} />
               <Route path="help-support" element={<HelpAndSupport />} />
               <Route path="*" element={<NotFound />} />
             </Route>

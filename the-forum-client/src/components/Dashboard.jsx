@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { NavLink, Outlet } from 'react-router-dom';
-import UserImg from '../assets/img/user_img.jpg';
+import TheForum from '../assets/img/the-forum-logo.jpeg';
 import { FaBars } from 'react-icons/fa';
 import { MdTask, MdBarChart, MdNotifications, MdHelp, MdMail, MdAccountCircle, MdExitToApp, MdSettings, MdSearch, MdGroup, MdDashboard, MdEvent } from 'react-icons/md';
 import api from '../api/axios';
@@ -15,8 +15,8 @@ function Dashboard() {
 
   const handleLogout = async () => {
     try {
-      await api.post('/logout'); // Send logout request to your backend
-      localStorage.removeItem('token'); // Clear token from localStorage
+      await api.post('/logout');
+      localStorage.removeItem('token');
       window.location.href = '/auth/login';
     } catch (error) {
       console.error('Logout error:', error);
@@ -41,7 +41,7 @@ function Dashboard() {
       <div className="row m-0">
         <div className="dashboard-menu vh-100 col-md-3 p-0 bg-purple z-3" style={{ right: showMenu ? '0' : '100%' }}>
           <div className="w-100 p-3 d-none d-md-flex align-items-center gap-2 bg-purple-subtle" style={{ height: '8rem' }}>
-            <img src={UserImg} alt="User img" className='img' />
+            <img src={TheForum} alt="User img" className='img' />
             <div className="d-flex flex-column">
               <strong className='h5 m-0'>{userName || 'Loading...'}</strong>
               <span className='text-gold fw-bold status-online'>Online</span>
@@ -101,7 +101,7 @@ function Dashboard() {
               </NavLink>
               <div className="dropdown">
                 <button className="btn dropdown-toggle d-flex align-items-center gap-2 p-1 text-light" type='button' id='dropdownMenuButton' data-bs-toggle='dropdown' aria-expanded='false'>                    
-                  <img src={UserImg} alt="" className='img' style={{ width: '2.5rem' }} />
+                  <img src={TheForum} alt="" className='img' style={{ width: '2.5rem' }} />
                   <span className='d-none d-md-block'>{userName.split(' ')[0] || 'Loading...'}</span>
                 </button>
                 <ul className="dropdown-menu" aria-labelledby='dropdownMenuButton'>

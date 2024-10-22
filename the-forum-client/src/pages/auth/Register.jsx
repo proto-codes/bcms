@@ -65,7 +65,7 @@ function Register() {
   };
 
   return (
-    <div className="d-flex justify-content-center align-items-center vh-100 bg-light py-5">
+    <div className="d-flex justify-content-center align-items-center bg-light py-5">
       <div className="card border-0 p-4 shadow-lg" style={{ width: '350px' }}>
         <h2 className="text-center text-gold mb-3">The Forum</h2>
         <p className="text-center mb-4">Create Your Account</p>
