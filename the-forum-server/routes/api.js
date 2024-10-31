@@ -1,8 +1,7 @@
 // All API routes
 const express = require('express');
-const { 
-  register, 
-  login, 
+
+const {
   logout 
 } = require('../controllers/authController');
 const { 
@@ -18,52 +17,49 @@ const {
 } = require('../controllers/profileController');
 const taskController = require('../controllers/taskController');
 const { searchUsers } = require('../controllers/searchController');
-const messagesController = require('../controllers/messagesController'); // Import the messages controller
-const authenticateToken = require('../middleware/auth');
+const messagesController = require('../controllers/messagesController');
 const upload = require('../config/multer');
 
 const router = express.Router();
 
-// Authentication routes
-router.post('/register', register);
-router.post('/login', login);
-router.post('/logout', authenticateToken, logout);
+// Logout Route
+router.post('/logout', logout);
 
 // Token validation route
-router.post('/validate-token', authenticateToken, (req, res) => {
+router.post('/validate-token', (req, res) => {
   // If the token is valid, respond with a success message and user info if needed
   res.json({ valid: true, user: req.user });
 });
 
 // User settings routes
-router.put('/change-password', authenticateToken, changePassword);
-router.put('/notification-preferences', authenticateToken, updateNotificationPreferences);
-router.delete('/delete-account', authenticateToken, deleteAccount);
+router.put('/change-password', changePassword);
+router.put('/notification-preferences', updateNotificationPreferences);
+router.delete('/delete-account', deleteAccount);
 
 // User routes
-router.get('/user', authenticateToken, getUserDetails);
+router.get('/user', getUserDetails);
 
 // Profile routes
-router.get('/profile', authenticateToken, getProfile);
-router.put('/profile', authenticateToken, upload.single('profile_pics'), updateProfile);
+router.get('/profile', getProfile);
+router.put('/profile', upload.single('profile_pics'), updateProfile);
 
 // Notification preferences
-router.get('/notification-preferences', authenticateToken, fetchNotificationPreferences);
+router.get('/notification-preferences', fetchNotificationPreferences);
 
 // Task routes
-router.post('/tasks', authenticateToken, taskController.createTask);
-router.get('/tasks', authenticateToken, taskController.getTasksByUser);
-router.put('/tasks/:taskId', authenticateToken, taskController.updateTask);
-router.delete('/tasks/:taskId', authenticateToken, taskController.deleteTask);
+router.post('/tasks', taskController.createTask);
+router.get('/tasks', taskController.getTasksByUser);
+router.put('/tasks/:taskId', taskController.updateTask);
+router.delete('/tasks/:taskId', taskController.deleteTask);
 
 // Search route
 router.get('/search', searchUsers);
 
 // Messaging routes
-router.get('/conversations', authenticateToken, messagesController.fetchConversations);
-router.get('/conversations/:conversationId/messages', authenticateToken, messagesController.fetchMessages);
-router.post('/messages', authenticateToken, messagesController.sendMessage);
-router.put('/messages/:messageId/read', authenticateToken, messagesController.updateMessageStatus);
-router.delete('/messages/:messageId', authenticateToken, messagesController.deleteMessage);
+router.get('/conversations', messagesController.fetchConversations);
+router.get('/conversations/:conversationId/messages', messagesController.fetchMessages);
+router.post('/messages', messagesController.sendMessage);
+router.put('/messages/:messageId/read', messagesController.updateMessageStatus);
+router.delete('/messages/:messageId', messagesController.deleteMessage);
 
 module.exports = router;

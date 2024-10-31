@@ -133,7 +133,7 @@ body {
 }
 
 .background-img {
-  height: 100vh;
+  width: 100%;
   position: relative;
   background-image: url('/src/assets/img/display.webp');
   /* background-size: cover; */

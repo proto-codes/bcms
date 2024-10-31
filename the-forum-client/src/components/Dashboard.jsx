@@ -3,6 +3,7 @@ import { NavLink, Outlet } from 'react-router-dom';
 import TheForum from '../assets/img/the-forum-logo.jpeg';
 import { FaBars } from 'react-icons/fa';
 import { MdTask, MdBarChart, MdNotifications, MdHelp, MdMail, MdAccountCircle, MdExitToApp, MdSettings, MdSearch, MdGroup, MdDashboard, MdEvent } from 'react-icons/md';
+// import { useAuth } from '../context/AuthContext';
 import api from '../api/axios';
 
 function Dashboard() {

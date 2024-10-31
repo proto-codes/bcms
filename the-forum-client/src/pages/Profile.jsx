@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Form, Button, Card, Container, Row, Col, Spinner, Alert } from 'react-bootstrap';
 import { FaUpload, FaTrash } from 'react-icons/fa';
+import ProfilePlaceholder from '../assets/img/the-forum-logo.jpeg';
 import api from '../api/axios';
 
 const Profile = () => {
@@ -172,10 +173,11 @@ const Profile = () => {
             {errorMsg && <Alert variant="danger">{errorMsg}</Alert>} {/* Error message display */}
             <div className="d-flex align-items-center mb-4">
               <img
-                src={preview || userData.profile_pics || 'https://via.placeholder.com/150'}
+                src={preview || userData.profile_pics || ProfilePlaceholder}
                 alt="User Profile Picture"
                 className="rounded-circle me-3"
                 style={{
+                  minWidth: '150px',
                   width: '150px',
                   height: '150px',
                   objectFit: 'cover',
@@ -184,7 +186,7 @@ const Profile = () => {
               />
               <div className="flex-grow-1">
                 <h2 style={{ color: '#052c65', fontWeight: '600' }}>{userData.name}</h2>
-                <p className="text-muted">{userData.email}</p>
+                <p className="text-muted text-truncate w-75">{userData.email}</p>
                 {editing && (
                   <div className="mt-2">
                     <label htmlFor="file-upload" className="me-2" style={{ cursor: 'pointer' }}>

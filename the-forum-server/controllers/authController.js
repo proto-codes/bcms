@@ -1,6 +1,8 @@
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const db = require('../config/db');
+const crypto = require('crypto');
+const nodemailer = require('nodemailer');
 
 // Helper function for Promisified MySQL query
 const queryAsync = (query, params) => {
@@ -10,6 +12,20 @@ const queryAsync = (query, params) => {
             resolve(results);
         });
     });
+};
+
+// Function to check password strength
+const checkPasswordStrength = (password) => {
+    const minLength = 8;
+    const hasUpperCase = /[A-Z]/.test(password);
+    const hasLowerCase = /[a-z]/.test(password);
+    const hasNumbers = /\d/.test(password);
+    const hasSpecialChars = /[!@#$%^&*(),.?":{}|<>]/.test(password);
+
+    if (password.length < minLength || !hasUpperCase || !hasLowerCase || !hasNumbers || !hasSpecialChars) {
+        return 'Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character and be at least 8 characters long';
+    }
+    return null; // No issues found, password is strong enough
 };
 
 const register = async (req, res) => {
@@ -24,20 +40,6 @@ const register = async (req, res) => {
     if (password !== password_confirmation) {
         return res.status(400).json({ error: 'Passwords do not match' });
     }
-
-    // Function to check password strength
-    const checkPasswordStrength = (password) => {
-        const minLength = 8;
-        const hasUpperCase = /[A-Z]/.test(password);
-        const hasLowerCase = /[a-z]/.test(password);
-        const hasNumbers = /\d/.test(password);
-        const hasSpecialChars = /[!@#$%^&*(),.?":{}|<>]/.test(password);
-
-        if (password.length < minLength || !hasUpperCase || !hasLowerCase || !hasNumbers || !hasSpecialChars) {
-            return 'Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character and be at least 8 characters long';
-        }
-        return null; // No issues found, password is strong enough
-    };
 
     // Check password strength
     const passwordStrengthError = checkPasswordStrength(password);
@@ -70,7 +72,7 @@ const register = async (req, res) => {
         await queryAsync('INSERT INTO active_tokens (user_id, token, expires_at) VALUES (?, ?, ?)', [userId, token, expiresAt]);
 
         // Respond with the token to automatically log in the user
-        res.status(201).json({ message: 'User registered successfully', token });
+        res.status(201).json({ message: 'Registration successful!', token });
     } catch (err) {
         console.error('Error registering user:', err);
         res.status(500).json({ error: 'Server error' });
@@ -100,7 +102,7 @@ const login = async (req, res) => {
         const expiresAt = new Date(Date.now() + 3600000);
         await queryAsync('INSERT INTO active_tokens (user_id, token, expires_at) VALUES (?, ?, ?)', [user.id, token, expiresAt]);
 
-        res.json({ token });
+        res.status(201).json({ message: 'Login successful!', token });
     } catch (error) {
         console.error('Error during login:', error);
         res.status(500).json({ error: 'Server error' });
@@ -116,4 +118,100 @@ const logout = (req, res) => {
     });
 };
 
-module.exports = { register, login, logout };
+const forgotPassword = async (req, res) => {
+    const { email } = req.body;
+
+    if (!email) {
+        return res.status(400).json({ error: 'Please provide your email' });
+    }
+
+    try {
+        // Check if the email exists
+        const results = await queryAsync('SELECT * FROM users WHERE email = ?', [email]);
+        if (results.length === 0) {
+            return res.status(404).json({ error: 'No user found with this email' });
+        }
+
+        const user = results[0];
+        
+        // Generate a unique reset token and set expiration
+        const resetToken = crypto.randomBytes(32).toString('hex');
+        const expiresAt = new Date(Date.now() + 3600000); // Token valid for 1 hour
+
+        // Store the reset token and expiration in the database
+        await queryAsync('INSERT INTO password_resets (user_id, reset_token, expires_at) VALUES (?, ?, ?)', [user.id, resetToken, expiresAt]);
+
+        // Set up nodemailer for sending the reset email
+        const transporter = nodemailer.createTransport({
+            service: 'Gmail',
+            auth: {
+                user: process.env.EMAIL_USER, // Your email
+                pass: process.env.EMAIL_PASS  // Your email password
+            }
+        });
+
+        // Send email with reset link
+        const resetUrl = `${process.env.FRONTEND_URL}/auth/reset-password?token=${resetToken}`;
+        await transporter.sendMail({
+            from: process.env.EMAIL_USER,
+            to: email,
+            subject: 'Password Reset Request',
+            text: `You requested a password reset. Please use the following link to reset your password: ${resetUrl}`,
+            html: `<p>You requested a password reset. Please use the following link to reset your password:</p><a href="${resetUrl}">${resetUrl}</a>`
+        });
+
+        res.status(200).json({ message: 'A password reset link has been sent to your email.' });
+    } catch (error) {
+        console.error('Error with forgot password:', error);
+        res.status(500).json({ error: 'Server error' });
+    }
+};
+
+const resetPassword = async (req, res) => {
+    const { token, newPassword, passwordConfirmation } = req.body;
+
+    // Check if all fields are provided
+    if (!token || !newPassword || !passwordConfirmation) {
+        return res.status(400).json({ error: 'Please provide all required fields' });
+    }
+
+    // Check if passwords match
+    if (newPassword !== passwordConfirmation) {
+        return res.status(400).json({ error: 'Passwords do not match' });
+    }
+
+    // Check password strength
+    const passwordStrengthError = checkPasswordStrength(newPassword);
+    if (passwordStrengthError) {
+        return res.status(400).json({ error: passwordStrengthError });
+    }
+
+    try {
+        // Find the reset request in the database
+        const results = await queryAsync('SELECT * FROM password_resets WHERE reset_token = ?', [token]);
+        if (results.length === 0) {
+            return res.status(400).json({ error: 'Invalid or expired token' });
+        }
+
+        const resetRequest = results[0];
+
+        // Check if the token has expired
+        if (new Date() > resetRequest.expires_at) {
+            return res.status(400).json({ error: 'Token has expired' });
+        }
+
+        // Hash the new password and update it in the users table
+        const hashedPassword = await bcrypt.hash(newPassword, 12);
+        await queryAsync('UPDATE users SET password = ? WHERE id = ?', [hashedPassword, resetRequest.user_id]);
+
+        // Remove the used token
+        await queryAsync('DELETE FROM password_resets WHERE reset_token = ?', [token]);
+
+        res.status(200).json({ message: 'Password has been reset successfully' });
+    } catch (error) {
+        console.error('Error resetting password:', error);
+        res.status(500).json({ error: 'Server error' });
+    }
+};
+
+module.exports = { register, login, logout, forgotPassword, resetPassword };

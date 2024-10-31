@@ -98,12 +98,25 @@ connection.connect((err) => {
     );
   `;
 
+  // SQL query to create the password_resets table if it doesn't exist
+  const createPasswordResetsTableQuery = `
+    CREATE TABLE IF NOT EXISTS password_resets (
+      id INT AUTO_INCREMENT PRIMARY KEY,
+      user_id INT NOT NULL,
+      reset_token VARCHAR(64) NOT NULL,
+      expires_at DATETIME NOT NULL,
+      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+      FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+    );
+  `;
+
   // Run migrations
   runMigration(createUsersTableQuery, 'Users table');
   runMigration(createActiveTokensTableQuery, 'Active tokens table');
   runMigration(createProfileTableQuery, 'Profile table');
   runMigration(createMessagesTableQuery, 'Messages table');
   runMigration(createTasksTableQuery, 'Tasks table');
+  runMigration(createPasswordResetsTableQuery, 'Password resets table');
 
   // Close the connection after all migrations
   connection.end((err) => {
