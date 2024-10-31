@@ -1,24 +1,55 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import PageLoader from '../components/PageLoader'; // Import your PageLoader component
+import api from '../api/axios';
+import PageLoader from '../components/PageLoader';
 
 const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
-  const [isAuthenticated, setIsAuthenticated] = useState(null); // Start with null for loading state
-  const [loading, setLoading] = useState(true); // Loading state
+  const [isAuthenticated, setIsAuthenticated] = useState(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const token = localStorage.getItem('token');
-    if (token) {
-      setIsAuthenticated(true);
-    } else {
-      setIsAuthenticated(false);
-    }
-    setLoading(false); // Done checking token
+    const checkAuth = async () => {
+      const token = localStorage.getItem('token');
+
+      if (token) {
+        try {
+          const response = await api.post('/validate-token');
+
+          if (response.status === 200) {
+            setIsAuthenticated(true);
+          } else {
+            setIsAuthenticated(false);
+          }
+        } catch (error) {
+          console.error('Error validating token:', error);
+          setIsAuthenticated(false);
+        }
+      } else {
+        setIsAuthenticated(false);
+      }
+
+      setLoading(false);
+    };
+
+    // Check authentication status initially
+    checkAuth();
+
+    // Set up an event listener for storage changes
+    const handleStorageChange = () => {
+      checkAuth(); // Re-check authentication status on storage changes
+    };
+
+    window.addEventListener('storage', handleStorageChange);
+
+    // Clean up the event listener on component unmount
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+    };
   }, []);
 
   if (loading) {
-    return <PageLoader />; // Use PageLoader while checking auth status
+    return <PageLoader />;
   }
 
   return (

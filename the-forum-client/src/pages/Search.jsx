@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { Form, Button, Card, Container, Spinner, InputGroup, FormControl } from 'react-bootstrap';
-import axios from 'axios';
+import api from '../api/axios';
 import { useLocation, useNavigate } from 'react-router-dom';
+import debounce from 'lodash.debounce';
 
 const Search = () => {
   const [searchQuery, setSearchQuery] = useState('');
@@ -26,16 +27,15 @@ const Search = () => {
     }
   }, [location.search]); // Re-run when the search parameter changes
 
-  const handleSearch = async (query = searchQuery) => {
+  // Debounced search function
+  const debouncedSearch = debounce(async (query) => {
     setLoading(true);
     setMessage(''); // Reset message on new search
 
     try {
-      const response = await axios.get(`http://localhost:8000/api/search?query=${query}`);
+      const response = await api.get(`search?query=${query}`);
       setSearchResults(response.data);
-
-      // Update URL without reloading the page
-      navigate(`/search?query=${query}`);
+      navigate(`/search?query=${query}`); // Update URL without reloading the page
 
       if (response.data.length === 0) {
         setMessage('No results found.'); // Set message if no results
@@ -46,26 +46,31 @@ const Search = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, 500); // Adjust debounce delay as needed
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    if (searchQuery.trim()) {
-      handleSearch();
+  const handleSearch = (query = searchQuery) => {
+    if (query.trim()) {
+      debouncedSearch(query);
     } else {
+      setSearchResults([]); // Clear results if the search term is empty
       setMessage('Please enter a search term.'); // Set message for empty search
     }
   };
 
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    handleSearch(searchQuery);
+  };
+
   return (
     <Container className="my-4">
-      <h2 className="text-center mb-4 text-gold">Explore Clubs, People, or More</h2>
+      <h4 className="text-center mb-4 text-gold">Explore Clubs, People, or More</h4>
 
       <Form onSubmit={handleSubmit}>
         <InputGroup className="mb-4 shadow-lg">
           <FormControl
             placeholder="Start typing or press search..."
-            className='p-3'
+            className='p-2'
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             style={{ borderTopRightRadius: '0', borderBottomRightRadius: '0' }}
@@ -97,8 +102,8 @@ const Search = () => {
                   {searchResults.map((result) => (
                     <li key={result.id} className="mb-3">
                       <Card className="p-3 shadow-sm rounded">
-                        <h6 className="text-info">{result.name || result.username}</h6>
-                        <p className="text-muted">Type: {result.type}</p>
+                        <h6 className="text-info">{result.name}</h6>
+                        <p className="text-muted">Email: {result.email}</p>
                       </Card>
                     </li>
                   ))}

@@ -17,6 +17,7 @@ function Dashboard() {
     try {
       await api.post('/logout');
       localStorage.removeItem('token');
+      // setIsAuthenticated(false);
       window.location.href = '/auth/login';
     } catch (error) {
       console.error('Logout error:', error);

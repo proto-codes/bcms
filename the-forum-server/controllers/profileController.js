@@ -1,4 +1,4 @@
-const db = require('../config/db'); // Your database connection setup
+const db = require('../config/db');
 
 // Helper function to query the database
 const queryAsync = (query, params) => {
@@ -10,62 +10,74 @@ const queryAsync = (query, params) => {
   });
 };
 
-// Fetch user profile
+// Fetch user profile (from users and profile tables)
 const getProfile = async (req, res) => {
-  const userId = req.user.id; // Assuming you have user info in req.user from middleware
-
-  try {
-    const user = await queryAsync('SELECT * FROM users WHERE id = ?', [userId]);
-    const profile = await queryAsync('SELECT * FROM profile WHERE user_id = ?', [userId]);
-
-    if (!user.length || !profile.length) {
-      return res.status(404).json({ message: 'User profile not found' });
+    // Ensure req.user is defined (from the authenticateToken middleware)
+    if (!req.user || !req.user.id) {
+        return res.status(401).json({ error: 'User not authenticated' });
     }
 
-    const userData = {
-      name: user[0].name,
-      email: user[0].email,
-      bio: profile[0].bio,
-      avatar: profile[0].profile_pics,
-      address: profile[0].address,
-      phone: profile[0].phone_number,
-      dob: profile[0].birthday,
-    };
+    try {
+        // Fetch from users table
+        const userResults = await queryAsync('SELECT name, email FROM users WHERE id = ?', [req.user.id]);
+        if (userResults.length === 0) {
+            return res.status(404).json({ error: 'User not found' });
+        }
 
-    res.json({ success: true, data: userData });
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: 'Server error' });
-  }
+        // Fetch from profile table
+        const profileResults = await queryAsync('SELECT bio, profile_pics, phone_number, birthday, address FROM profile WHERE user_id = ?', [req.user.id]);
+        const userProfile = {
+            ...userResults[0], // name and email
+            bio: profileResults[0]?.bio || '',
+            profile_pics: profileResults[0]?.profile_pics || '',
+            phone_number: profileResults[0]?.phone_number || '',
+            birthday: profileResults[0]?.birthday || '',
+            address: profileResults[0]?.address || ''
+        };
+
+        res.json(userProfile);
+    } catch (error) {
+        console.error('Error fetching profile:', error);
+        res.status(500).json({ error: 'Server error' });
+    }
 };
 
-// Update user profile
+// Update user profile (for both users and profile tables)
 const updateProfile = async (req, res) => {
-  const userId = req.user.id; // Assuming you have user info in req.user from middleware
-  const { name, email, bio, address, phone, dob } = req.body;
-
-  try {
-    // Handle file upload
-    let profilePics;
-    if (req.file) {
-      profilePics = req.file.path; // Use the uploaded file path
+    if (!req.user || !req.user.id) {
+        return res.status(401).json({ error: 'User not authenticated' });
     }
 
-    // Update user and profile data
-    await queryAsync('UPDATE users SET name = ?, email = ? WHERE id = ?', [name, email, userId]);
-    await queryAsync(
-      'UPDATE profile SET bio = ?, profile_pics = ?, address = ?, phone_number = ?, birthday = ? WHERE user_id = ?',
-      [bio, profilePics || null, address, phone, dob, userId]
-    );
+    const { name, email, bio, phone_number, birthday, address } = req.body;
 
-    res.json({ message: 'Profile updated successfully' });
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: 'Server error' });
-  }
+    // Get the image path
+    const profile_pics = req.file ? req.file.path : ''; // Use the uploaded file path
+
+    try {
+        // Update users table
+        await queryAsync('UPDATE users SET name = ?, email = ? WHERE id = ?', [name, email, req.user.id]);
+
+        // Update or insert profile table
+        const profileUpdateQuery = `
+            INSERT INTO profile (user_id, bio, profile_pics, phone_number, birthday, address)
+            VALUES (?, ?, ?, ?, ?, ?)
+            ON DUPLICATE KEY UPDATE
+                bio = VALUES(bio),
+                profile_pics = VALUES(profile_pics),
+                phone_number = VALUES(phone_number),
+                birthday = VALUES(birthday),
+                address = VALUES(address)
+        `;
+        await queryAsync(profileUpdateQuery, [req.user.id, bio, profile_pics, phone_number, birthday, address]);
+
+        res.json({ message: 'Profile updated successfully' });
+    } catch (error) {
+        console.error('Error updating profile:', error);
+        res.status(500).json({ error: 'Server error' });
+    }
 };
 
 module.exports = {
-  getProfile,
-  updateProfile,
+    getProfile,
+    updateProfile,
 };

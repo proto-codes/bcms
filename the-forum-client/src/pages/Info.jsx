@@ -37,9 +37,10 @@ function Info() {
   return (
     <div>
       {/* Hero Section */}
-      <header className="background-img bg-gold text-white text-center p-5">
+      <header className="background-img bg-gold d-flex align-items-center justify-content-center text-white text-center p-5">
         <div className="position-relative z-2">
           <h1>Welcome to The Forum</h1>
+          <p className="lead mb-1">(AKA The League of Gentlemen)</p>
           <p className="lead">Support. Wellness. Philanthropy.</p>
         </div>
       </header>

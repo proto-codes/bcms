@@ -35,8 +35,8 @@ body {
 }
 
 .spinner {
-  border: 8px solid #e2e2e2; /* Light grey */
-  border-top: 8px solid var(--purple); /* Purple */
+  border: 8px solid #e2e2e2;
+  border-top: 8px solid var(--purple);
   border-radius: 50%;
   width: 60px;
   height: 60px;
@@ -133,10 +133,11 @@ body {
 }
 
 .background-img {
-    position: relative;
-    background-image: url('/src/assets/img/display.webp');
-    background-size: cover;
-    background-position: center;
+  height: 100vh;
+  position: relative;
+  background-image: url('/src/assets/img/display.webp');
+  /* background-size: cover; */
+  background-position: center;
 }
 
 .background-img::before {
