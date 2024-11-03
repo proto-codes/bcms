@@ -1,0 +1,166 @@
+:root {
+  --purple: #4B0082;
+  --gold: #B8860B;
+  --light: #ffffff;
+}
+
+body {
+  font-family: 'Poppins', sans-serif;
+}
+
+.bg-purple, .btn-purple {
+  background-color: var(--purple);
+  color: var(--light);
+}
+
+.text-gold {   
+  color: var(--gold) !important;
+}
+
+.bg-gold {
+  background-color: var(--gold) !important;
+}
+
+.btn-gold {
+  color: var(--light) !important;
+  background-color: var(--gold) !important;
+}
+
+/* Loader */
+.loader {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
+
+.spinner {
+  border: 8px solid #e2e2e2;
+  border-top: 8px solid var(--purple);
+  border-radius: 50%;
+  width: 60px;
+  height: 60px;
+  animation: spin 1.5s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Online status effect */
+.status-online {
+  position: relative; /* To position the pseudo-element */
+  padding-left: 15px; /* Space for the rounded indicator */
+}
+
+.status-online::before {
+  content: '';
+  width: 10px; /* Size of the rounded indicator */
+  height: 10px; /* Size of the rounded indicator */
+  border-radius: 50%; /* Makes the div circular */
+  background-color: var(--gold); /* Gold color for the online indicator */
+  position: absolute; /* Positioning relative to the text */
+  left: 0; /* Align to the left */
+  top: 50%; /* Center vertically */
+  transform: translateY(-50%); /* Adjust for vertical centering */
+  animation: pulse 1.5s infinite; /* Apply the pulse animation */
+}
+
+/* Keyframes for the pulse effect */
+@keyframes pulse {
+  0% {
+    transform: translateY(-50%) scale(1); /* Normal size */
+  }
+  50% {
+    transform: translateY(-50%) scale(1.2); /* Scale up */
+  }
+  100% {
+    transform: translateY(-50%) scale(1); /* Scale back to normal */
+  }
+}
+
+/* Bootstrap Customization */
+.form-check-input:checked {
+    background-color: var(--gold) !important;
+    border-color: var(--gold) !important;
+}
+
+.dropdown-item.active, .dropdown-item:active {
+    background-color: var(--gold) !important;
+}
+
+.list-group-item.active {
+    background-color: var(--gold) !important;
+    border-color: var(--gold) !important;
+}
+
+.nav-link:hover {
+    color: var(--light) !important;
+}
+
+.nav-tab:hover {
+    transform: scale(.90);
+    transition: transform 0.3s ease;
+}
+
+.active-link {
+  border-bottom: 2px solid var(--gold) !important;
+}
+
+.active-tab {
+    font-weight: bold;
+}
+
+.active-icon {
+    border-bottom: 2px solid #fff !important;
+}
+
+.img {
+    width: 5rem;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.cst-height {
+    height: calc(100% - 4.5rem);
+    overflow: auto;
+}
+
+.msg-height {
+    max-height: calc(100vh - 20.5rem);
+    overflow: auto;
+}
+
+.icon:hover {
+  transform: scale(1.1);
+  transition: transform 0.3s ease;
+}
+
+.footer-links a:hover {
+  text-decoration: underline !important;
+}
+
+@media (max-width: 992px) {
+    .active-link {
+        border-bottom: none !important;
+    }
+}
+
+@media (max-width: 767.98px) {
+    .active-link {
+        border-bottom: none !important;
+    } 
+
+    .dashboard-menu {
+        position: fixed;
+        right: 100%;
+        transition: right 0.5s ease-in-out;
+    }
+}
+
+@media (max-width: 576px) {
+    .the-forum {
+        font-size: calc(1rem + .9vw) !important;
+    }
+}
