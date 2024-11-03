@@ -1,23 +1,14 @@
 // All API routes
 const express = require('express');
 
-const {
-  logout 
-} = require('../controllers/authController');
-const { 
-  changePassword, 
-  updateNotificationPreferences, 
-  deleteAccount, 
-  getUserDetails, 
-  fetchNotificationPreferences 
+const { logout } = require('../controllers/authController');
+const { changePassword, updateNotificationPreferences, deleteAccount, getUserDetails, fetchNotificationPreferences 
 } = require('../controllers/userController');
-const { 
-  getProfile, 
-  updateProfile 
-} = require('../controllers/profileController');
+const { getProfile, updateProfile } = require('../controllers/profileController');
 const taskController = require('../controllers/taskController');
 const { searchUsers } = require('../controllers/searchController');
 const messagesController = require('../controllers/messagesController');
+const { getNotifications, createNotification } = require('../controllers/notificationsController');
 const upload = require('../config/multer');
 
 const router = express.Router();
@@ -61,5 +52,9 @@ router.get('/conversations/:conversationId/messages', messagesController.fetchMe
 router.post('/messages', messagesController.sendMessage);
 router.put('/messages/:messageId/read', messagesController.updateMessageStatus);
 router.delete('/messages/:messageId', messagesController.deleteMessage);
+
+// Notifications route
+router.get('/notifications', getNotifications);
+router.post('/notifications', createNotification);
 
 module.exports = router;

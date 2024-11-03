@@ -1,20 +1,26 @@
-// src/components/Notifications.jsx
 import React, { useState, useEffect } from 'react';
-import { Button, Card } from 'react-bootstrap'; // Import Bootstrap components
+import { Button, Card, Toast, ToastContainer } from 'react-bootstrap';
+import api from '../api/axios';
 
 const Notifications = () => {
   const [notifications, setNotifications] = useState([]);
+  const [newNotifications, setNewNotifications] = useState([]);
 
-  // Fetch notifications when the component mounts
   useEffect(() => {
     const fetchNotifications = async () => {
       try {
-        const response = [
-          { id: 1, message: 'New event coming up next week!', type: 'event', date: '2024-10-10' },
-          { id: 2, message: 'Membership fee is due soon.', type: 'reminder', date: '2024-10-08' },
-          { id: 3, message: 'Welcome to the club!', type: 'welcome', date: '2024-09-30' },
-        ];
-        setNotifications(response);
+        const response = await api.get('/notifications');
+        const fetchedNotifications = response.data;
+    
+        // Ensure fetchedNotifications is an array
+        const notificationsArray = Array.isArray(fetchedNotifications) ? fetchedNotifications : [];
+    
+        // Filter out expired notifications
+        const validNotifications = notificationsArray.filter(
+          (notification) => new Date(notification.date) >= new Date()
+        );
+    
+        setNotifications(validNotifications);
       } catch (error) {
         console.error('Error fetching notifications:', error);
       }
@@ -23,14 +29,14 @@ const Notifications = () => {
     fetchNotifications();
   }, []);
 
-  // Function to handle deleting a notification
+  // Function to delete a notification
   const deleteNotification = (id) => {
     setNotifications((prevNotifications) =>
       prevNotifications.filter((notification) => notification.id !== id)
     );
   };
 
-  // Get the color variant based on notification type
+  // Determine notification style based on type
   const getNotificationVariant = (type) => {
     switch (type) {
       case 'event':
@@ -46,7 +52,28 @@ const Notifications = () => {
 
   return (
     <div className="container my-4">
-      <h2 className="mb-4">Notifications</h2>
+      <h2 className="mb-3">Notifications</h2>
+
+      {/* Notification Popup Alerts */}
+      <ToastContainer position="top-end" className="p-3">
+        {newNotifications.map((notification) => (
+          <Toast
+            key={notification.id}
+            onClose={() => deleteNotification(notification.id)}
+            bg={getNotificationVariant(notification.type)}
+            delay={5000}
+            autohide
+          >
+            <Toast.Header closeButton={false}>
+              <strong className="me-auto">{notification.type} Alert</strong>
+              <small>{new Date(notification.date).toLocaleDateString()}</small>
+            </Toast.Header>
+            <Toast.Body>{notification.message}</Toast.Body>
+          </Toast>
+        ))}
+      </ToastContainer>
+
+      {/* Notification Cards */}
       {notifications.length > 0 ? (
         <div className="row">
           {notifications.map((notification) => (
@@ -56,16 +83,11 @@ const Notifications = () => {
                   <Card.Title className="text-capitalize">
                     {notification.type} Notification
                   </Card.Title>
-                  <Card.Text>
-                    {notification.message}
-                  </Card.Text>
+                  <Card.Text>{notification.message}</Card.Text>
                   <Card.Subtitle className="mb-2 text-muted">
                     {new Date(notification.date).toLocaleDateString()}
                   </Card.Subtitle>
-                  <Button
-                    variant="danger"
-                    onClick={() => deleteNotification(notification.id)}
-                  >
+                  <Button variant="danger" onClick={() => deleteNotification(notification.id)}>
                     Delete
                   </Button>
                 </Card.Body>

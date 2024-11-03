@@ -37,8 +37,8 @@ function ForgotPassword() {
     try {
       const response = await axios.post('http://localhost:5000/public/forgot-password', { email: email.trim() });
       setSuccess(response.data.message);
-      setEmail(''); // Clear the email input field
-      setValidated(false); // Reset validation
+      setEmail('');
+      setValidated(false);
     } catch (error) {
       console.error('Error sending password reset link:', error.response?.data?.error || error.message);
       setError(error.response?.data?.error || 'An unexpected error occurred. Please try again.');
@@ -52,7 +52,7 @@ function ForgotPassword() {
     <div className="vh-100 d-flex justify-content-center align-items-center py-3">
       <div className="card border-0 p-3 shadow-lg" style={{ width: '400px' }}>
         <h4 className="text-center text-gold mb-3">Forgot Password</h4>
-        <form onSubmit={handleSubmit} noValidate>
+        <form onSubmit={handleSubmit} noValidate aria-busy={loading}>
           <div className="form-floating mb-3">
             <input
               type="email"
@@ -63,8 +63,12 @@ function ForgotPassword() {
               onChange={handleInputChange}
             />
             <label htmlFor="email">Email address</label>
-            {validated && error && <div className="invalid-feedback">{error}</div>}
-            {success && <div className="valid-feedback">{success}</div>}
+            {validated && error && (
+              <div className="invalid-feedback" aria-live="polite">{error}</div>
+            )}
+            {success && (
+              <div className="valid-feedback" aria-live="polite">{success}</div>
+            )}
           </div>
           <button type="submit" className="btn btn-gold w-100" disabled={loading}>
             {loading ? (

@@ -36,6 +36,7 @@ connection.connect((err) => {
       password VARCHAR(255) NOT NULL,
       email_notifications BOOLEAN DEFAULT TRUE,
       sms_notifications BOOLEAN DEFAULT FALSE,
+      confirmed TINYINT(1) DEFAULT 0,
       created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     );
   `;
@@ -109,6 +110,30 @@ connection.connect((err) => {
       FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
     );
   `;
+  
+  // SQL query to create the verification_tokens table if it doesn't exist
+  const createVerificationTokensTableQuery = `
+    CREATE TABLE IF NOT EXISTS verification_tokens (
+      id INT AUTO_INCREMENT PRIMARY KEY,
+      user_id INT NOT NULL,
+      token VARCHAR(64) NOT NULL,
+      expires_at DATETIME NOT NULL,
+      FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+    );
+  `;
+  
+  // SQL query to create the notifications table if it doesn't exist
+  const createNotificationsTableQuery = `
+    CREATE TABLE IF NOT EXISTS notifications (
+      id INT AUTO_INCREMENT PRIMARY KEY,
+      user_id INT NOT NULL,
+      message VARCHAR(255) NOT NULL,
+      type ENUM('event', 'reminder', 'welcome', 'general') DEFAULT 'general',
+      date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+      is_read BOOLEAN DEFAULT FALSE,
+      FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+    );
+  `;
 
   // Run migrations
   runMigration(createUsersTableQuery, 'Users table');
@@ -117,6 +142,8 @@ connection.connect((err) => {
   runMigration(createMessagesTableQuery, 'Messages table');
   runMigration(createTasksTableQuery, 'Tasks table');
   runMigration(createPasswordResetsTableQuery, 'Password resets table');
+  runMigration(createVerificationTokensTableQuery, 'Verification tokens table');
+  runMigration(createNotificationsTableQuery, 'notifications table');
 
   // Close the connection after all migrations
   connection.end((err) => {

@@ -30,8 +30,7 @@ const Profile = () => {
         const response = await api.get('/profile');
         const data = response.data;
 
-        // Format birthday to yyyy-MM-dd
-        const formattedBirthday = new Date(data.birthday).toISOString().split('T')[0];
+        const formattedBirthday = data.birthday ? new Date(data.birthday).toISOString().split('T')[0] : '';
 
         setUserData({
           name: data.name || '',
@@ -40,7 +39,7 @@ const Profile = () => {
           profile_pics: data.profile_pics || '',
           address: data.address || '',
           phone_number: data.phone_number || '',
-          birthday: formattedBirthday || '',
+          birthday: formattedBirthday
         });
         setPreview(data.profile_pics || '');
       } catch (error) {
@@ -55,13 +54,12 @@ const Profile = () => {
   }, []);
 
   // Format date function
-  // Format date function
   const formatDate = (dateString) => {
     const date = new Date(dateString);
     
     // Check if the date is valid
     if (isNaN(date.getTime())) {
-      return 'Invalid date'; // Return a fallback string for invalid dates
+      return '';
     }
 
     const day = date.getDate();
