@@ -45,18 +45,18 @@ connection.connect((err) => {
   const createActiveTokensTableQuery = `
     CREATE TABLE IF NOT EXISTS active_tokens (
       id INT AUTO_INCREMENT PRIMARY KEY,
-      user_id INT NOT NULL,
+      user_id INT NOT NULL UNIQUE,
       token VARCHAR(255) NOT NULL,
       expires_at DATETIME NOT NULL,
       FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
-    )
+    );
   `;
 
   // SQL query to create the profile table if it doesn't exist
   const createProfileTableQuery = `
     CREATE TABLE IF NOT EXISTS profile (
       id INT AUTO_INCREMENT PRIMARY KEY,
-      user_id INT NOT NULL,
+      user_id INT NOT NULL UNIQUE,
       bio TEXT,
       profile_pics VARCHAR(255),
       phone_number VARCHAR(20),
@@ -65,7 +65,7 @@ connection.connect((err) => {
       created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
       updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
       FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
-    )
+    );
   `;
 
   // SQL query to create the messages table if it doesn't exist
@@ -81,7 +81,7 @@ connection.connect((err) => {
       is_read BOOLEAN DEFAULT FALSE,
       FOREIGN KEY (sender_id) REFERENCES users(id) ON DELETE CASCADE,
       FOREIGN KEY (receiver_id) REFERENCES users(id) ON DELETE CASCADE
-    )
+    );
   `;
 
   // SQL query to create the tasks table if it doesn't exist
@@ -103,7 +103,7 @@ connection.connect((err) => {
   const createPasswordResetsTableQuery = `
     CREATE TABLE IF NOT EXISTS password_resets (
       id INT AUTO_INCREMENT PRIMARY KEY,
-      user_id INT NOT NULL,
+      user_id INT NOT NULL UNIQUE,
       reset_token VARCHAR(64) NOT NULL,
       expires_at DATETIME NOT NULL,
       created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
@@ -115,7 +115,7 @@ connection.connect((err) => {
   const createVerificationTokensTableQuery = `
     CREATE TABLE IF NOT EXISTS verification_tokens (
       id INT AUTO_INCREMENT PRIMARY KEY,
-      user_id INT NOT NULL,
+      user_id INT NOT NULL UNIQUE,
       token VARCHAR(64) NOT NULL,
       expires_at DATETIME NOT NULL,
       FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
@@ -143,7 +143,7 @@ connection.connect((err) => {
   runMigration(createTasksTableQuery, 'Tasks table');
   runMigration(createPasswordResetsTableQuery, 'Password resets table');
   runMigration(createVerificationTokensTableQuery, 'Verification tokens table');
-  runMigration(createNotificationsTableQuery, 'notifications table');
+  runMigration(createNotificationsTableQuery, 'Notifications table');
 
   // Close the connection after all migrations
   connection.end((err) => {

@@ -1,60 +1,70 @@
 const db = require('../config/db');
 
+// Helper function for async/await support with db queries
+const queryAsync = (query, params) => {
+  return new Promise((resolve, reject) => {
+    db.query(query, params, (error, results) => {
+      if (error) {
+        return reject(new Error('Database query failed'));
+      }
+      resolve(results);
+    });
+  });
+};
+
 // Fetch notifications for the logged-in user
 const getNotifications = async (req, res) => {
   try {
     const userId = req.user.id;
-
-    // Query to fetch notifications
-    db.query(
+    const notifications = await queryAsync(
       'SELECT id, message, type, date FROM notifications WHERE user_id = ? ORDER BY date DESC',
-      [userId],
-      (error, results) => {
-        if (error) {
-          console.error('Error fetching notifications:', error);
-          return res.status(500).json({ error: 'Internal server error' });
-        }
-        
-        if (results.length === 0) {
-          return res.status(200).json({ message: 'No notifications found' });
-        }
-        
-        res.status(200).json(results);
-      }
+      [userId]
     );
+    res.status(200).json(notifications.length ? notifications : []);
   } catch (error) {
-    console.error('Error:', error);
+    console.error('Error fetching notifications:', error);
     res.status(500).json({ error: 'Internal server error' });
   }
 };
 
-// Function to create a new notification
-const createNotification = (req, res) => {
-  const { message, type } = req.body;
-
-  if (!message || !type) {
-    return res.status(400).json({ error: 'Message and type are required' });
-  }
-
-  const userId = req.user.id;
-  const date = new Date();
-
-  // Insert new notification into the database
-  db.query(
-    'INSERT INTO notifications (user_id, message, type, date) VALUES (?, ?, ?, ?)',
-    [userId, message, type, date],
-    (error) => {
-      if (error) {
-        console.error('Error creating notification:', error);
-        return res.status(500).json({ error: 'Internal server error' });
+// Create a new notification
+const createNotification = ({ user_id, message, type }) => {
+  return new Promise((resolve, reject) => {
+    const date = new Date();
+    db.query(
+      'INSERT INTO notifications (user_id, message, type, date) VALUES (?, ?, ?, ?)',
+      [user_id, message, type, date],
+      (error) => {
+        if (error) {
+          console.error('Error creating notification in database:', error);
+          return reject(new Error('Error creating notification'));
+        }
+        resolve('Notification created');
       }
+    );
+  });
+};
 
-      res.status(201).json({ message: 'Notification created successfully!' });
+// Delete a notification by ID
+const deleteNotification = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const result = await queryAsync(
+      'DELETE FROM notifications WHERE id = ?',
+      [id]
+    );
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ error: 'Notification not found' });
     }
-  );
+    res.status(200).json({ message: 'Notification deleted successfully' });
+  } catch (error) {
+    console.error('Error deleting notification:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
 };
 
 module.exports = {
   getNotifications,
   createNotification,
+  deleteNotification,
 };

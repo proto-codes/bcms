@@ -2,32 +2,25 @@ const db = require('../config/db');
 
 // Helper function to query the database
 const queryAsync = (query, params) => {
-  return new Promise((resolve, reject) => {
-    db.query(query, params, (err, results) => {
-      if (err) return reject(err);
-      resolve(results);
+    return new Promise((resolve, reject) => {
+        db.query(query, params, (err, results) => {
+            if (err) return reject(err);
+            resolve(results);
+        });
     });
-  });
 };
 
-// Fetch user profile (from users and profile tables)
+// Fetch user profile (allow viewing other profiles)
 const getProfile = async (req, res) => {
-    // Ensure req.user is defined (from the authenticateToken middleware)
-    if (!req.user || !req.user.id) {
-        return res.status(401).json({ error: 'User not authenticated' });
-    }
+    const userId = req.params.userId;
 
     try {
-        // Fetch from users table
-        const userResults = await queryAsync('SELECT name, email FROM users WHERE id = ?', [req.user.id]);
-        if (userResults.length === 0) {
-            return res.status(404).json({ error: 'User not found' });
-        }
+        const userResults = await queryAsync('SELECT name, email FROM users WHERE id = ?', [userId]);
+        if (!userResults.length) return res.status(404).json({ error: 'User not found' });
 
-        // Fetch from profile table
-        const profileResults = await queryAsync('SELECT bio, profile_pics, phone_number, birthday, address FROM profile WHERE user_id = ?', [req.user.id]);
+        const profileResults = await queryAsync('SELECT bio, profile_pics, phone_number, birthday, address FROM profile WHERE user_id = ?', [userId]);
         const userProfile = {
-            ...userResults[0], // name and email
+            ...userResults[0],
             bio: profileResults[0]?.bio || '',
             profile_pics: profileResults[0]?.profile_pics || '',
             phone_number: profileResults[0]?.phone_number || '',
@@ -42,22 +35,27 @@ const getProfile = async (req, res) => {
     }
 };
 
-// Update user profile (for both users and profile tables)
+// Update user profile (only allow profile owner to edit)
 const updateProfile = async (req, res) => {
-    if (!req.user || !req.user.id) {
-        return res.status(401).json({ error: 'User not authenticated' });
+    const userId = req.params.userId;
+
+    if (req.user.id !== parseInt(userId)) {
+        return res.status(403).json({ error: 'Access forbidden: You can only update your own profile' });
     }
 
     const { name, email, bio, phone_number, birthday, address } = req.body;
-
-    // Get the image path
-    const profile_pics = req.file ? req.file.path : ''; // Use the uploaded file path
+    const profile_pics = req.file ? req.file.path : '';
 
     try {
-        // Update users table
-        await queryAsync('UPDATE users SET name = ?, email = ? WHERE id = ?', [name, email, req.user.id]);
+        const emailCheckQuery = 'SELECT id FROM users WHERE email = ? AND id != ?';
+        const emailCheckResult = await queryAsync(emailCheckQuery, [email, userId]);
 
-        // Update or insert profile table
+        if (emailCheckResult.length > 0) {
+            return res.status(400).json({ error: 'Email is already in use by another account' });
+        }
+
+        await queryAsync('UPDATE users SET name = ?, email = ? WHERE id = ?', [name, email, userId]);
+
         const profileUpdateQuery = `
             INSERT INTO profile (user_id, bio, profile_pics, phone_number, birthday, address)
             VALUES (?, ?, ?, ?, ?, ?)
@@ -68,9 +66,9 @@ const updateProfile = async (req, res) => {
                 birthday = VALUES(birthday),
                 address = VALUES(address)
         `;
-        await queryAsync(profileUpdateQuery, [req.user.id, bio, profile_pics, phone_number, birthday, address]);
+        await queryAsync(profileUpdateQuery, [userId, bio, profile_pics, phone_number, birthday, address]);
 
-        res.json({ message: 'Profile updated successfully' });
+        res.json({ message: 'Profile updated successfully!' });
     } catch (error) {
         console.error('Error updating profile:', error);
         res.status(500).json({ error: 'Server error' });

@@ -3,8 +3,12 @@ import { Form, Button, Card, Container, Row, Col, Spinner, Alert } from 'react-b
 import { FaUpload, FaTrash } from 'react-icons/fa';
 import ProfilePlaceholder from '../assets/img/the-forum-logo.jpeg';
 import api from '../api/axios';
+import { useParams } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
 
 const Profile = () => {
+  const { userId } = useParams();
+  const { userId: loggedInUserId } = useAuth();
   const [userData, setUserData] = useState({
     name: '',
     email: '',
@@ -20,14 +24,29 @@ const Profile = () => {
   const [preview, setPreview] = useState('');
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState({});
-  const [errorMsg, setErrorMsg] = useState(''); // State for error messages
+  const [successMsg, setSuccessMsg] = useState('');
+  const [errorMsg, setErrorMsg] = useState('');
+
+  useEffect(() => {
+    if (successMsg) {
+      const timer = setTimeout(() => setSuccessMsg(''), 5000);
+      return () => clearTimeout(timer);
+    }
+  }, [successMsg]);
+
+  useEffect(() => {
+    if (errorMsg) {
+      const timer = setTimeout(() => setErrorMsg(''), 5000);
+      return () => clearTimeout(timer);
+    }
+  }, [errorMsg]);
 
   // Fetch user data from server on component mount
   useEffect(() => {
     const fetchUserData = async () => {
       setLoading(true);
       try {
-        const response = await api.get('/profile');
+        const response = await api.get(`/profile/${userId}`);
         const data = response.data;
 
         const formattedBirthday = data.birthday ? new Date(data.birthday).toISOString().split('T')[0] : '';
@@ -51,13 +70,11 @@ const Profile = () => {
     };
 
     fetchUserData();
-  }, []);
+  }, [userId]); // Include userId as a dependency
 
   // Format date function
   const formatDate = (dateString) => {
     const date = new Date(dateString);
-    
-    // Check if the date is valid
     if (isNaN(date.getTime())) {
       return '';
     }
@@ -65,7 +82,6 @@ const Profile = () => {
     const day = date.getDate();
     const month = new Intl.DateTimeFormat('en-US', { month: 'long' }).format(date);
     const year = date.getFullYear();
-    
     const ordinalSuffix = (day) => {
       if (day > 3 && day < 21) return 'th';
       switch (day % 10) {
@@ -140,20 +156,20 @@ const Profile = () => {
     }
 
     try {
-      await api.put('/profile', formData, {
+      const feedback = await api.put(`/profile/${userId}`, formData, { // Update API call with userId
         headers: {
           'Content-Type': 'multipart/form-data', // Important for file uploads
         },
       });
-      setEditing(false); // Exit editing mode
-
-      // Optionally, refetch the data or update local state to reflect changes
-      const response = await api.get('/profile');
+      setEditing(false);
+      setSuccessMsg(feedback.data.message);
+      const response = await api.get(`/profile/${userId}`); // Refetch updated data
       setUserData(response.data);
       setPreview(response.data.profile_pics);
     } catch (error) {
       console.error('Error updating user data:', error);
-      setErrorMsg('Failed to update profile data.'); // Set error message
+      const errorMessage = error.response?.data?.error || 'Failed to update profile data. Please try again later.';
+      setErrorMsg(errorMessage);
     } finally {
       setLoading(false);
     }
@@ -168,7 +184,8 @@ const Profile = () => {
       ) : (
         <Card className="shadow-lg border-0">
           <Card.Body>
-            {errorMsg && <Alert variant="danger">{errorMsg}</Alert>} {/* Error message display */}
+            {successMsg && <Alert variant="success">{successMsg}</Alert>}
+            {errorMsg && <Alert variant="danger">{errorMsg}</Alert>}
             <div className="d-flex align-items-center mb-4">
               <img
                 src={preview || userData.profile_pics || ProfilePlaceholder}
@@ -211,7 +228,15 @@ const Profile = () => {
                 <p><strong>Address:</strong> {userData.address}</p>
                 <p><strong>Phone Number:</strong> {userData.phone_number}</p>
                 <p><strong>Date of Birth:</strong> {formatDate(userData.birthday)}</p>
-                <Button variant="primary" onClick={() => setEditing(true)}>Edit Profile</Button>
+                {String(userId) === String(loggedInUserId) ? (
+                  <Button variant="primary" onClick={() => setEditing(true)}>
+                    Edit Profile
+                  </Button>
+                ) : (
+                  <Button variant="gold" onClick={() => {/* handle send message logic */}}>
+                    Send Message
+                  </Button>
+                )}
               </div>
             ) : (
               <Form onSubmit={handleFormSubmit}>
@@ -252,7 +277,7 @@ const Profile = () => {
                     <Form.Group className="mb-3">
                       <Form.Label>Phone Number</Form.Label>
                       <Form.Control
-                        type="text"
+                        type="tel"
                         name="phone_number"
                         value={userData.phone_number}
                         onChange={handleInputChange}
@@ -265,7 +290,7 @@ const Profile = () => {
                   </Col>
                   <Col md={6}>
                     <Form.Group className="mb-3">
-                      <Form.Label>Birthday</Form.Label>
+                      <Form.Label>Date of Birth</Form.Label>
                       <Form.Control
                         type="date"
                         name="birthday"
@@ -305,10 +330,10 @@ const Profile = () => {
                     {errors.bio}
                   </Form.Control.Feedback>
                 </Form.Group>
-                <Button variant="success" type="submit">
+                <Button type="submit" variant="success" className="me-2">
                   Save Changes
                 </Button>
-                <Button variant="secondary" className="ms-2" onClick={() => setEditing(false)}>
+                <Button variant="secondary" onClick={() => setEditing(false)}>
                   Cancel
                 </Button>
               </Form>

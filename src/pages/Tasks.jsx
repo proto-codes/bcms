@@ -15,7 +15,7 @@ const Tasks = () => {
   const [loading, setLoading] = useState(true);
   const [isFormVisible, setIsFormVisible] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
-  const [confirmDeleteId, setConfirmDeleteId] = useState(null); // Track which task is being deleted
+  const [confirmDeleteId, setConfirmDeleteId] = useState(null);
 
   useEffect(() => {
     const fetchTasks = async () => {
@@ -50,19 +50,20 @@ const Tasks = () => {
 
     try {
       const response = await api.post('/tasks', task);
+    
       if (response.data.success) {
         // Add new task at the top of the list
         setTasks([{ id: response.data.taskId, ...task }, ...tasks]);
         setSuccess('Task added successfully!');
         clearForm();
-        setIsFormVisible(false);
       } else {
         setError(response.data.message || 'Failed to add task.');
       }
     } catch (error) {
       console.error('Error adding task:', error);
-      setError('Failed to add task.');
+      setError(error.response?.data?.message || 'Failed to add task.');
     }
+    
   };
 
   const handleEditTask = (task) => {
@@ -94,14 +95,12 @@ const Tasks = () => {
         ));
         setSuccess('Task updated successfully!');
         clearForm();
-        setEditingTask(null);
-        setIsFormVisible(false);
       } else {
         setError(response.data.message || 'Failed to update task.');
       }
     } catch (error) {
       console.error('Error updating task:', error);
-      setError('Failed to update task.');
+      setError(error.response?.data?.message || 'Failed to update task.');
     }
   };
 
@@ -116,7 +115,7 @@ const Tasks = () => {
       }
     } catch (error) {
       console.error('Error deleting task:', error);
-      setError('Failed to delete task.');
+      setError(error.response?.data?.message || 'Failed to delete task.');
     } finally {
       setConfirmDeleteId(null); // Reset the confirmation state
     }
@@ -128,8 +127,8 @@ const Tasks = () => {
     setDueDate('');
     setPriority('Medium');
     setEditingTask(null);
-    setError('');
-    setSuccess('');
+    // setError('');
+    // setSuccess('');
     setIsFormVisible(false);
   };
 
@@ -162,6 +161,10 @@ const Tasks = () => {
       <Card className="shadow-lg border-0">
         <Card.Body>
           <h4 className="mb-3 text-gold">{editingTask ? 'Edit Task' : 'Add New Task'}</h4>
+          
+          {/* Success and Error Alerts */}
+          {success && <Alert variant="success">{success}</Alert>}
+          {error && <Alert variant="danger">{error}</Alert>}
 
           {/* Button to toggle form visibility */}
           <Button onClick={() => setIsFormVisible(!isFormVisible)} className="mb-3">
@@ -238,10 +241,6 @@ const Tasks = () => {
                   onChange={(e) => setSearchQuery(e.target.value)}
                 />
               </Form.Group>
-
-              {/* Success and Error Alerts */}
-              {success && <Alert variant="success">{success}</Alert>}
-              {error && <Alert variant="danger">{error}</Alert>}
 
               {/* Task List */}
               <h4 className="mb-3 text-gold">Task List</h4>

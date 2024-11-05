@@ -124,10 +124,10 @@ function Login() {
           </button>
         </form>
         <small className="mt-2 text-center">
-          <Link to="/auth/forgot-password" className="text-gold">Forgot password?</Link>
+          <Link to="/auth/forgot-password" className="text-decoration-none text-gold">Forgot password?</Link>
         </small>
         <div className="text-center mt-2">
-          <small>Don't have an account? <Link to="/auth/register" className="text-gold">Register</Link></small>
+          <small>Don't have an account? <Link to="/auth/register" className="text-decoration-none text-gold">Register</Link></small>
         </div>
       </div>
     </div>

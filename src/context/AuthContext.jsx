@@ -6,6 +6,7 @@ const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(null);
+  const [userId, setUserId] = useState(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -18,6 +19,7 @@ export const AuthProvider = ({ children }) => {
 
           if (response.status === 200) {
             setIsAuthenticated(true);
+            setUserId(response.data.user.id);
           } else {
             setIsAuthenticated(false);
           }
@@ -32,17 +34,15 @@ export const AuthProvider = ({ children }) => {
       setLoading(false);
     };
 
-    // Check authentication status initially
     checkAuth();
 
     // Set up an event listener for storage changes
     const handleStorageChange = () => {
-      checkAuth(); // Re-check authentication status on storage changes
+      checkAuth();
     };
 
     window.addEventListener('storage', handleStorageChange);
 
-    // Clean up the event listener on component unmount
     return () => {
       window.removeEventListener('storage', handleStorageChange);
     };
@@ -53,7 +53,7 @@ export const AuthProvider = ({ children }) => {
   }
 
   return (
-    <AuthContext.Provider value={{ isAuthenticated }}>
+    <AuthContext.Provider value={{ isAuthenticated, userId }}>
       {children}
     </AuthContext.Provider>
   );

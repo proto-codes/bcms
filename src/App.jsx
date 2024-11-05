@@ -37,7 +37,7 @@ function App() {
             <Route path="/" element={<ProtectedRoute requireAuth={true}><Dashboard /></ProtectedRoute>}>
               <Route index element={<DashboardHome />} />
               <Route path="overview" element={<Overview />} />
-              <Route path="profile" element={<Profile />} />
+              <Route path="profile/:userId" element={<Profile />} />
               <Route path="notifications" element={<Notifications />} />
               <Route path="messages" element={<Messages />} />
               <Route path="tasks" element={<Tasks />} />

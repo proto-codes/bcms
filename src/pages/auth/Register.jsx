@@ -16,13 +16,34 @@ function Register() {
   const [validated, setValidated] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [showPasswordConfirmation, setShowPasswordConfirmation] = useState(false);
+  const [passwordStrength, setPasswordStrength] = useState('');
 
   const handleInputChange = (e) => {
-    setUserData({ ...userData, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+    setUserData({ ...userData, [name]: value });
+    if (name === 'password') {
+      checkPasswordStrength(value);
+    }
     setValidated(false);
   };
 
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+  const checkPasswordStrength = (password) => {
+    const hasUpperCase = /[A-Z]/.test(password);
+    const hasLowerCase = /[a-z]/.test(password);
+    const hasNumbers = /[0-9]/.test(password);
+    const hasSpecialChars = /[!@#$%^&*(),.?":{}|<>]/.test(password);
+    const minLength = 8;
+
+    if (password.length >= minLength && hasUpperCase && hasLowerCase && hasNumbers && hasSpecialChars) {
+      setPasswordStrength('Strong');
+    } else if (password.length >= minLength && (hasUpperCase || hasLowerCase) && (hasNumbers || hasSpecialChars)) {
+      setPasswordStrength('Medium');
+    } else {
+      setPasswordStrength('Low');
+    }
+  };
 
   const register = async (event) => {
     event.preventDefault();
@@ -63,7 +84,7 @@ function Register() {
       localStorage.setItem('token', response.data.token);
 
       setTimeout(() => {
-        window.location.href = '/';
+        window.location.href = '/verify-account';
       }, 3000);
 
       setUserData({
@@ -140,6 +161,11 @@ function Register() {
                 {validated && !userData.password && (
                   <div className="invalid-feedback">Please enter your password.</div>
                 )}
+                {passwordStrength && (
+                  <div className={`mt-1 ${passwordStrength === 'Strong' ? 'text-success' : passwordStrength === 'Medium' ? 'text-warning' : 'text-danger'}`}>
+                    Password strength: {passwordStrength}
+                  </div>
+                )}
                 <button
                   type="button"
                   className="btn position-absolute top-50 end-0 translate-middle-y pe-2"
@@ -193,7 +219,7 @@ function Register() {
           </button>
         </form>
         <div className="text-center mt-2">
-          <small>Already have an account? <Link to="/auth/login" className="text-gold">Login</Link></small>
+          <small>Already have an account? <Link to="/auth/login" className="text-decoration-none text-gold">Login</Link></small>
         </div>
       </div>
     </div>

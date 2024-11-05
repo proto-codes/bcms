@@ -1,20 +1,24 @@
 // All API routes
 const express = require('express');
 
-const { logout } = require('../controllers/authController');
+const { logout, verifyAccount, requestVerificationToken } = require('../controllers/authController');
 const { changePassword, updateNotificationPreferences, deleteAccount, getUserDetails, fetchNotificationPreferences 
 } = require('../controllers/userController');
 const { getProfile, updateProfile } = require('../controllers/profileController');
 const taskController = require('../controllers/taskController');
 const { searchUsers } = require('../controllers/searchController');
 const messagesController = require('../controllers/messagesController');
-const { getNotifications, createNotification } = require('../controllers/notificationsController');
+const { getNotifications, deleteNotification } = require('../controllers/notificationsController');
 const upload = require('../config/multer');
 
 const router = express.Router();
 
 // Logout Route
 router.post('/logout', logout);
+
+// Token verification
+router.get('/verify-account', verifyAccount);
+router.post('/request-verification-token', requestVerificationToken);
 
 // Token validation route
 router.post('/validate-token', (req, res) => {
@@ -31,8 +35,8 @@ router.delete('/delete-account', deleteAccount);
 router.get('/user', getUserDetails);
 
 // Profile routes
-router.get('/profile', getProfile);
-router.put('/profile', upload.single('profile_pics'), updateProfile);
+router.get('/profile/:userId', getProfile);
+router.put('/profile/:userId', upload.single('profile_pics'), updateProfile);
 
 // Notification preferences
 router.get('/notification-preferences', fetchNotificationPreferences);
@@ -55,6 +59,6 @@ router.delete('/messages/:messageId', messagesController.deleteMessage);
 
 // Notifications route
 router.get('/notifications', getNotifications);
-router.post('/notifications', createNotification);
+router.delete('/notifications/:id', deleteNotification);
 
 module.exports = router;

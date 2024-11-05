@@ -4,39 +4,45 @@ import api from '../api/axios';
 
 const Notifications = () => {
   const [notifications, setNotifications] = useState([]);
-  const [newNotifications, setNewNotifications] = useState([]);
+  const [dismissedNotifications, setDismissedNotifications] = useState([]);
+  const [error, setError] = useState(null);
 
+  // Fetch notifications on component mount
   useEffect(() => {
     const fetchNotifications = async () => {
       try {
         const response = await api.get('/notifications');
-        const fetchedNotifications = response.data;
-    
-        // Ensure fetchedNotifications is an array
-        const notificationsArray = Array.isArray(fetchedNotifications) ? fetchedNotifications : [];
-    
-        // Filter out expired notifications
-        const validNotifications = notificationsArray.filter(
-          (notification) => new Date(notification.date) >= new Date()
-        );
-    
-        setNotifications(validNotifications);
+        const fetchedNotifications = Array.isArray(response.data) ? response.data : [];
+
+        setNotifications(fetchedNotifications);
       } catch (error) {
         console.error('Error fetching notifications:', error);
+        setError('Failed to load notifications.');
       }
     };
 
     fetchNotifications();
   }, []);
 
-  // Function to delete a notification
-  const deleteNotification = (id) => {
-    setNotifications((prevNotifications) =>
-      prevNotifications.filter((notification) => notification.id !== id)
-    );
+  // Delete notification on both server and client
+  const deleteNotification = async (id) => {
+    try {
+      await api.delete(`/notifications/${id}`);
+      setNotifications((prevNotifications) =>
+        prevNotifications.filter((notification) => notification.id !== id)
+      );
+    } catch (error) {
+      console.error('Error deleting notification:', error);
+      setError('Failed to delete notification.');
+    }
   };
 
-  // Determine notification style based on type
+  // Dismiss notification from toast view only
+  const dismissNotificationFromToast = (id) => {
+    setDismissedNotifications((prevDismissed) => [...prevDismissed, id]);
+  };
+
+  // Determine variant styling based on notification type
   const getNotificationVariant = (type) => {
     switch (type) {
       case 'event':
@@ -54,23 +60,29 @@ const Notifications = () => {
     <div className="container my-4">
       <h2 className="mb-3">Notifications</h2>
 
-      {/* Notification Popup Alerts */}
+      {/* Display error message if fetch fails */}
+      {error && <div className="alert alert-danger">{error}</div>}
+
+      {/* Popup Alerts */}
       <ToastContainer position="top-end" className="p-3">
-        {newNotifications.map((notification) => (
-          <Toast
-            key={notification.id}
-            onClose={() => deleteNotification(notification.id)}
-            bg={getNotificationVariant(notification.type)}
-            delay={5000}
-            autohide
-          >
-            <Toast.Header closeButton={false}>
-              <strong className="me-auto">{notification.type} Alert</strong>
-              <small>{new Date(notification.date).toLocaleDateString()}</small>
-            </Toast.Header>
-            <Toast.Body>{notification.message}</Toast.Body>
-          </Toast>
-        ))}
+        {notifications
+          .filter((notification) => !dismissedNotifications.includes(notification.id))
+          .slice(0, 3)
+          .map((notification) => (
+            <Toast
+              key={notification.id}
+              onClose={() => dismissNotificationFromToast(notification.id)}
+              bg={getNotificationVariant(notification.type)}
+              delay={5000}
+              autohide
+            >
+              <Toast.Header closeButton={false}>
+                <strong className="me-auto">{notification.type} Alert</strong>
+                <small>{new Date(notification.date).toLocaleDateString()}</small>
+              </Toast.Header>
+              <Toast.Body>{notification.message}</Toast.Body>
+            </Toast>
+          ))}
       </ToastContainer>
 
       {/* Notification Cards */}

@@ -82,7 +82,7 @@ function ForgotPassword() {
           </button>
         </form>
         <div className="text-center mt-2">
-          <small>Remember your password? <Link to="/auth/login" className="text-gold">Login</Link></small>
+          <small>Remember your password? <Link to="/auth/login" className="text-decoration-none text-gold">Login</Link></small>
         </div>
       </div>
     </div>

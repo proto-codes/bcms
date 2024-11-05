@@ -3,10 +3,11 @@ import { NavLink, Outlet } from 'react-router-dom';
 import TheForum from '../assets/img/the-forum-logo.jpeg';
 import { FaBars } from 'react-icons/fa';
 import { MdTask, MdBarChart, MdNotifications, MdHelp, MdMail, MdAccountCircle, MdExitToApp, MdSettings, MdSearch, MdGroup, MdDashboard, MdEvent } from 'react-icons/md';
-// import { useAuth } from '../context/AuthContext';
+import { useAuth } from '../context/AuthContext';
 import api from '../api/axios';
 
 function Dashboard() {
+  const { userId } = useAuth();
   const [showMenu, setShowMenu] = useState(false);
   const [userName, setUserName] = useState('');
 
@@ -108,7 +109,7 @@ function Dashboard() {
                 </button>
                 <ul className="dropdown-menu" aria-labelledby='dropdownMenuButton'>
                   <li>
-                    <NavLink to="/profile" className="dropdown-item d-flex align-items-center gap-2"><MdAccountCircle size={20} /> Profile</NavLink>
+                    <NavLink to={`/profile/${userId}`} className="dropdown-item d-flex align-items-center gap-2"><MdAccountCircle size={20} /> Profile</NavLink>
                     <button className="btn dropdown-item d-flex align-items-center gap-2" onClick={handleLogout}>
                       <MdExitToApp size={20} /> Logout
                     </button>

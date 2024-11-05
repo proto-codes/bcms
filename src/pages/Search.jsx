@@ -101,7 +101,11 @@ const Search = () => {
                 <ul className="list-unstyled mt-3">
                   {searchResults.map((result) => (
                     <li key={result.id} className="mb-3">
-                      <Card className="p-3 shadow-sm rounded">
+                      <Card 
+                        className="p-3 shadow-sm rounded" 
+                        onClick={() => navigate(`/profile/${result.id}`)} // Navigate to user's profile
+                        style={{ cursor: 'pointer' }} // Change cursor to pointer to indicate it's clickable
+                      >
                         <h6 className="text-info">{result.name}</h6>
                         <p className="text-muted">Email: {result.email}</p>
                       </Card>

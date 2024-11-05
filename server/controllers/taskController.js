@@ -45,6 +45,14 @@ const createTask = async (req, res) => {
         // Validate input
         validateTaskInput(title, description, due_date, priority);
 
+        // Check if due_date is in the past
+        const now = new Date();
+        const dueDate = new Date(due_date);
+
+        if (dueDate < now) {
+            return res.status(400).json({ success: false, message: 'Due date cannot be in the past.' });
+        }
+
         const query = `
             INSERT INTO tasks (user_id, title, description, due_date, priority)
             VALUES (?, ?, ?, ?, ?);

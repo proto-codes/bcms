@@ -7,7 +7,7 @@ const authenticateToken = (req, res, next) => {
     const token = authHeader && authHeader.split(' ')[1]; // Extract the token from the Authorization header
 
     if (!token) {
-        return res.sendStatus(401); // No token, unauthorized
+        return res.status(401).json({ error: 'Token is missing' }); // No token, unauthorized
     }
 
     // Check if the token is in the active_tokens table
