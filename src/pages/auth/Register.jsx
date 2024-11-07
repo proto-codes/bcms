@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
 import { AiFillEye, AiFillEyeInvisible } from 'react-icons/ai';
+import { toast } from 'react-toastify';
 
 function Register() {
   const [userData, setUserData] = useState({
@@ -10,8 +11,6 @@ function Register() {
     password: '',
     password_confirmation: '',
   });
-  const [error, setError] = useState('');
-  const [success, setSuccess] = useState('');
   const [loading, setLoading] = useState(false);
   const [validated, setValidated] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
@@ -48,26 +47,27 @@ function Register() {
   const register = async (event) => {
     event.preventDefault();
     setLoading(true);
-    setSuccess('');
-    setError('');
     setValidated(false);
 
     const { name, email, password, password_confirmation } = userData;
 
     if (!name.trim() || !email.trim() || !password || !password_confirmation) {
       setValidated(true);
+      toast.error('Please fill in all the fields!');
       setLoading(false);
       return;
     }
 
     if (!emailRegex.test(email.trim())) {
       setValidated(true);
+      toast.error('Invalid email format!');
       setLoading(false);
       return;
     }
 
     if (password !== password_confirmation) {
       setValidated(true);
+      toast.error('Passwords do not match!');
       setLoading(false);
       return;
     }
@@ -80,7 +80,7 @@ function Register() {
         password_confirmation: password_confirmation.trim(),
       });
 
-      setSuccess(response.data.message || 'Registration successful! Check your email for a confirmation code.');
+      toast.success(response.data.message || 'Registration successful! Check your email for a confirmation code.');
       localStorage.setItem('token', response.data.token);
 
       setTimeout(() => {
@@ -94,7 +94,7 @@ function Register() {
         password_confirmation: '',
       });
     } catch (error) {
-      setError(error.response?.data?.error || 'An unexpected error occurred. Please try again.');
+      toast.error(error.response?.data?.error || 'An unexpected error occurred. Please try again.');
     } finally {
       setLoading(false);
     }
@@ -107,29 +107,29 @@ function Register() {
         <p className="text-center mb-3">Create Your Account</p>
         <form onSubmit={register} noValidate>
           <div className="row g-2">
+            {/* Name Field */}
             <div className="col-md-6 col-12">
               <div className="form-floating mb-2">
                 <input
                   type="text"
                   name="name"
-                  className={`form-control ${validated && !userData.name.trim() ? 'is-invalid' : ''}`}
+                  className="form-control"
                   id="name"
                   placeholder="Full Name"
                   value={userData.name}
                   onChange={handleInputChange}
                 />
                 <label htmlFor="name">Full Name</label>
-                {validated && !userData.name.trim() && (
-                  <div className="invalid-feedback">Please enter your name.</div>
-                )}
               </div>
             </div>
+
+            {/* Email Field */}
             <div className="col-md-6 col-12">
               <div className="form-floating mb-2">
                 <input
                   type="email"
                   name="email"
-                  className={`form-control ${validated && (!userData.email || !emailRegex.test(userData.email.trim())) ? 'is-invalid' : ''}`}
+                  className="form-control"
                   id="email"
                   placeholder="Email Address"
                   value={userData.email}
@@ -137,20 +137,16 @@ function Register() {
                   autoComplete="on"
                 />
                 <label htmlFor="email">Email Address</label>
-                {validated && !userData.email.trim() && (
-                  <div className="invalid-feedback">Please enter your email.</div>
-                )}
-                {validated && userData.email && !emailRegex.test(userData.email.trim()) && (
-                  <div className="invalid-feedback">Invalid email format.</div>
-                )}
               </div>
             </div>
+
+            {/* Password Field */}
             <div className="col-md-6 col-12">
               <div className="form-floating mb-2 position-relative">
                 <input
                   type={showPassword ? 'text' : 'password'}
                   name="password"
-                  className={`form-control ${validated && !userData.password ? 'is-invalid' : ''}`}
+                  className="form-control"
                   id="password"
                   placeholder="Password"
                   value={userData.password}
@@ -158,9 +154,6 @@ function Register() {
                   autoComplete="current-password"
                 />
                 <label htmlFor="password">Password</label>
-                {validated && !userData.password && (
-                  <div className="invalid-feedback">Please enter your password.</div>
-                )}
                 {passwordStrength && (
                   <div className={`mt-1 ${passwordStrength === 'Strong' ? 'text-success' : passwordStrength === 'Medium' ? 'text-warning' : 'text-danger'}`}>
                     Password strength: {passwordStrength}
@@ -177,12 +170,14 @@ function Register() {
                 </button>
               </div>
             </div>
+
+            {/* Password Confirmation Field */}
             <div className="col-md-6 col-12">
               <div className="form-floating mb-2 position-relative">
                 <input
                   type={showPasswordConfirmation ? 'text' : 'password'}
                   name="password_confirmation"
-                  className={`form-control ${validated && !userData.password_confirmation ? 'is-invalid' : ''}`}
+                  className="form-control"
                   id="password_confirmation"
                   placeholder="Confirm Password"
                   value={userData.password_confirmation}
@@ -190,9 +185,6 @@ function Register() {
                   autoComplete="current-password"
                 />
                 <label htmlFor="password_confirmation">Confirm Password</label>
-                {validated && !userData.password_confirmation && (
-                  <div className="invalid-feedback">Please confirm your password.</div>
-                )}
                 <button
                   type="button"
                   className="btn position-absolute top-50 end-0 translate-middle-y pe-2"
@@ -205,8 +197,8 @@ function Register() {
               </div>
             </div>
           </div>
-          {error && <p className="text-danger mt-2" aria-live="assertive">{error}</p>}
-          {success && <p className="text-success mt-2" aria-live="assertive">{success}</p>}
+
+          {/* Register Button */}
           <button type="submit" className="btn btn-gold w-100" disabled={loading}>
             {loading ? (
               <>
@@ -218,6 +210,8 @@ function Register() {
             )}
           </button>
         </form>
+
+        {/* Link to Login page */}
         <div className="text-center mt-2">
           <small>Already have an account? <Link to="/auth/login" className="text-decoration-none text-gold">Login</Link></small>
         </div>

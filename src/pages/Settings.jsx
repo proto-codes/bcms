@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { Form, Button, Card, Container, Alert } from 'react-bootstrap';
+import { Form, Button, Card, Container } from 'react-bootstrap';
+import { toast } from 'react-toastify';
 import PageLoader from '../components/PageLoader';
 import api from '../api/axios';
 
@@ -15,7 +16,6 @@ const Settings = () => {
     smsNotifications: false,
   });
 
-  const [message, setMessage] = useState(null); // State for server messages
   const [loading, setLoading] = useState(true); // State to handle loading
 
   // Fetch user's notification preferences from the database
@@ -30,7 +30,7 @@ const Settings = () => {
             });
         } catch (error) {
             console.error('Error fetching notification preferences:', error);
-            setMessage('Failed to load notification preferences.');
+            toast.error('Failed to load notification preferences.');
         } finally {
             setLoading(false);
         }
@@ -62,7 +62,7 @@ const Settings = () => {
     e.preventDefault();
 
     if (passwordData.newPassword !== passwordData.confirmPassword) {
-      setMessage("Passwords do not match!");
+      toast.error("Passwords do not match!");
       return;
     }
 
@@ -71,7 +71,7 @@ const Settings = () => {
         currentPassword: passwordData.currentPassword,
         newPassword: passwordData.newPassword,
       });
-      setMessage('Password changed successfully!');
+      toast.success('Password changed successfully!');
       setPasswordData({
         currentPassword: '',
         newPassword: '',
@@ -79,7 +79,7 @@ const Settings = () => {
       });
     } catch (error) {
       console.error('Error changing password:', error);
-      setMessage('Error changing password. Please try again.');
+      toast.error('Error changing password. Please try again.');
     }
   };
 
@@ -88,17 +88,17 @@ const Settings = () => {
     e.preventDefault();
     // Check if at least one notification preference is selected
     if (!notificationPreferences.emailNotifications && !notificationPreferences.smsNotifications) {
-      setMessage('At least one notification preference must be selected.');
+      toast.error('At least one notification preference must be selected.');
       return; // Prevent form submission
     }
     try {
       await api.put('/notification-preferences', notificationPreferences);
-      setMessage('Notification preferences updated successfully!');
+      toast.success('Notification preferences updated successfully!');
     } catch (error) {
       console.error('Error updating notification preferences:', error);
       // Check if the error response has a message and set it
       const errorMessage = error.response?.data?.error || 'Error updating notification preferences. Please try again.';
-      setMessage(errorMessage);
+      toast.error(errorMessage);
     }
   };
 
@@ -109,12 +109,12 @@ const Settings = () => {
 
     try {
       await api.delete('/delete-account');
-      setMessage('Your account has been deleted.');
+      toast.success('Your account has been deleted.');
       localStorage.removeItem('token');
       window.location.href = '/';
     } catch (error) {
       console.error('Error deleting account:', error);
-      setMessage('Error deleting account. Please try again.');
+      toast.error('Error deleting account. Please try again.');
     }
   };
 
@@ -191,9 +191,6 @@ const Settings = () => {
               Save Notification Preferences
             </Button>
           </Form>
-          
-          {/* Display server messages */}
-          {message && <Alert variant="info" className='mt-4' onClose={() => setMessage(null)} dismissible>{message}</Alert>}
 
           {/* Delete Account Section */}
           <div className="mt-4">

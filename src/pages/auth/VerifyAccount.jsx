@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import api from '../../api/axios';
 import { useLocation, useNavigate } from 'react-router-dom';
+import { toast } from 'react-toastify';
 
 function VerifyAccount() {
-  const [message, setMessage] = useState({ text: 'error', type: 'error' });
   const [loading, setLoading] = useState(true);
   const location = useLocation();
   const navigate = useNavigate();
@@ -16,10 +16,7 @@ function VerifyAccount() {
     if (token) {
       verifyToken(token);
     } else {
-      setMessage({
-        text: 'Verification token is missing. Please check your email for a verification link or request a new verification token.',
-        type: 'error',
-      });
+      toast.error('Verification token is missing. Please check your email for a verification link or request a new verification token.');
       setLoading(false);
     }
   }, [location.search]);
@@ -28,12 +25,12 @@ function VerifyAccount() {
   const verifyToken = async (token) => {
     try {
       const response = await api.get(`/verify-account?token=${token}`);
-      setMessage({ text: response.data.message || 'Account confirmed successfully!', type: 'success' });
+      toast.success(response.data.message || 'Account confirmed successfully!');
       setTimeout(() => {
         navigate('/profile');
       }, 3000);
     } catch (error) {
-      setMessage({ text: error.response?.data?.error || 'An error occurred. Please try again.', type: 'error' });
+      toast.error(error.response?.data?.error || 'An error occurred. Please try again.');
     } finally {
       setLoading(false);
     }
@@ -44,9 +41,9 @@ function VerifyAccount() {
     setLoading(true);
     try {
       const response = await api.post('/request-verification-token');
-      setMessage({ text: response.data.message || 'A new verification token has been sent to your email.', type: 'success' });
+      toast.success(response.data.message || 'A new verification token has been sent to your email.');
     } catch (error) {
-      setMessage({ text: error.response?.data?.error || 'Error requesting verification token. Please try again.', type: 'error' });
+      toast.error(error.response?.data?.error || 'Error requesting verification token. Please try again.');
     } finally {
       setLoading(false);
     }
@@ -60,17 +57,13 @@ function VerifyAccount() {
           <p>Verifying your account...</p>
         ) : (
           <div>
-            <p className={`${message.type === 'error' ? 'text-danger' : 'text-success'}`}>
-              {message.text}
-            </p>
-            {message.type === 'error' && (
-              <div>
-                <p>If you haven't received a verification email, you can request a new verification token.</p>
-                <button className="btn btn-primary" onClick={requestNewToken}>
-                  Request New Verification Token
-                </button>
-              </div>
-            )}
+            {/* No need for inline error/success messages, now handled by Toast */}
+            <div>
+              <p>If you haven't received a verification email, you can request a new verification token.</p>
+              <button className="btn btn-primary" onClick={requestNewToken}>
+                Request New Verification Token
+              </button>
+            </div>
           </div>
         )}
       </div>

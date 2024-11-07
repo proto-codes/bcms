@@ -1,12 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import { toast } from 'react-toastify';
 
 function ResetPassword() {
   const [newPassword, setNewPassword] = useState('');
   const [passwordConfirmation, setPasswordConfirmation] = useState('');
-  const [error, setError] = useState('');
-  const [success, setSuccess] = useState('');
   const [loading, setLoading] = useState(false);
   const [validated, setValidated] = useState(false);
   const [tokenExists, setTokenExists] = useState(true);
@@ -18,7 +17,7 @@ function ResetPassword() {
   // Check if token exists when the component mounts
   useEffect(() => {
     if (!token) {
-      setError('Verification token is missing.');
+      toast.error('Verification token is missing.');
       setTokenExists(false);
     }
   }, [token]);
@@ -26,18 +25,17 @@ function ResetPassword() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
-    setError('');
-    setSuccess('');
     setValidated(true);
 
     // Validation checks
     if (!newPassword || !passwordConfirmation) {
+      toast.error('Both password fields are required');
       setLoading(false);
       return;
     }
 
     if (newPassword !== passwordConfirmation) {
-      setError("Passwords do not match.");
+      toast.error('Passwords do not match.');
       setLoading(false);
       return;
     }
@@ -48,13 +46,12 @@ function ResetPassword() {
         newPassword,
         passwordConfirmation
       });
-      setSuccess(response.data.message);
+      toast.success(response.data.message || 'Password reset successfully!');
       setTimeout(() => {
         navigate('/auth/login');
       }, 3000);
     } catch (error) {
-      console.error('Error resetting password:', error.response?.data?.error || error.message);
-      setError(error.response?.data?.error || 'An unexpected error occurred. Please try again.');
+      toast.error(error.response?.data?.error || 'An unexpected error occurred. Please try again.');
     } finally {
       setLoading(false);
     }
@@ -69,7 +66,7 @@ function ResetPassword() {
             <div className="form-floating mb-3">
               <input
                 type="password"
-                className={`form-control ${validated && (error || !newPassword) ? 'is-invalid' : ''} ${success ? 'is-valid' : ''}`}
+                className={`form-control ${validated && !newPassword ? 'is-invalid' : ''}`}
                 id="newPassword"
                 placeholder="New Password"
                 value={newPassword}
@@ -83,7 +80,7 @@ function ResetPassword() {
             <div className="form-floating mb-3">
               <input
                 type="password"
-                className={`form-control ${validated && (error || !passwordConfirmation) ? 'is-invalid' : ''} ${success ? 'is-valid' : ''}`}
+                className={`form-control ${validated && !passwordConfirmation ? 'is-invalid' : ''}`}
                 id="passwordConfirmation"
                 placeholder="Confirm Password"
                 value={passwordConfirmation}
@@ -94,8 +91,6 @@ function ResetPassword() {
                 <div className="invalid-feedback" aria-live="polite">Password confirmation is required.</div>
               )}
             </div>
-            {error && <p className="text-danger" aria-live="polite">{error}</p>}
-            {success && <p className="text-success" aria-live="polite">{success}</p>}
             <button type="submit" className="btn btn-gold w-100" disabled={loading}>
               {loading ? (
                 <>
@@ -108,7 +103,7 @@ function ResetPassword() {
             </button>
           </form>
         ) : (
-          <p className="text-danger text-center">{error}</p>
+          <p className="text-danger text-center">{'Verification token is missing.'}</p>
         )}
       </div>
     </div>

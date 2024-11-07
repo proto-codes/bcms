@@ -96,7 +96,7 @@ function Dashboard() {
               </NavLink>
               <NavLink
                 className={({ isActive }) => isActive ? 'text-gold fs-5 active-icon' : 'text-gold fs-5'}
-                to="/info/help-support"><MdHelp size={30} color="#fff" className='icon' />
+                to="/help-support"><MdHelp size={30} color="#fff" className='icon' />
               </NavLink>
               <NavLink
                 className={({ isActive }) => isActive ? 'text-gold fs-5 active-icon' : 'text-gold fs-5'}

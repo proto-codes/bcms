@@ -128,12 +128,39 @@ connection.connect((err) => {
       id INT AUTO_INCREMENT PRIMARY KEY,
       user_id INT NOT NULL,
       message VARCHAR(255) NOT NULL,
-      type ENUM('event', 'reminder', 'welcome', 'general') DEFAULT 'general',
+      type VARCHAR(50) DEFAULT 'general',
       date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
       is_read BOOLEAN DEFAULT FALSE,
       FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
     );
   `;
+
+  // SQL query to create the events table if it doesn't exist
+  const createEventsTableQuery = `
+    CREATE TABLE IF NOT EXISTS events (
+      id INT AUTO_INCREMENT PRIMARY KEY,
+      user_id INT NOT NULL,
+      title VARCHAR(255) NOT NULL,
+      date DATETIME NOT NULL,
+      location VARCHAR(255) NOT NULL,
+      description TEXT NOT NULL,
+      rsvp BOOLEAN DEFAULT FALSE,
+      FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+    );
+  `;
+
+  // SQL query to create the RSVPS table if it doesn't exist
+  const createRSVPSTableQuery = `
+    CREATE TABLE IF NOT EXISTS rsvps (
+      id INT AUTO_INCREMENT PRIMARY KEY,
+      event_id INT NOT NULL,
+      user_id INT NOT NULL,
+      rsvp BOOLEAN DEFAULT TRUE,
+      FOREIGN KEY (event_id) REFERENCES events(id) ON DELETE CASCADE,
+      FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+    );
+  `;
+
 
   // Run migrations
   runMigration(createUsersTableQuery, 'Users table');
@@ -144,6 +171,8 @@ connection.connect((err) => {
   runMigration(createPasswordResetsTableQuery, 'Password resets table');
   runMigration(createVerificationTokensTableQuery, 'Verification tokens table');
   runMigration(createNotificationsTableQuery, 'Notifications table');
+  runMigration(createEventsTableQuery, 'Events table');
+  runMigration(createRSVPSTableQuery, 'RSVPS table');
 
   // Close the connection after all migrations
   connection.end((err) => {

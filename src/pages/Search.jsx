@@ -70,7 +70,7 @@ const Search = () => {
         <InputGroup className="mb-4 shadow-lg">
           <FormControl
             placeholder="Start typing or press search..."
-            className='p-2'
+            className='p-3'
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             style={{ borderTopRightRadius: '0', borderBottomRightRadius: '0' }}
@@ -102,12 +102,14 @@ const Search = () => {
                   {searchResults.map((result) => (
                     <li key={result.id} className="mb-3">
                       <Card 
-                        className="p-3 shadow-sm rounded" 
-                        onClick={() => navigate(`/profile/${result.id}`)} // Navigate to user's profile
-                        style={{ cursor: 'pointer' }} // Change cursor to pointer to indicate it's clickable
+                        className="p-3 shadow-sm rounded"
                       >
-                        <h6 className="text-info">{result.name}</h6>
+                        <h6>{result.name}</h6>
                         <p className="text-muted">Email: {result.email}</p>
+                        <div className="d-flex gap-2">
+                          <button onClick={() => navigate(`/profile/${result.id}`)} className='btn btn-secondary'>View profile</button>
+                          <button className='btn btn-gold'>Send message</button>
+                        </div>
                       </Card>
                     </li>
                   ))}

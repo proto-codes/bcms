@@ -1,11 +1,10 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
+import { toast } from 'react-toastify';
 
 function ForgotPassword() {
   const [email, setEmail] = useState('');
-  const [error, setError] = useState('');
-  const [success, setSuccess] = useState('');
   const [loading, setLoading] = useState(false);
   const [validated, setValidated] = useState(false);
 
@@ -16,32 +15,29 @@ function ForgotPassword() {
   const handleSubmit = async (event) => {
     event.preventDefault();
     setLoading(true);
-    setError('');
-    setSuccess('');
     setValidated(false);
 
     // Validate email field
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!email.trim()) {
-      setError('Email is required');
       setValidated(true);
+      toast.error('Email is required');
       setLoading(false);
       return;
     } else if (!emailRegex.test(email.trim())) {
-      setError('Please enter a valid email address');
       setValidated(true);
+      toast.error('Please enter a valid email address');
       setLoading(false);
       return;
     }
 
     try {
       const response = await axios.post('http://localhost:5000/public/forgot-password', { email: email.trim() });
-      setSuccess(response.data.message);
-      setEmail('');
+      toast.success(response.data.message || 'Password reset link sent successfully');
+      setEmail(''); // Clear the email field after success
       setValidated(false);
     } catch (error) {
-      console.error('Error sending password reset link:', error.response?.data?.error || error.message);
-      setError(error.response?.data?.error || 'An unexpected error occurred. Please try again.');
+      toast.error(error.response?.data?.error || 'An unexpected error occurred. Please try again.');
       setValidated(true);
     } finally {
       setLoading(false);
@@ -56,19 +52,13 @@ function ForgotPassword() {
           <div className="form-floating mb-3">
             <input
               type="email"
-              className={`form-control ${validated && error ? 'is-invalid' : ''} ${success ? 'is-valid' : ''}`}
+              className={`form-control ${validated && !email.trim() ? 'is-invalid' : ''}`}
               id="email"
               placeholder="Enter your email"
               value={email}
               onChange={handleInputChange}
             />
             <label htmlFor="email">Email address</label>
-            {validated && error && (
-              <div className="invalid-feedback" aria-live="polite">{error}</div>
-            )}
-            {success && (
-              <div className="valid-feedback" aria-live="polite">{success}</div>
-            )}
           </div>
           <button type="submit" className="btn btn-gold w-100" disabled={loading}>
             {loading ? (

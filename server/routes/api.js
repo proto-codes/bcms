@@ -8,6 +8,7 @@ const { getProfile, updateProfile } = require('../controllers/profileController'
 const taskController = require('../controllers/taskController');
 const { searchUsers } = require('../controllers/searchController');
 const messagesController = require('../controllers/messagesController');
+const eventController = require('../controllers/eventController');
 const { getNotifications, deleteNotification } = require('../controllers/notificationsController');
 const upload = require('../config/multer');
 
@@ -60,5 +61,13 @@ router.delete('/messages/:messageId', messagesController.deleteMessage);
 // Notifications route
 router.get('/notifications', getNotifications);
 router.delete('/notifications/:id', deleteNotification);
+
+// Events routes
+router.get('/events', eventController.getAllEvents);
+router.post('/events', eventController.createEvent);
+router.put('/events/:id', eventController.updateEvent);
+router.delete('/events/:id', eventController.deleteEvent);
+router.put('/events/rsvp/:id', eventController.toggleRSVP);
+
 
 module.exports = router;

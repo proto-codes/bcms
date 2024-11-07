@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { Button, Card, Toast, ToastContainer } from 'react-bootstrap';
+import { Button } from 'react-bootstrap';
+import { toast } from 'react-toastify';
 import api from '../api/axios';
+import { AiOutlineDelete } from 'react-icons/ai';
 
 const Notifications = () => {
   const [notifications, setNotifications] = useState([]);
-  const [dismissedNotifications, setDismissedNotifications] = useState([]);
-  const [error, setError] = useState(null);
 
   // Fetch notifications on component mount
   useEffect(() => {
@@ -13,11 +13,10 @@ const Notifications = () => {
       try {
         const response = await api.get('/notifications');
         const fetchedNotifications = Array.isArray(response.data) ? response.data : [];
-
         setNotifications(fetchedNotifications);
       } catch (error) {
         console.error('Error fetching notifications:', error);
-        setError('Failed to load notifications.');
+        toast.error('Failed to load notifications.');
       }
     };
 
@@ -31,79 +30,40 @@ const Notifications = () => {
       setNotifications((prevNotifications) =>
         prevNotifications.filter((notification) => notification.id !== id)
       );
+      toast.success('Notification deleted successfully.');  // Show success for deletion
     } catch (error) {
       console.error('Error deleting notification:', error);
-      setError('Failed to delete notification.');
-    }
-  };
-
-  // Dismiss notification from toast view only
-  const dismissNotificationFromToast = (id) => {
-    setDismissedNotifications((prevDismissed) => [...prevDismissed, id]);
-  };
-
-  // Determine variant styling based on notification type
-  const getNotificationVariant = (type) => {
-    switch (type) {
-      case 'event':
-        return 'success';
-      case 'reminder':
-        return 'warning';
-      case 'welcome':
-        return 'primary';
-      default:
-        return 'secondary';
+      toast.error('Failed to delete notification.');
     }
   };
 
   return (
     <div className="container my-4">
-      <h2 className="mb-3">Notifications</h2>
+      <h3 className="mb-3">Notifications</h3>
 
-      {/* Display error message if fetch fails */}
-      {error && <div className="alert alert-danger">{error}</div>}
-
-      {/* Popup Alerts */}
-      <ToastContainer position="top-end" className="p-3">
-        {notifications
-          .filter((notification) => !dismissedNotifications.includes(notification.id))
-          .slice(0, 3)
-          .map((notification) => (
-            <Toast
-              key={notification.id}
-              onClose={() => dismissNotificationFromToast(notification.id)}
-              bg={getNotificationVariant(notification.type)}
-              delay={5000}
-              autohide
-            >
-              <Toast.Header closeButton={false}>
-                <strong className="me-auto">{notification.type} Alert</strong>
-                <small>{new Date(notification.date).toLocaleDateString()}</small>
-              </Toast.Header>
-              <Toast.Body>{notification.message}</Toast.Body>
-            </Toast>
-          ))}
-      </ToastContainer>
-
-      {/* Notification Cards */}
+      {/* List of Notifications */}
       {notifications.length > 0 ? (
-        <div className="row">
+        <div className="list-group">
           {notifications.map((notification) => (
-            <div key={notification.id} className="col-md-6 mb-4">
-              <Card border={getNotificationVariant(notification.type)} className="shadow-sm">
-                <Card.Body>
-                  <Card.Title className="text-capitalize">
-                    {notification.type} Notification
-                  </Card.Title>
-                  <Card.Text>{notification.message}</Card.Text>
-                  <Card.Subtitle className="mb-2 text-muted">
-                    {new Date(notification.date).toLocaleDateString()}
-                  </Card.Subtitle>
-                  <Button variant="danger" onClick={() => deleteNotification(notification.id)}>
-                    Delete
-                  </Button>
-                </Card.Body>
-              </Card>
+            <div key={notification.id} className="list-group-item d-flex justify-content-between align-items-center p-3">
+              {/* Notification Content */}
+              <div className="d-flex align-items-center">
+                <div>
+                  <h5 className="text-muted">{notification.type}</h5>
+                  {/* Truncated Message */}
+                  <p className="mb-0 text-muted">
+                    {notification.message}
+                  </p>
+                </div>
+              </div>
+
+              {/* Actions (Date and Delete) */}
+              <div className="d-flex align-items-center">
+                <small className="text-muted me-3">{new Date(notification.date).toLocaleTimeString()}</small>
+                <Button variant="danger" size="sm" onClick={() => deleteNotification(notification.id)}>
+                  <AiOutlineDelete />
+                </Button>
+              </div>
             </div>
           ))}
         </div>

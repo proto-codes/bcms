@@ -2,6 +2,8 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { Suspense, lazy } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap/dist/js/bootstrap.bundle.min.js';
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import './App.css';
 import PageLoader from './components/PageLoader';
 import { AuthProvider } from './context/AuthContext';
@@ -18,6 +20,7 @@ const Dashboard = lazy(() => import('./components/Dashboard'));
 const DashboardHome = lazy(() => import('./pages/DashboardHome'));
 const Overview = lazy(() => import('./pages/Overview'));
 const Profile = lazy(() => import('./pages/Profile'));
+const HelpAndSupport = lazy(() => import('./pages/HelpAndSupport'));
 const Notifications = lazy(() => import('./pages/Notifications'));
 const Messages = lazy(() => import('./pages/Messages'));
 const Tasks = lazy(() => import('./pages/Tasks'));
@@ -32,6 +35,7 @@ function App() {
   return (
     <AuthProvider>
       <Router>
+        <ToastContainer position="top-right" autoClose={5000} hideProgressBar newestOnTop />
         <Suspense fallback={<PageLoader />}>
           <Routes>
             <Route path="/" element={<ProtectedRoute requireAuth={true}><Dashboard /></ProtectedRoute>}>
@@ -39,6 +43,7 @@ function App() {
               <Route path="overview" element={<Overview />} />
               <Route path="profile/:userId" element={<Profile />} />
               <Route path="notifications" element={<Notifications />} />
+              <Route path="help-support" element={<HelpAndSupport />} />
               <Route path="messages" element={<Messages />} />
               <Route path="tasks" element={<Tasks />} />
               <Route path="clubs" element={<Clubs />} />

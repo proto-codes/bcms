@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { Form, Button, Card, Container, Row, Col, Spinner, Alert } from 'react-bootstrap';
+import { Form, Button, Card, Container, Row, Col, Spinner } from 'react-bootstrap';
 import { FaUpload, FaTrash } from 'react-icons/fa';
 import ProfilePlaceholder from '../assets/img/the-forum-logo.jpeg';
 import api from '../api/axios';
 import { useParams } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { toast } from 'react-toastify';
 
 const Profile = () => {
   const { userId } = useParams();
@@ -18,30 +19,12 @@ const Profile = () => {
     phone_number: '',
     birthday: '',
   });
-
   const [editing, setEditing] = useState(false);
   const [file, setFile] = useState(null);
   const [preview, setPreview] = useState('');
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState({});
-  const [successMsg, setSuccessMsg] = useState('');
-  const [errorMsg, setErrorMsg] = useState('');
 
-  useEffect(() => {
-    if (successMsg) {
-      const timer = setTimeout(() => setSuccessMsg(''), 5000);
-      return () => clearTimeout(timer);
-    }
-  }, [successMsg]);
-
-  useEffect(() => {
-    if (errorMsg) {
-      const timer = setTimeout(() => setErrorMsg(''), 5000);
-      return () => clearTimeout(timer);
-    }
-  }, [errorMsg]);
-
-  // Fetch user data from server on component mount
   useEffect(() => {
     const fetchUserData = async () => {
       setLoading(true);
@@ -58,21 +41,19 @@ const Profile = () => {
           profile_pics: data.profile_pics || '',
           address: data.address || '',
           phone_number: data.phone_number || '',
-          birthday: formattedBirthday
+          birthday: formattedBirthday,
         });
         setPreview(data.profile_pics || '');
       } catch (error) {
-        console.error('Error fetching user data:', error);
-        setErrorMsg('Failed to fetch user data.'); // Set error message
+        toast.error('Failed to fetch user data.');
       } finally {
         setLoading(false);
       }
     };
 
     fetchUserData();
-  }, [userId]); // Include userId as a dependency
+  }, [userId]);
 
-  // Format date function
   const formatDate = (dateString) => {
     const date = new Date(dateString);
     if (isNaN(date.getTime())) {
@@ -95,7 +76,6 @@ const Profile = () => {
     return `${day}${ordinalSuffix(day)} ${month}, ${year}`;
   };
 
-  // Handle form input change
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setUserData((prevState) => ({
@@ -104,16 +84,14 @@ const Profile = () => {
     }));
   };
 
-  // Handle file change for profile picture
   const handleFileChange = (e) => {
     const selectedFile = e.target.files[0];
     if (selectedFile) {
       setFile(selectedFile);
-      setPreview(URL.createObjectURL(selectedFile)); // Create a preview URL
+      setPreview(URL.createObjectURL(selectedFile));
     }
   };
 
-  // Handle delete profile picture
   const handleDeleteProfilePicture = () => {
     setUserData((prevState) => ({
       ...prevState,
@@ -123,7 +101,6 @@ const Profile = () => {
     setPreview('');
   };
 
-  // Validate form fields
   const validateForm = () => {
     const newErrors = {};
     if (!userData.name) newErrors.name = 'Name is required.';
@@ -137,7 +114,6 @@ const Profile = () => {
     return Object.keys(newErrors).length === 0;
   };
 
-  // Handle form submission to update user data
   const handleFormSubmit = async (e) => {
     e.preventDefault();
 
@@ -156,20 +132,19 @@ const Profile = () => {
     }
 
     try {
-      const feedback = await api.put(`/profile/${userId}`, formData, { // Update API call with userId
+      const feedback = await api.put(`/profile/${userId}`, formData, {
         headers: {
-          'Content-Type': 'multipart/form-data', // Important for file uploads
+          'Content-Type': 'multipart/form-data',
         },
       });
       setEditing(false);
-      setSuccessMsg(feedback.data.message);
-      const response = await api.get(`/profile/${userId}`); // Refetch updated data
+      toast.success(feedback.data.message);
+      const response = await api.get(`/profile/${userId}`);
       setUserData(response.data);
       setPreview(response.data.profile_pics);
     } catch (error) {
-      console.error('Error updating user data:', error);
       const errorMessage = error.response?.data?.error || 'Failed to update profile data. Please try again later.';
-      setErrorMsg(errorMessage);
+      toast.error(errorMessage);
     } finally {
       setLoading(false);
     }
@@ -184,8 +159,6 @@ const Profile = () => {
       ) : (
         <Card className="shadow-lg border-0">
           <Card.Body>
-            {successMsg && <Alert variant="success">{successMsg}</Alert>}
-            {errorMsg && <Alert variant="danger">{errorMsg}</Alert>}
             <div className="d-flex align-items-center mb-4">
               <img
                 src={preview || userData.profile_pics || ProfilePlaceholder}

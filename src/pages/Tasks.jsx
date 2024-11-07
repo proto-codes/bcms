@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { Container, Card, Form, Button, ListGroup, Row, Col, Alert } from 'react-bootstrap';
+import { Container, Card, Form, Button, ListGroup, Row, Col } from 'react-bootstrap';
 import { FaEdit, FaTrashAlt } from 'react-icons/fa';
 import api from '../api/axios';
+import { toast } from 'react-toastify';
 
 const Tasks = () => {
   const [tasks, setTasks] = useState([]);
@@ -10,8 +11,6 @@ const Tasks = () => {
   const [dueDate, setDueDate] = useState('');
   const [priority, setPriority] = useState('Medium');
   const [editingTask, setEditingTask] = useState(null);
-  const [error, setError] = useState('');
-  const [success, setSuccess] = useState('');
   const [loading, setLoading] = useState(true);
   const [isFormVisible, setIsFormVisible] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
@@ -24,11 +23,11 @@ const Tasks = () => {
         if (response.data.success) {
           setTasks(response.data.tasks);
         } else {
-          setError('Failed to fetch tasks.');
+          toast.error('Failed to fetch tasks.');
         }
       } catch (error) {
         console.error('Error fetching tasks:', error);
-        setError('Failed to fetch tasks.');
+        toast.error('Failed to fetch tasks.');
       } finally {
         setLoading(false);
       }
@@ -54,16 +53,15 @@ const Tasks = () => {
       if (response.data.success) {
         // Add new task at the top of the list
         setTasks([{ id: response.data.taskId, ...task }, ...tasks]);
-        setSuccess('Task added successfully!');
+        toast.success('Task added successfully!');
         clearForm();
       } else {
-        setError(response.data.message || 'Failed to add task.');
+        toast.error(response.data.message || 'Failed to add task.');
       }
     } catch (error) {
       console.error('Error adding task:', error);
-      setError(error.response?.data?.message || 'Failed to add task.');
+      toast.error(error.response?.data?.message || 'Failed to add task.');
     }
-    
   };
 
   const handleEditTask = (task) => {
@@ -93,14 +91,14 @@ const Tasks = () => {
             ? { ...task, title: taskTitle, description: taskDescription, due_date: dueDate, priority }
             : task
         ));
-        setSuccess('Task updated successfully!');
+        toast.success('Task updated successfully!');
         clearForm();
       } else {
-        setError(response.data.message || 'Failed to update task.');
+        toast.error(response.data.message || 'Failed to update task.');
       }
     } catch (error) {
       console.error('Error updating task:', error);
-      setError(error.response?.data?.message || 'Failed to update task.');
+      toast.error(error.response?.data?.message || 'Failed to update task.');
     }
   };
 
@@ -109,13 +107,13 @@ const Tasks = () => {
       const response = await api.delete(`/tasks/${taskId}`);
       if (response.data.success) {
         setTasks(tasks.filter((task) => task.id !== taskId));
-        setSuccess('Task deleted successfully!');
+        toast.success('Task deleted successfully!');
       } else {
-        setError(response.data.message || 'Failed to delete task.');
+        toast.error(response.data.message || 'Failed to delete task.');
       }
     } catch (error) {
       console.error('Error deleting task:', error);
-      setError(error.response?.data?.message || 'Failed to delete task.');
+      toast.error(error.response?.data?.message || 'Failed to delete task.');
     } finally {
       setConfirmDeleteId(null); // Reset the confirmation state
     }
@@ -127,8 +125,6 @@ const Tasks = () => {
     setDueDate('');
     setPriority('Medium');
     setEditingTask(null);
-    // setError('');
-    // setSuccess('');
     setIsFormVisible(false);
   };
 
@@ -137,34 +133,11 @@ const Tasks = () => {
     task.title.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
-  // Hide messages after 3 seconds
-  useEffect(() => {
-    if (success) {
-      const timer = setTimeout(() => {
-        setSuccess('');
-      }, 3000);
-      return () => clearTimeout(timer);
-    }
-  }, [success]);
-
-  useEffect(() => {
-    if (error) {
-      const timer = setTimeout(() => {
-        setError('');
-      }, 3000);
-      return () => clearTimeout(timer);
-    }
-  }, [error]);
-
   return (
     <Container className="my-4">
       <Card className="shadow-lg border-0">
         <Card.Body>
           <h4 className="mb-3 text-gold">{editingTask ? 'Edit Task' : 'Add New Task'}</h4>
-          
-          {/* Success and Error Alerts */}
-          {success && <Alert variant="success">{success}</Alert>}
-          {error && <Alert variant="danger">{error}</Alert>}
 
           {/* Button to toggle form visibility */}
           <Button onClick={() => setIsFormVisible(!isFormVisible)} className="mb-3">

@@ -2,16 +2,14 @@ import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
 import { AiFillEye, AiFillEyeInvisible } from 'react-icons/ai';
+import { toast } from 'react-toastify';
 
 function Login() {
   const [userData, setUserData] = useState({
     email: '',
     password: '',
   });
-  const [error, setError] = useState('');
-  const [success, setSuccess] = useState('');
   const [loading, setLoading] = useState(false);
-  const [validated, setValidated] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
 
   const handleInputChange = (e) => {
@@ -23,27 +21,24 @@ function Login() {
   const login = async (event) => {
     event.preventDefault();
     setLoading(true);
-    setError('');
-    setSuccess('');
-    setValidated(false);
 
     const { email, password } = userData;
 
     if (!email.trim() || !password) {
-      setValidated(true);
+      toast.error('Please enter both email and password');
       setLoading(false);
       return;
     }
 
     if (!emailRegex.test(email.trim())) {
-      setValidated(true);
+      toast.error('Please enter a valid email address');
       setLoading(false);
       return;
     }
 
     try {
       const response = await axios.post('http://localhost:5000/public/login', userData);
-      setSuccess(response.data.message || 'Login successful!');
+      toast.success(response.data.message || 'Login successful!');
       localStorage.setItem('token', response.data.token);
 
       setTimeout(() => {
@@ -56,8 +51,7 @@ function Login() {
       });
     } catch (error) {
       console.error('Login failed:', error.response?.data?.error || error.message);
-      setError(error.response?.data?.error || 'An unexpected error occurred. Please try again.');
-      setValidated(true);
+      toast.error(error.response?.data?.error || 'An unexpected error occurred. Please try again.');
     } finally {
       setLoading(false);
     }
@@ -73,24 +67,21 @@ function Login() {
             <input
               type="email"
               name="email"
-              className={`form-control ${validated && (!userData.email || !emailRegex.test(userData.email.trim())) ? 'is-invalid' : ''}`}
+              className="form-control"
               id="email"
               placeholder="Email address"
               autoComplete="on"
               value={userData.email}
               onChange={handleInputChange}
               aria-required="true"
-              aria-describedby="emailHelp"
             />
             <label htmlFor="email">Email address</label>
-            {validated && !userData.email && <div className="invalid-feedback">Email is required</div>}
-            {validated && userData.email && !emailRegex.test(userData.email.trim()) && <div className="invalid-feedback">Please enter a valid email address</div>}
           </div>
           <div className="form-floating mb-3 position-relative">
             <input
               type={showPassword ? "text" : "password"}
               name="password"
-              className={`form-control ${validated && !userData.password ? 'is-invalid' : ''}`}
+              className="form-control"
               id="password"
               placeholder="Password"
               value={userData.password}
@@ -108,10 +99,7 @@ function Login() {
             >
               {showPassword ? <AiFillEyeInvisible size={20} /> : <AiFillEye size={20} />}
             </button>
-            {validated && !userData.password && <div className="invalid-feedback">Password is required</div>}
           </div>
-          {error && <p className="text-danger" aria-live="assertive">{error}</p>}
-          {success && <p className="text-success" aria-live="assertive">{success}</p>}
           <button type="submit" className="btn btn-gold w-100" disabled={loading}>
             {loading ? (
               <>

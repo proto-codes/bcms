@@ -80,16 +80,19 @@ const register = async (req, res) => {
         // Generate JWT token
         const token = jwt.sign({ id: userId, name, email }, process.env.JWT_SECRET, { expiresIn: '1h' });
         const tokenExpiresAt = new Date(Date.now() + 3600000);
-        await queryAsync(
-            'INSERT INTO active_tokens (user_id, token, expires_at) VALUES (?, ?, ?)',
-            [userId, token, tokenExpiresAt]
-        );
+        await queryAsync(`
+            INSERT INTO active_tokens (user_id, token, expires_at)
+            VALUES (?, ?, ?)
+            ON DUPLICATE KEY UPDATE
+                token = VALUES(token),
+                expires_at = VALUES(expires_at)
+        `, [userId, token, tokenExpiresAt]);
 
         // Create a welcome notification (passing user_id, message, type directly)
         await createNotification({
             user_id: userId,
             message: 'Welcome to our platform! Your registration was successful.',
-            type: 'welcome'
+            type: 'Welcome'
         });
 
         res.status(201).json({
@@ -127,16 +130,20 @@ const login = async (req, res) => {
             { expiresIn: '1h' }
         );
         const expiresAt = new Date(Date.now() + 3600000);
-        await queryAsync(
-            'INSERT INTO active_tokens (user_id, token, expires_at) VALUES (?, ?, ?)',
+        await queryAsync( 
+            `INSERT INTO active_tokens (user_id, token, expires_at) 
+             VALUES (?, ?, ?)
+             ON DUPLICATE KEY UPDATE 
+                 token = VALUES(token), 
+                 expires_at = VALUES(expires_at)`,
             [user.id, token, expiresAt]
-        );
+        );        
 
         // Create a welcome notification
         await createNotification({
             user_id: user.id,
             message: 'Welcome back to our platform!',
-            type: 'welcome'
+            type: 'Welcome'
         });
 
         res.status(200).json({ message: 'Login successful!', token });
@@ -322,11 +329,14 @@ const requestVerificationToken = async (req, res) => {
         const newVerificationToken = crypto.randomBytes(32).toString('hex');
         const expiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000); // Token valid for 24 hours
 
-        // Delete any existing tokens for this user (optional but recommended)
-        await queryAsync('DELETE FROM verification_tokens WHERE user_id = ?', [user.id]);
-
         // Store the new token in the verification_tokens table
-        await queryAsync('INSERT INTO verification_tokens (user_id, token, expires_at) VALUES (?, ?, ?)', [user.id, newVerificationToken, expiresAt]);
+        await queryAsync(`
+            INSERT INTO verification_tokens (user_id, token, expires_at)
+            VALUES (?, ?, ?)
+            ON DUPLICATE KEY UPDATE
+              token = VALUES(token),
+              expires_at = VALUES(expires_at)
+        `, [user.id, newVerificationToken, expiresAt]);
 
         // Email the verification link to the user
         const verificationLink = `${process.env.FRONTEND_URL}/verify-account?token=${newVerificationToken}`;
