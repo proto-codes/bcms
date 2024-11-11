@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { NavLink, Outlet } from 'react-router-dom';
+import { Link, NavLink, Outlet } from 'react-router-dom';
 import TheForum from '../assets/img/the-forum-logo.jpeg';
 import { FaBars } from 'react-icons/fa';
-import { MdTask, MdBarChart, MdNotifications, MdHelp, MdMail, MdAccountCircle, MdExitToApp, MdSettings, MdSearch, MdGroup, MdDashboard, MdEvent } from 'react-icons/md';
+import { MdTask, MdBarChart, MdNotifications, MdHelp, MdMail, MdAccountCircle, MdExitToApp, MdSettings, MdSearch, MdGroup, MdVisibility, MdCreate, MdPersonAdd, MdDashboard, MdEvent } from 'react-icons/md';
 import { useAuth } from '../context/AuthContext';
 import api from '../api/axios';
 
@@ -62,9 +62,37 @@ function Dashboard() {
               <NavLink to="/events" className={({ isActive }) => isActive ? 'nav-tab text-light fs-4 p-1 d-flex align-items-center gap-2 text-decoration-none active-tab' : 'nav-tab text-light fs-4 p-1 d-flex align-items-center gap-2 text-decoration-none'}>
                 <MdEvent size={30} color="#fff" /> Events
               </NavLink>
-              <NavLink to="/clubs" className={({ isActive }) => isActive ? 'nav-tab text-light fs-4 p-1 d-flex align-items-center gap-2 text-decoration-none active-tab' : 'nav-tab text-light fs-4 p-1 d-flex align-items-center gap-2 text-decoration-none'}>
-                <MdGroup size={30} color="#fff" /> Clubs
-              </NavLink>
+              {/* Dropdown */}
+              <div className="dropdown">
+                <a 
+                  href="#" 
+                  className='nav-link dropdown-toggle nav-tab text-light fs-4 p-1 d-flex align-items-center gap-2 text-decoration-none' 
+                  id="dropdownMenuLink" 
+                  role="button" 
+                  data-bs-toggle="dropdown" 
+                  aria-expanded="false"
+                >
+                  <MdGroup size={30} color="#fff" /> Club House
+                </a>
+                {/* Dropdown Menu */}
+                <ul className="dropdown-menu" aria-labelledby="dropdownMenuLink">
+                  <li>
+                    <Link className="dropdown-item fs-5" to="/clubs/create">
+                      <MdCreate size={20} className="me-2" /> Create Club
+                    </Link>
+                  </li>
+                  <li>
+                    <Link className="dropdown-item fs-5" to="/clubs/join">
+                      <MdPersonAdd size={20} className="me-2" /> Join Club
+                    </Link>
+                  </li>
+                  <li>
+                    <Link className="dropdown-item fs-5" to="/clubs/club-overview">
+                      <MdVisibility size={20} className="me-2" /> Club Overview
+                    </Link>
+                  </li>
+                </ul>
+              </div>
               <NavLink to="/tasks" className={({ isActive }) => isActive ? 'nav-tab text-light fs-4 p-1 d-flex align-items-center gap-2 text-decoration-none active-tab' : 'nav-tab text-light fs-4 p-1 d-flex align-items-center gap-2 text-decoration-none'}>
                 <MdTask size={30} color="#fff" /> Tasks
               </NavLink>

@@ -137,14 +137,7 @@ const login = async (req, res) => {
                  token = VALUES(token), 
                  expires_at = VALUES(expires_at)`,
             [user.id, token, expiresAt]
-        );        
-
-        // Create a welcome notification
-        await createNotification({
-            user_id: user.id,
-            message: 'Welcome back to our platform!',
-            type: 'Welcome'
-        });
+        );
 
         res.status(200).json({ message: 'Login successful!', token });
     } catch (error) {

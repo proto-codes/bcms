@@ -267,7 +267,7 @@ const Profile = () => {
                       <Form.Control
                         type="date"
                         name="birthday"
-                        value={userData.birthday}
+                        value={new Date(userData.birthday).toISOString().split('T')[0]}
                         onChange={handleInputChange}
                         isInvalid={!!errors.birthday}
                       />

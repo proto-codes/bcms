@@ -135,32 +135,62 @@ connection.connect((err) => {
     );
   `;
 
+  // SQL query to create the clubs table if it doesn't exist
+  const createClubsTableQuery = `
+    CREATE TABLE IF NOT EXISTS clubs (
+      id INT AUTO_INCREMENT PRIMARY KEY,
+      name VARCHAR(255) NOT NULL,
+      description TEXT,
+      goals TEXT,
+      is_private BOOLEAN DEFAULT FALSE,
+      created_by INT,
+      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+      updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+      FOREIGN KEY (created_by) REFERENCES users(id) -- assuming there's a users table
+    );
+  `;
+  
   // SQL query to create the events table if it doesn't exist
   const createEventsTableQuery = `
     CREATE TABLE IF NOT EXISTS events (
       id INT AUTO_INCREMENT PRIMARY KEY,
-      user_id INT NOT NULL,
+      club_id INT NOT NULL,
       title VARCHAR(255) NOT NULL,
+      description TEXT,
       date DATETIME NOT NULL,
-      location VARCHAR(255) NOT NULL,
-      description TEXT NOT NULL,
-      rsvp BOOLEAN DEFAULT FALSE,
-      FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+      location VARCHAR(255),
+      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+      updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+      FOREIGN KEY (club_id) REFERENCES clubs(id)
     );
   `;
 
-  // SQL query to create the RSVPS table if it doesn't exist
+  // SQL query to create the clubMemberships table if it doesn't exist
+  const createClubMembershipsTableQuery = `
+    CREATE TABLE IF NOT EXISTS club_memberships (
+      id INT AUTO_INCREMENT PRIMARY KEY,
+      club_id INT NOT NULL,
+      user_id INT NOT NULL,
+      status ENUM('pending', 'approved', 'rejected') DEFAULT 'pending',
+      joined_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+      updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+      FOREIGN KEY (club_id) REFERENCES clubs(id),
+      FOREIGN KEY (user_id) REFERENCES users(id) -- assuming there's a users table
+    );
+  `;
+  
+  // SQL query to create the rsvps table if it doesn't exist
   const createRSVPSTableQuery = `
     CREATE TABLE IF NOT EXISTS rsvps (
       id INT AUTO_INCREMENT PRIMARY KEY,
       event_id INT NOT NULL,
       user_id INT NOT NULL,
-      rsvp BOOLEAN DEFAULT TRUE,
-      FOREIGN KEY (event_id) REFERENCES events(id) ON DELETE CASCADE,
-      FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+      status ENUM('accepted', 'declined', 'pending') DEFAULT 'pending',
+      rsvp_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+      FOREIGN KEY (event_id) REFERENCES events(id),
+      FOREIGN KEY (user_id) REFERENCES users(id) -- assuming there's a users table
     );
   `;
-
 
   // Run migrations
   runMigration(createUsersTableQuery, 'Users table');
@@ -171,7 +201,9 @@ connection.connect((err) => {
   runMigration(createPasswordResetsTableQuery, 'Password resets table');
   runMigration(createVerificationTokensTableQuery, 'Verification tokens table');
   runMigration(createNotificationsTableQuery, 'Notifications table');
+  runMigration(createClubsTableQuery, 'Clubs table');
   runMigration(createEventsTableQuery, 'Events table');
+  runMigration(createClubMembershipsTableQuery, 'Club memberships table');
   runMigration(createRSVPSTableQuery, 'RSVPS table');
 
   // Close the connection after all migrations

@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { toast } from 'react-toastify';
-import api from '../api/axios'; // Assuming `api` is an axios instance
+import api from '../api/axios';
+import { useAuth } from '../context/AuthContext'; // Assuming you have AuthContext to get the logged-in user
 
 const Events = () => {
+  const { userId } = useAuth(); // Get logged-in user ID from AuthContext
   const [events, setEvents] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [formVisible, setFormVisible] = useState(false);
@@ -14,11 +16,22 @@ const Events = () => {
     description: '',
   });
 
+  // Format date to readable format (MM/DD/YYYY)
+  const formatDate = (date) => {
+    const d = new Date(date);
+    return d.toLocaleDateString('en-US', {
+      weekday: 'short',
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric',
+    });
+  };
+
   // Fetch events from the server
   const fetchEvents = async () => {
     try {
       const response = await api.get('/events');
-      setEvents(response.data); // Assuming response.data contains the events array
+      setEvents(response.data); // Set the events from the server response
     } catch (error) {
       toast.error('Failed to load events.');
     }
@@ -30,9 +43,16 @@ const Events = () => {
   }, []);
 
   // Filter events based on search term
-  const filteredEvents = events.filter(event =>
+  const filteredEvents = events.filter((event) =>
     event.title.toLowerCase().includes(searchTerm.toLowerCase())
   );
+
+  // Sort events: Place the owner's event at the top
+  const sortedEvents = [...filteredEvents].sort((a, b) => {
+    if (a.ownerId === userId && b.ownerId !== userId) return -1; // Owner's event comes first
+    if (a.ownerId !== userId && b.ownerId === userId) return 1; // Owner's event comes first
+    return 0; // No change if both or neither are owned by the user
+  });
 
   // Handle RSVP toggle
   const handleRSVP = async (eventId) => {
@@ -52,10 +72,17 @@ const Events = () => {
     }
   };
 
-  // Handle input changes for creating/editing events
+ // Handle input changes for creating/editing events
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setNewEvent((prevState) => ({ ...prevState, [name]: value }));
+    
+    if (name === "date") {
+      // When the date field changes, ensure the value is in YYYY-MM-DD format
+      const formattedDate = new Date(value).toISOString().split('T')[0];
+      setNewEvent((prevState) => ({ ...prevState, [name]: formattedDate }));
+    } else {
+      setNewEvent((prevState) => ({ ...prevState, [name]: value }));
+    }
   };
 
   // Handle event form submission
@@ -101,7 +128,7 @@ const Events = () => {
 
   return (
     <div className="container my-4">
-      <h2 className="mb-4 text-center">Upcoming Events</h2>
+      <h3 className="mb-4 text-gold">Events</h3>
 
       {/* Search bar */}
       <div className="input-group mb-4">
@@ -175,42 +202,52 @@ const Events = () => {
 
       {/* Events list */}
       <div className="row">
-        {filteredEvents.length > 0 ? (
-          filteredEvents.map((event) => (
-            <div key={event.id} className="col-12 col-md-6 mb-4">
-              <div className="p-3 border rounded">
-                <h5>{event.title}</h5>
-                <p><strong>Date:</strong> {event.date}</p>
-                <p><strong>Location:</strong> {event.location}</p>
-                <p>{event.description}</p>
+        {sortedEvents.length > 0 ? (
+          sortedEvents.map((event) => {
+            return (
+              <div key={event.id} className="col-12 col-md-6 mb-4">
+                <div className="p-3 border rounded">
+                  <h5>{event.title}</h5>
+                  <p><strong>Date:</strong> {formatDate(event.date)}</p> {/* Display readable date */}
+                  <p><strong>Location:</strong> {event.location}</p>
+                  <p>{event.description}</p>
 
-                {/* RSVP Button */}
-                <button
-                  className={`btn btn-sm ${event.user_rsvp ? 'btn-secondary' : 'btn-primary'}`}
-                  onClick={() => handleRSVP(event.id)}
-                >
-                  {event.user_rsvp ? 'Cancel RSVP' : 'RSVP'}
-                </button>
+                  {/* RSVP Button (Visible for non-owners) */}
+                  {userId && event.ownerId !== userId && (
+                    <button
+                      className={`btn btn-sm ${event.user_rsvp ? 'btn-secondary' : 'btn-primary'}`}
+                      onClick={() => handleRSVP(event.id)}
+                    >
+                      {event.user_rsvp ? 'Cancel RSVP' : 'RSVP'}
+                    </button>
+                  )}
 
-                {/* Edit and Delete Buttons */}
-                <div className="d-flex gap-2 mt-2">
-                  <button
-                    className="btn btn-warning btn-sm"
-                    onClick={() => setNewEvent(event) & setFormVisible(true)}
-                  >
-                    Edit
-                  </button>
-                  <button
-                    className="btn btn-danger btn-sm"
-                    onClick={() => handleDeleteEvent(event.id)}
-                  >
-                    Delete
-                  </button>
+                  {/* Edit and Delete Buttons (Visible for owners) */}
+                  {userId && event.ownerId === userId && (
+                    <div className="d-flex gap-2 mt-2">
+                      <button
+                        className="btn btn-warning btn-sm"
+                        onClick={() => {
+                          const formattedDate = new Date(event.date).toISOString().split('T')[0];
+                          setNewEvent({ ...event, date: formattedDate });
+                          setFormVisible(true);
+                        }}
+                      >
+                        Edit
+                      </button>
+                      <button
+                        className="btn btn-danger btn-sm"
+                        onClick={() => handleDeleteEvent(event.id)}
+                      >
+                        Delete
+                      </button>
+                    </div>
+                  )}
                 </div>
+                <hr />
               </div>
-              <hr />
-            </div>
-          ))
+            );
+          })
         ) : (
           <p>No events available.</p>
         )}

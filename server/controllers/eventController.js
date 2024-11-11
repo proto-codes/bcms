@@ -16,7 +16,7 @@ const getAllEvents = async (req, res) => {
 
   try {
     const rows = await queryAsync(`
-      SELECT events.*, rsvps.rsvp AS user_rsvp
+      SELECT events.*, events.user_id AS ownerId, rsvps.rsvp AS user_rsvp
       FROM events
       LEFT JOIN rsvps ON events.id = rsvps.event_id AND rsvps.user_id = ?
     `, [userId]);
