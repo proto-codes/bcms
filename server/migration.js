@@ -146,7 +146,7 @@ connection.connect((err) => {
       created_by INT,
       created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
       updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-      FOREIGN KEY (created_by) REFERENCES users(id) -- assuming there's a users table
+      FOREIGN KEY (created_by) REFERENCES users(id)
     );
   `;
   
@@ -175,7 +175,7 @@ connection.connect((err) => {
       joined_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
       updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
       FOREIGN KEY (club_id) REFERENCES clubs(id),
-      FOREIGN KEY (user_id) REFERENCES users(id) -- assuming there's a users table
+      FOREIGN KEY (user_id) REFERENCES users(id)
     );
   `;
   
@@ -188,7 +188,7 @@ connection.connect((err) => {
       status ENUM('accepted', 'declined', 'pending') DEFAULT 'pending',
       rsvp_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
       FOREIGN KEY (event_id) REFERENCES events(id),
-      FOREIGN KEY (user_id) REFERENCES users(id) -- assuming there's a users table
+      FOREIGN KEY (user_id) REFERENCES users(id)
     );
   `;
 

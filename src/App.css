@@ -8,22 +8,38 @@ body {
   font-family: 'Poppins', sans-serif;
 }
 
-.bg-purple, .btn-purple {
-  background-color: var(--purple);
-  color: var(--light);
-}
-
 .text-gold {   
   color: var(--gold) !important;
 }
 
-.bg-gold {
+.bg-purple, .btn-purple {
+  background-color: var(--purple) !important;
+  color: var(--light) !important;
+}
+
+.bg-gold, .btn-gold {
+  background-color: var(--gold) !important;
+  color: var(--light) !important;
+}
+
+.btn-outline-gold {
+  color: var(--gold) !important;
+  border: 1px solid var(--gold) !important;
+}
+
+.btn-outline-gold:hover {
+  color: var(--light) !important;
   background-color: var(--gold) !important;
 }
 
-.btn-gold {
+.btn-outline-purple {
+  color: var(--purple) !important;
+  border: 1px solid var(--purple) !important;
+}
+
+.btn-outline-purple:hover {
   color: var(--light) !important;
-  background-color: var(--gold) !important;
+  background-color: var(--purple) !important;
 }
 
 /* Loader */

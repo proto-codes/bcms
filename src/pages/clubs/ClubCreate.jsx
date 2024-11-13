@@ -6,6 +6,7 @@ const ClubCreate = () => {
     name: '',
     description: '',
     goals: '',
+    membershipCriteria: '', // New field for membership criteria
     isPrivate: false,
   });
 
@@ -26,6 +27,8 @@ const ClubCreate = () => {
     <div className="mt-4">
       <h3 className="mb-4">Create a New Club</h3>
       <Form onSubmit={handleSubmit} style={{ maxWidth: '100%' }}>
+        
+        {/* Club Name */}
         <Form.Group controlId="name" className="mb-3">
           <Form.Label>Club Name</Form.Label>
           <Form.Control
@@ -38,6 +41,7 @@ const ClubCreate = () => {
           />
         </Form.Group>
 
+        {/* Description */}
         <Form.Group controlId="description" className="mb-3">
           <Form.Label>Description</Form.Label>
           <Form.Control
@@ -51,6 +55,7 @@ const ClubCreate = () => {
           />
         </Form.Group>
 
+        {/* Goals */}
         <Form.Group controlId="goals" className="mb-3">
           <Form.Label>Goals</Form.Label>
           <Form.Control
@@ -63,6 +68,20 @@ const ClubCreate = () => {
           />
         </Form.Group>
 
+        {/* Membership Criteria */}
+        <Form.Group controlId="membershipCriteria" className="mb-3">
+          <Form.Label>Membership Criteria</Form.Label>
+          <Form.Control
+            as="textarea"
+            rows={2}
+            placeholder="Specify any criteria for joining (e.g., skills, experience)"
+            name="membershipCriteria"
+            value={formData.membershipCriteria}
+            onChange={handleChange}
+          />
+        </Form.Group>
+
+        {/* Privacy Setting */}
         <Form.Group controlId="isPrivate" className="mb-4">
           <Form.Check
             type="checkbox"
@@ -73,7 +92,8 @@ const ClubCreate = () => {
           />
         </Form.Group>
 
-        <Button variant="gold" type="submit">
+        {/* Submit Button */}
+        <Button variant="primary" type="submit">
           Create Club
         </Button>
       </Form>

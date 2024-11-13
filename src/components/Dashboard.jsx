@@ -59,9 +59,6 @@ function Dashboard() {
               <NavLink to="/overview" className={({ isActive }) => isActive ? 'nav-tab text-light fs-4 p-1 d-flex align-items-center gap-2 text-decoration-none active-tab' : 'nav-tab text-light fs-4 p-1 d-flex align-items-center gap-2 text-decoration-none'}>
                 <MdDashboard size={30} color="#fff" /> Overview
               </NavLink>
-              <NavLink to="/events" className={({ isActive }) => isActive ? 'nav-tab text-light fs-4 p-1 d-flex align-items-center gap-2 text-decoration-none active-tab' : 'nav-tab text-light fs-4 p-1 d-flex align-items-center gap-2 text-decoration-none'}>
-                <MdEvent size={30} color="#fff" /> Events
-              </NavLink>
               {/* Dropdown */}
               <div className="dropdown">
                 <a 
@@ -72,10 +69,15 @@ function Dashboard() {
                   data-bs-toggle="dropdown" 
                   aria-expanded="false"
                 >
-                  <MdGroup size={30} color="#fff" /> Club House
+                  <MdGroup size={30} color="#fff" /> Clubs
                 </a>
                 {/* Dropdown Menu */}
                 <ul className="dropdown-menu" aria-labelledby="dropdownMenuLink">
+                  <li>
+                    <Link className="dropdown-item fs-5" to="/clubs/overview">
+                      <MdVisibility size={20} className="me-2" /> Overview
+                    </Link>
+                  </li>
                   <li>
                     <Link className="dropdown-item fs-5" to="/clubs/create">
                       <MdCreate size={20} className="me-2" /> Create Club
@@ -84,11 +86,6 @@ function Dashboard() {
                   <li>
                     <Link className="dropdown-item fs-5" to="/clubs/join">
                       <MdPersonAdd size={20} className="me-2" /> Join Club
-                    </Link>
-                  </li>
-                  <li>
-                    <Link className="dropdown-item fs-5" to="/clubs/club-overview">
-                      <MdVisibility size={20} className="me-2" /> Club Overview
                     </Link>
                   </li>
                 </ul>

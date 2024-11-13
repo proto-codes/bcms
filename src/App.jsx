@@ -27,7 +27,7 @@ const Clubs = lazy(() => import('./pages/clubs/Clubs'));
 const ClubOverview = lazy(() => import('./pages/clubs/ClubOverview'));
 const ClubCreate = lazy(() => import('./pages/clubs/ClubCreate'));
 const ClubJoin = lazy(() => import('./pages/clubs/ClubJoin'));
-const Events = lazy(() => import('./pages/Events'));
+const Discussion = lazy(() => import('./pages/clubs/Discussion'));
 const Search = lazy(() => import('./pages/Search'));
 const Statistics = lazy(() => import('./pages/Statistics'));
 const Settings = lazy(() => import('./pages/Settings'));
@@ -52,12 +52,12 @@ function App() {
 
               {/* Clubs Routes */}
               <Route path="clubs" element={<Clubs />}>
-                <Route path="club-overview" element={<ClubOverview />} />
+                <Route path="overview" element={<ClubOverview />} />
                 <Route path="create" element={<ClubCreate />} />
                 <Route path="join" element={<ClubJoin />} />
               </Route>
 
-              <Route path="events" element={<Events />} />
+              <Route path="discussion/:discussionId" element={<Discussion />} />
               <Route path="search" element={<Search />} />
               <Route path="statistics" element={<Statistics />} />
               <Route path="settings" element={<Settings />} />
