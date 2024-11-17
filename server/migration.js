@@ -58,7 +58,7 @@ connection.connect((err) => {
       id INT AUTO_INCREMENT PRIMARY KEY,
       user_id INT NOT NULL UNIQUE,
       bio TEXT,
-      profile_pics VARCHAR(255),
+      profile_pics MEDIUMBLOB;
       phone_number VARCHAR(20),
       birthday DATE,
       address VARCHAR(255),
@@ -139,9 +139,11 @@ connection.connect((err) => {
   const createClubsTableQuery = `
     CREATE TABLE IF NOT EXISTS clubs (
       id INT AUTO_INCREMENT PRIMARY KEY,
+      img MEDIUMBLOB;
       name VARCHAR(255) NOT NULL,
       description TEXT,
       goals TEXT,
+      membership_criteria TEXT,
       is_private BOOLEAN DEFAULT FALSE,
       created_by INT,
       created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
@@ -161,7 +163,7 @@ connection.connect((err) => {
       location VARCHAR(255),
       created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
       updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-      FOREIGN KEY (club_id) REFERENCES clubs(id)
+      FOREIGN KEY (club_id) REFERENCES clubs(id) ON DELETE CASCADE
     );
   `;
 
@@ -171,10 +173,11 @@ connection.connect((err) => {
       id INT AUTO_INCREMENT PRIMARY KEY,
       club_id INT NOT NULL,
       user_id INT NOT NULL,
-      status ENUM('pending', 'approved', 'rejected') DEFAULT 'pending',
+      status ENUM('pending', 'approved') DEFAULT 'pending',
+      role ENUM('member', 'club leader', 'admin') DEFAULT 'member',
       joined_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
       updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-      FOREIGN KEY (club_id) REFERENCES clubs(id),
+      FOREIGN KEY (club_id) REFERENCES clubs(id) ON DELETE CASCADE,
       FOREIGN KEY (user_id) REFERENCES users(id)
     );
   `;
@@ -185,10 +188,24 @@ connection.connect((err) => {
       id INT AUTO_INCREMENT PRIMARY KEY,
       event_id INT NOT NULL,
       user_id INT NOT NULL,
-      status ENUM('accepted', 'declined', 'pending') DEFAULT 'pending',
       rsvp_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-      FOREIGN KEY (event_id) REFERENCES events(id),
+      FOREIGN KEY (event_id) REFERENCES events(id) ON DELETE CASCADE,
       FOREIGN KEY (user_id) REFERENCES users(id)
+    );
+  `;
+
+  // SQL query to create the discussions table if it doesn't exist
+  const createDiscussionsTableQuery = `
+    CREATE TABLE IF NOT EXISTS discussions (
+      id INT AUTO_INCREMENT PRIMARY KEY,
+      club_id INT NOT NULL,
+      title VARCHAR(255) NOT NULL,
+      content TEXT,
+      created_by INT NOT NULL,
+      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+      updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+      FOREIGN KEY (club_id) REFERENCES clubs(id) ON DELETE CASCADE,
+      FOREIGN KEY (created_by) REFERENCES users(id)
     );
   `;
 
@@ -205,6 +222,7 @@ connection.connect((err) => {
   runMigration(createEventsTableQuery, 'Events table');
   runMigration(createClubMembershipsTableQuery, 'Club memberships table');
   runMigration(createRSVPSTableQuery, 'RSVPS table');
+  runMigration(createDiscussionsTableQuery, 'Discussions table');
 
   // Close the connection after all migrations
   connection.end((err) => {

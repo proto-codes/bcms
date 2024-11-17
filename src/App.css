@@ -22,7 +22,7 @@ body {
   color: var(--light) !important;
 }
 
-.btn-outline-gold {
+.btn-outline-gold, .bg-outline-gold {
   color: var(--gold) !important;
   border: 1px solid var(--gold) !important;
 }
@@ -32,7 +32,7 @@ body {
   background-color: var(--gold) !important;
 }
 
-.btn-outline-purple {
+.btn-outline-purple, .bg-outline-purple {
   color: var(--purple) !important;
   border: 1px solid var(--purple) !important;
 }
@@ -176,7 +176,7 @@ body {
 }
 
 @media (max-width: 576px) {
-    .the-forum {
+    .bcms {
         font-size: calc(1rem + .9vw) !important;
     }
 }

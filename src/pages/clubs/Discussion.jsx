@@ -64,7 +64,7 @@ const Discussion = () => {
   }
 
   return (
-    <div className="h-100 container position-relative py-4">
+    <div className="h-100 container-fluid position-relative py-4">
       {/* Back Button */}
       <Button
         variant="outline-dark"

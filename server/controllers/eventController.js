@@ -1,135 +1,122 @@
 const db = require('../config/db');
 
-// Helper function for Promisified MySQL query
+// Helper function to query the database
 const queryAsync = (query, params) => {
-  return new Promise((resolve, reject) => {
-    db.query(query, params, (err, results) => {
-      if (err) return reject(err);
-      resolve(results);
+    return new Promise((resolve, reject) => {
+        db.query(query, params, (err, results) => {
+            if (err) return reject(err);
+            resolve(results);
+        });
     });
-  });
 };
 
-// Fetch all events
-const getAllEvents = async (req, res) => {
-  const userId = req.user.id; // Get the logged-in user's ID
-
-  try {
-    const rows = await queryAsync(`
-      SELECT events.*, events.user_id AS ownerId, rsvps.rsvp AS user_rsvp
-      FROM events
-      LEFT JOIN rsvps ON events.id = rsvps.event_id AND rsvps.user_id = ?
-    `, [userId]);
-
-    res.status(200).json(rows);
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ message: 'Failed to load events' });
-  }
-};
-
-// Create a new event
+// Create an event
 const createEvent = async (req, res) => {
-  const { title, date, location, description } = req.body;
-  const user_id = req.user.id; // Get the logged-in user's ID from the token
+    const { name, date, location, clubId } = req.body;
 
-  // Validate required fields
-  if (!title || !date || !location || !description) {
-    return res.status(400).json({ message: 'All fields are required!' });
-  }
+    if (!req.user || !req.user.id) {
+        return res.status(401).json({ error: 'User not authenticated' });
+    }
 
-  // Ensure the date format is correct for MySQL DATETIME type
-  const formattedDate = new Date(date).toISOString().slice(0, 19).replace('T', ' ');
-
-  try {
-    const result = await queryAsync(
-      'INSERT INTO events (user_id, title, date, location, description) VALUES (?, ?, ?, ?, ?)',
-      [user_id, title, formattedDate, location, description]
-    );
-    res.status(201).json({ id: result.insertId, user_id, title, date: formattedDate, location, description });
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ message: 'Failed to create event' });
-  }
+    try {
+        const result = await queryAsync(
+            'INSERT INTO events (name, date, location, club_id, created_by) VALUES (?, ?, ?, ?, ?)',
+            [name, date, location, clubId, req.user.id]
+        );
+        res.status(201).json({ message: 'Event created successfully', eventId: result.insertId });
+    } catch (error) {
+        console.error('Error creating event:', error);
+        res.status(500).json({ error: 'Server error' });
+    }
 };
 
-// Update an existing event
+// Get all events
+const getAllEvents = async (req, res) => {
+    try {
+        const events = await queryAsync('SELECT * FROM events');
+        res.json(events);
+    } catch (error) {
+        console.error('Error fetching events:', error);
+        res.status(500).json({ error: 'Server error' });
+    }
+};
+
+// Update event details
 const updateEvent = async (req, res) => {
-  const { id } = req.params;
-  const { title, date, location, description } = req.body;
-  const user_id = req.user.id; // Get the logged-in user's ID from the token
+    const { name, date, location } = req.body;
+    const { id } = req.params;
 
-  // Validate required fields
-  if (!title || !date || !location || !description) {
-    return res.status(400).json({ message: 'All fields are required!' });
-  }
-
-  // Ensure the date format is correct for MySQL DATETIME type
-  const formattedDate = new Date(date).toISOString().slice(0, 19).replace('T', ' ');
-
-  try {
-    const result = await queryAsync(
-      'UPDATE events SET title = ?, date = ?, location = ?, description = ? WHERE id = ? AND user_id = ?',
-      [title, formattedDate, location, description, id, user_id] // Add user_id in WHERE clause to ensure the user can only update their own event
-    );
-    if (result.affectedRows === 0) {
-      return res.status(404).json({ message: 'Event not found or you are not authorized to update this event' });
+    if (!req.user || !req.user.id) {
+        return res.status(401).json({ error: 'User not authenticated' });
     }
-    res.status(200).json({ id, title, date: formattedDate, location, description });
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ message: 'Failed to update event' });
-  }
+
+    try {
+        const result = await queryAsync(
+            'UPDATE events SET name = ?, date = ?, location = ? WHERE id = ? AND created_by = ?',
+            [name, date, location, id, req.user.id]
+        );
+
+        if (result.affectedRows === 0) {
+            return res.status(404).json({ error: 'Event not found or user is not the creator' });
+        }
+
+        res.json({ message: 'Event updated successfully' });
+    } catch (error) {
+        console.error('Error updating event:', error);
+        res.status(500).json({ error: 'Server error' });
+    }
 };
 
-// Delete an event
+// Delete event
 const deleteEvent = async (req, res) => {
-  const { id } = req.params;
-  const user_id = req.user.id; // Get the logged-in user's ID from the token
+    const { id } = req.params;
 
-  try {
-    const result = await queryAsync('DELETE FROM events WHERE id = ? AND user_id = ?', [id, user_id]);
-    if (result.affectedRows === 0) {
-      return res.status(404).json({ message: 'Event not found or you are not authorized to delete this event' });
+    if (!req.user || !req.user.id) {
+        return res.status(401).json({ error: 'User not authenticated' });
     }
-    res.status(200).json({ message: 'Event deleted successfully' });
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ message: 'Failed to delete event' });
-  }
+
+    try {
+        const result = await queryAsync(
+            'DELETE FROM events WHERE id = ? AND created_by = ?',
+            [id, req.user.id]
+        );
+
+        if (result.affectedRows === 0) {
+            return res.status(404).json({ error: 'Event not found or user is not the creator' });
+        }
+
+        res.json({ message: 'Event deleted successfully' });
+    } catch (error) {
+        console.error('Error deleting event:', error);
+        res.status(500).json({ error: 'Server error' });
+    }
 };
 
-// RSVP an event (toggle RSVP status)
+// RSVP to an event
 const toggleRSVP = async (req, res) => {
-  const { id: eventId } = req.params;
-  const userId = req.user.id; // Assuming `req.user` holds the logged-in user's info
+    const { id } = req.params;
 
-  try {
-    // Check if the user has already RSVP'd for this event
-    const rows = await queryAsync('SELECT rsvp FROM rsvps WHERE event_id = ? AND user_id = ?', [eventId, userId]);
-    
-    if (rows.length > 0) {
-      // If RSVP exists, toggle it
-      const currentRSVPStatus = rows[0].rsvp;
-      const newRSVPStatus = !currentRSVPStatus;
-
-      await queryAsync('UPDATE rsvps SET rsvp = ? WHERE event_id = ? AND user_id = ?', [newRSVPStatus, eventId, userId]);
-      res.status(200).json({ message: `RSVP ${newRSVPStatus ? 'confirmed' : 'canceled'}` });
-    } else {
-      // If no RSVP exists, create a new one
-      await queryAsync('INSERT INTO rsvps (event_id, user_id, rsvp) VALUES (?, ?, TRUE)', [eventId, userId]);
-      res.status(201).json({ message: 'RSVP confirmed' });
+    if (!req.user || !req.user.id) {
+        return res.status(401).json({ error: 'User not authenticated' });
     }
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ message: 'Failed to update RSVP status' });
-  }
+
+    try {
+        const [rsvp] = await queryAsync(
+            'SELECT * FROM event_rsvps WHERE user_id = ? AND event_id = ?',
+            [req.user.id, id]
+        );
+
+        if (rsvp) {
+            await queryAsync('DELETE FROM event_rsvps WHERE user_id = ? AND event_id = ?', [req.user.id, id]);
+            res.json({ message: 'RSVP canceled' });
+        } else {
+            await queryAsync('INSERT INTO event_rsvps (user_id, event_id) VALUES (?, ?)', [req.user.id, id]);
+            res.json({ message: 'RSVP confirmed' });
+        }
+    } catch (error) {
+        console.error('Error toggling RSVP:', error);
+        res.status(500).json({ error: 'Server error' });
+    }
 };
 
-module.exports = {
-  getAllEvents,
-  createEvent,
-  updateEvent,
-  deleteEvent,
-  toggleRSVP,
-};
+module.exports = { createEvent, getAllEvents, updateEvent, deleteEvent, toggleRSVP };

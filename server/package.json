@@ -1,7 +1,7 @@
 {
   "name": "server",
   "version": "1.0.0",
-  "description": "A Node.js server for the-forum",
+  "description": "A Node.js server for bcms",
   "main": "server.js",
   "scripts": {
     "server": "nodemon server.js",
@@ -9,7 +9,7 @@
     "migrate": "node migration.js"
   },
   "keywords": [
-    "the forum",
+    "bcms",
     "node",
     "server",
     "express",

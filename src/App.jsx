@@ -25,8 +25,7 @@ const Messages = lazy(() => import('./pages/Messages'));
 const Tasks = lazy(() => import('./pages/Tasks'));
 const Clubs = lazy(() => import('./pages/clubs/Clubs'));
 const ClubOverview = lazy(() => import('./pages/clubs/ClubOverview'));
-const ClubCreate = lazy(() => import('./pages/clubs/ClubCreate'));
-const ClubJoin = lazy(() => import('./pages/clubs/ClubJoin'));
+const ClubMange = lazy(() => import('./pages/clubs/ClubMange'));
 const Discussion = lazy(() => import('./pages/clubs/Discussion'));
 const Search = lazy(() => import('./pages/Search'));
 const Statistics = lazy(() => import('./pages/Statistics'));
@@ -49,13 +48,14 @@ function App() {
               <Route path="help-support" element={<HelpAndSupport />} />
               <Route path="messages" element={<Messages />} />
               <Route path="tasks" element={<Tasks />} />
+              <Route path=":clubId/:clubName/overview" element={<ClubOverview />} />
+              <Route path="manage" element={<ClubMange />} />
 
               {/* Clubs Routes */}
-              <Route path="clubs" element={<Clubs />}>
-                <Route path="overview" element={<ClubOverview />} />
-                <Route path="create" element={<ClubCreate />} />
-                <Route path="join" element={<ClubJoin />} />
-              </Route>
+              {/* <Route path="clubs" element={<Clubs />}>
+                <Route path=":clubId/:clubName/overview" element={<ClubOverview />} />
+                <Route path="manage" element={<ClubMange />} />
+              </Route> */}
 
               <Route path="discussion/:discussionId" element={<Discussion />} />
               <Route path="search" element={<Search />} />

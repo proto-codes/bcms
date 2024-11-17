@@ -60,7 +60,7 @@ function Login() {
   return (
     <div className="vh-100 d-flex justify-content-center align-items-center py-3">
       <div className="card border-0 p-3 shadow-lg" style={{ width: '400px' }}>
-        <h4 className="text-center text-gold mb-2">The Forum</h4>
+        <h4 className="text-center text-gold mb-2">BCMS</h4>
         <p className="text-center mb-3">Login to Your Account</p>
         <form onSubmit={login} noValidate>
           <div className="form-floating mb-3">

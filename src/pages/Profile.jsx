@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Form, Button, Card, Container, Row, Col, Spinner } from 'react-bootstrap';
 import { FaUpload, FaTrash } from 'react-icons/fa';
-import ProfilePlaceholder from '../assets/img/the-forum-logo.jpeg';
 import api from '../api/axios';
 import { useParams } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
@@ -161,7 +160,7 @@ const Profile = () => {
           <Card.Body>
             <div className="d-flex align-items-center mb-4">
               <img
-                src={preview || userData.profile_pics || ProfilePlaceholder}
+                src={preview || userData.profile_pics || '/profile-placeholder.png'}
                 alt="User Profile Picture"
                 className="rounded-circle me-3"
                 style={{
