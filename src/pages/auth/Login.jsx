@@ -37,12 +37,14 @@ function Login() {
     }
 
     try {
-      const response = await axios.post('http://localhost:5000/public/login', userData);
+      const response = await axios.post('http://localhost:5000/public/login', userData, {
+        withCredentials: true,
+      });
       toast.success(response.data.message || 'Login successful!');
-      localStorage.setItem('token', response.data.token);
+      localStorage.setItem('accessToken', response.data.accessToken);
 
       setTimeout(() => {
-        window.location.href = '/'; // Redirect to the dashboard page
+        window.location.href = '/';
       }, 2000);
 
       setUserData({
@@ -100,7 +102,7 @@ function Login() {
               {showPassword ? <AiFillEyeInvisible size={20} /> : <AiFillEye size={20} />}
             </button>
           </div>
-          <button type="submit" className="btn btn-gold w-100" disabled={loading}>
+          <button type="submit" className="btn btn-outline-gold w-100" disabled={loading}>
             {loading ? (
               <>
                 <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>

@@ -123,7 +123,7 @@ const Messages = () => {
                     value={newMessage}
                     onChange={(e) => setNewMessage(e.target.value)}
                   />
-                  <button className="btn btn-gold" type="submit">
+                  <button className="btn btn-outline-gold" type="submit">
                     Send
                   </button>
                 </div>

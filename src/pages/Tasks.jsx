@@ -140,7 +140,7 @@ const Tasks = () => {
           <h4 className="mb-3 text-gold">{editingTask ? 'Edit Task' : 'Add New Task'}</h4>
 
           {/* Button to toggle form visibility */}
-          <Button onClick={() => setIsFormVisible(!isFormVisible)} className="mb-3">
+          <Button variant='outline-gold' onClick={() => setIsFormVisible(!isFormVisible)} className="mb-3">
             {isFormVisible ? 'View Task List' : 'Add New Task'}
           </Button>
 
@@ -193,11 +193,11 @@ const Tasks = () => {
                   </Form.Group>
                 </Col>
               </Row>
-              <Button variant={editingTask ? 'success' : 'gold'} type="submit">
+              <Button variant='outline-purple' type="submit">
                 {editingTask ? 'Update Task' : 'Add Task'}
               </Button>
               {editingTask && (
-                <Button variant="secondary" className="ms-2" onClick={clearForm}>
+                <Button variant="outline-secondary" className="ms-2" onClick={clearForm}>
                   Cancel
                 </Button>
               )}
@@ -237,11 +237,11 @@ const Tasks = () => {
                         {confirmDeleteId === task.id ? (
                           <>
                             <span>Are you sure?</span>
-                            <Button variant="danger" onClick={() => handleDeleteTask(task.id)}>Yes</Button>
-                            <Button variant="secondary" onClick={() => setConfirmDeleteId(null)}>No</Button>
+                            <Button variant="outline-danger" onClick={() => handleDeleteTask(task.id)}>Yes</Button>
+                            <Button variant="outline-secondary" onClick={() => setConfirmDeleteId(null)}>No</Button>
                           </>
                         ) : (
-                          <Button variant="outline-secondary" className="text-danger" onClick={() => setConfirmDeleteId(task.id)}>
+                          <Button variant="outline-danger" onClick={() => setConfirmDeleteId(task.id)}>
                             <FaTrashAlt className="d-block d-md-none" /> <span className="d-none d-md-block">Delete</span>
                           </Button>
                         )}

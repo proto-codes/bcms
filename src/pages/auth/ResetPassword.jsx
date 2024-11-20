@@ -91,7 +91,7 @@ function ResetPassword() {
                 <div className="invalid-feedback" aria-live="polite">Password confirmation is required.</div>
               )}
             </div>
-            <button type="submit" className="btn btn-gold w-100" disabled={loading}>
+            <button type="submit" className="btn btn-outline-gold w-100" disabled={loading}>
               {loading ? (
                 <>
                   <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>

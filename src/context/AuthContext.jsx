@@ -7,45 +7,64 @@ const AuthContext = createContext();
 export const AuthProvider = ({ children }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(null);
   const [userId, setUserId] = useState(null);
+  const [userName, setUserName] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    const checkAuth = async () => {
-      const token = localStorage.getItem('token');
+  const isTokenExpired = (token) => {
+    try {
+      const payload = JSON.parse(atob(token.split('.')[1]));
+      return payload.exp * 1000 < Date.now();
+    } catch (error) {
+      console.error('Invalid token format:', error);
+      return true;
+    }
+  };
 
-      if (token) {
-        try {
-          const response = await api.post('/validate-token');
+  const checkAuth = async () => {
+    const accessToken = localStorage.getItem('accessToken');
 
-          if (response.status === 200) {
-            setIsAuthenticated(true);
-            setUserId(response.data.user.id);
-          } else {
-            setIsAuthenticated(false);
+    if (accessToken && !isTokenExpired(accessToken)) {
+      try {
+        const response = await api.post('/validate-token');
+        if (response.status === 200) {
+          setIsAuthenticated(true);
+          setUserId(response.data.user.id);
+          setUserName(response.data.user.name);
+          if (response.data.newAccessToken) {
+            localStorage.setItem('accessToken', response.data.newAccessToken);
           }
-        } catch (error) {
-          console.error('Error validating token:', error);
+        } else {
           setIsAuthenticated(false);
+          setUserId(null);
+          setUserName(null);
         }
-      } else {
+      } catch (error) {
+        console.error('Error validating token:', error);
         setIsAuthenticated(false);
+        setUserId(null);
+        setUserName(null);
       }
+    } else {
+      setIsAuthenticated(false);
+      setUserId(null);
+      setUserName(null);
+    }
+  };
 
+  const logout = () => {
+    localStorage.removeItem('accessToken');
+    setIsAuthenticated(false);
+    setUserId(null);
+    setUserName(null);
+  };
+
+  useEffect(() => {
+    const initializeAuth = async () => {
+      await checkAuth();
       setLoading(false);
     };
 
-    checkAuth();
-
-    // Set up an event listener for storage changes
-    const handleStorageChange = () => {
-      checkAuth();
-    };
-
-    window.addEventListener('storage', handleStorageChange);
-
-    return () => {
-      window.removeEventListener('storage', handleStorageChange);
-    };
+    initializeAuth();
   }, []);
 
   if (loading) {
@@ -53,7 +72,7 @@ export const AuthProvider = ({ children }) => {
   }
 
   return (
-    <AuthContext.Provider value={{ isAuthenticated, userId }}>
+    <AuthContext.Provider value={{ isAuthenticated, userId, userName, logout }}>
       {children}
     </AuthContext.Provider>
   );

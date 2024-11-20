@@ -60,7 +60,7 @@ function VerifyAccount() {
             {/* No need for inline error/success messages, now handled by Toast */}
             <div>
               <p>If you haven't received a verification email, you can request a new verification token.</p>
-              <button className="btn btn-primary" onClick={requestNewToken}>
+              <button className="btn btn-outline-gold" onClick={requestNewToken}>
                 Request New Verification Token
               </button>
             </div>

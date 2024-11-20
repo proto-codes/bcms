@@ -164,7 +164,7 @@ const Settings = () => {
               />
             </Form.Group>
 
-            <Button variant="gold" type="submit">
+            <Button variant="outline-gold" type="submit">
               Change Password
             </Button>
           </Form>
@@ -187,7 +187,7 @@ const Settings = () => {
               onChange={handleNotificationChange}
             />
 
-            <Button variant="secondary" type="submit" className="mt-3">
+            <Button variant="outline-secondary" type="submit" className="mt-3">
               Save Notification Preferences
             </Button>
           </Form>
@@ -195,7 +195,7 @@ const Settings = () => {
           {/* Delete Account Section */}
           <div className="mt-4">
             <h5>Danger Zone</h5>
-            <Button variant="danger" onClick={handleDeleteAccount}>
+            <Button variant="outline-danger" onClick={handleDeleteAccount}>
               Delete Account
             </Button>
           </div>
