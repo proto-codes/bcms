@@ -46,7 +46,9 @@ connection.connect((err) => {
     CREATE TABLE IF NOT EXISTS active_tokens (
       id INT AUTO_INCREMENT PRIMARY KEY,
       user_id INT NOT NULL UNIQUE,
-      token VARCHAR(255) NOT NULL,
+      refresh_token TEXT NOT NULL,
+      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+      updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
       expires_at DATETIME NOT NULL,
       FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
     );
@@ -58,7 +60,7 @@ connection.connect((err) => {
       id INT AUTO_INCREMENT PRIMARY KEY,
       user_id INT NOT NULL UNIQUE,
       bio TEXT,
-      profile_pics MEDIUMBLOB;
+      profile_pics MEDIUMBLOB,
       phone_number VARCHAR(20),
       birthday DATE,
       address VARCHAR(255),
@@ -88,7 +90,7 @@ connection.connect((err) => {
   const createTasksTableQuery = `
     CREATE TABLE IF NOT EXISTS tasks (
       id INT AUTO_INCREMENT PRIMARY KEY,
-      user_id INT NOT NULL,
+      user_id INT NOT NULL UNIQUE,
       title VARCHAR(255) NOT NULL,
       description TEXT,
       due_date DATE NOT NULL,
@@ -126,7 +128,7 @@ connection.connect((err) => {
   const createNotificationsTableQuery = `
     CREATE TABLE IF NOT EXISTS notifications (
       id INT AUTO_INCREMENT PRIMARY KEY,
-      user_id INT NOT NULL,
+      user_id INT NOT NULL UNIQUE,
       message VARCHAR(255) NOT NULL,
       type VARCHAR(50) DEFAULT 'general',
       date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
@@ -139,7 +141,7 @@ connection.connect((err) => {
   const createClubsTableQuery = `
     CREATE TABLE IF NOT EXISTS clubs (
       id INT AUTO_INCREMENT PRIMARY KEY,
-      img MEDIUMBLOB;
+      img MEDIUMBLOB,
       name VARCHAR(255) NOT NULL,
       description TEXT,
       goals TEXT,
@@ -148,7 +150,7 @@ connection.connect((err) => {
       created_by INT,
       created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
       updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-      FOREIGN KEY (created_by) REFERENCES users(id)
+      FOREIGN KEY (created_by) REFERENCES users(id) ON DELETE CASCADE
     );
   `;
   
@@ -157,9 +159,12 @@ connection.connect((err) => {
     CREATE TABLE IF NOT EXISTS events (
       id INT AUTO_INCREMENT PRIMARY KEY,
       club_id INT NOT NULL,
+      created_by INT,
       title VARCHAR(255) NOT NULL,
       description TEXT,
-      date DATETIME NOT NULL,
+      date DATE NOT NULL,
+      start_time TIME NOT NULL,
+      end_time TIME NOT NULL,
       location VARCHAR(255),
       created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
       updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
@@ -172,13 +177,13 @@ connection.connect((err) => {
     CREATE TABLE IF NOT EXISTS club_memberships (
       id INT AUTO_INCREMENT PRIMARY KEY,
       club_id INT NOT NULL,
-      user_id INT NOT NULL,
+      user_id INT NOT NULL UNIQUE,
       status ENUM('pending', 'approved') DEFAULT 'pending',
       role ENUM('member', 'club leader', 'admin') DEFAULT 'member',
       joined_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
       updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
       FOREIGN KEY (club_id) REFERENCES clubs(id) ON DELETE CASCADE,
-      FOREIGN KEY (user_id) REFERENCES users(id)
+      FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
     );
   `;
   
@@ -187,10 +192,10 @@ connection.connect((err) => {
     CREATE TABLE IF NOT EXISTS rsvps (
       id INT AUTO_INCREMENT PRIMARY KEY,
       event_id INT NOT NULL,
-      user_id INT NOT NULL,
+      user_id INT NOT NULL UNIQUE,
       rsvp_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
       FOREIGN KEY (event_id) REFERENCES events(id) ON DELETE CASCADE,
-      FOREIGN KEY (user_id) REFERENCES users(id)
+      FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
     );
   `;
 
@@ -205,7 +210,20 @@ connection.connect((err) => {
       created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
       updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
       FOREIGN KEY (club_id) REFERENCES clubs(id) ON DELETE CASCADE,
-      FOREIGN KEY (created_by) REFERENCES users(id)
+      FOREIGN KEY (created_by) REFERENCES users(id) ON DELETE CASCADE
+    );
+  `;
+
+  // SQL query to create the discussion messages table if it doesn't exist
+  const createDiscussionMessagesTableQuery = `
+    CREATE TABLE IF NOT EXISTS discussion_messages (
+      id INT AUTO_INCREMENT PRIMARY KEY,
+      discussion_id INT NOT NULL,
+      sender_id INT NOT NULL,
+      content TEXT NOT NULL,
+      timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+      FOREIGN KEY (discussion_id) REFERENCES discussions(id) ON DELETE CASCADE,
+      FOREIGN KEY (sender_id) REFERENCES users(id) ON DELETE CASCADE
     );
   `;
 
@@ -223,6 +241,7 @@ connection.connect((err) => {
   runMigration(createClubMembershipsTableQuery, 'Club memberships table');
   runMigration(createRSVPSTableQuery, 'RSVPS table');
   runMigration(createDiscussionsTableQuery, 'Discussions table');
+  runMigration(createDiscussionMessagesTableQuery, 'Discussion messages table');
 
   // Close the connection after all migrations
   connection.end((err) => {

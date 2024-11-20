@@ -32,7 +32,7 @@ const getClubData = async (req, res) => {
 
         // Query to fetch members of the club
         const membersQuery = `
-            SELECT u.id, u.name, cm.status 
+            SELECT u.id, u.name, cm.status, cm.role
             FROM users u
             JOIN club_memberships cm ON cm.user_id = u.id
             WHERE cm.club_id = ?`;
@@ -71,28 +71,37 @@ const createClub = async (req, res) => {
     }
 
     try {
+        let clubId;
+
         // Validate image size
         if (img) {
             const imgBuffer = Buffer.from(img, 'base64');
             if (imgBuffer.length > MAX_IMG_SIZE) {
                 return res.status(400).json({ error: 'Image size exceeds 16 MB limit' });
             }
-            // Image is valid, proceed with conversion and save
+
+            // Insert club with image
             const result = await queryAsync(
                 'INSERT INTO clubs (name, img, description, is_private, created_by) VALUES (?, ?, ?, ?, ?)',
                 [name, imgBuffer, description, isPrivate, req.user.id]
             );
-
-            res.status(201).json({ message: 'Club created successfully', clubId: result.insertId });
+            clubId = result.insertId;
         } else {
-            // If there's no image, insert without an image
+            // Insert club without image
             const result = await queryAsync(
                 'INSERT INTO clubs (name, description, is_private, created_by) VALUES (?, ?, ?, ?)',
                 [name, description, isPrivate, req.user.id]
             );
-
-            res.status(201).json({ message: 'Club created successfully', clubId: result.insertId });
+            clubId = result.insertId;
         }
+
+        // Insert creator as admin in club_memberships table
+        await queryAsync(
+            'INSERT INTO club_memberships (user_id, club_id, role, status) VALUES (?, ?, ?, ?)',
+            [req.user.id, clubId, 'admin', 'approved']
+        );
+
+        res.status(201).json({ message: 'Club created successfully', clubId });
     } catch (error) {
         console.error('Error creating club:', error);
         res.status(500).json({ error: 'Server error' });
@@ -129,6 +138,9 @@ const updateClub = async (req, res) => {
     const { img, name, description, goals, membershipCriteria, isPrivate } = req.body;
     const { clubId } = req.params;
 
+    // Convert `isPrivate` into a consistent format
+    const isPrivateVal = isPrivate === true || isPrivate === 'true' || isPrivate === 1;
+
     if (!req.user || !req.user.id) {
         return res.status(401).json({ error: 'User not authenticated' });
     }
@@ -138,19 +150,29 @@ const updateClub = async (req, res) => {
     }
 
     try {
-        // Convert and validate the image
+        // Initialize image buffer as null
         let imgBuffer = null;
+
+        // Process the image if provided
         if (img) {
-            imgBuffer = Buffer.from(img, 'base64');
-            if (imgBuffer.length > MAX_IMG_SIZE) {
-                return res.status(400).json({ error: 'Image size exceeds 16 MB limit' });
+            try {
+                imgBuffer = Buffer.from(img, 'base64');
+                if (imgBuffer.length > MAX_IMG_SIZE) {
+                    return res.status(400).json({ error: 'Image size exceeds 16 MB limit' });
+                }
+            } catch (err) {
+                console.error('Invalid image format:', err);
+                return res.status(400).json({ error: 'Invalid image format' });
             }
         }
 
-        // Construct query and values dynamically
-        let query = `UPDATE clubs SET name = ?, description = ?, goals = ?, membership_criteria = ?, is_private = ?`;
-        const values = [name, description, goals, membershipCriteria, isPrivate];
+        // Construct the query for updating the club
+        let query = `
+            UPDATE clubs
+            SET name = ?, description = ?, goals = ?, membership_criteria = ?, is_private = ?`;
+        const values = [name, description, goals, membershipCriteria, isPrivateVal];
 
+        // If an image was provided, include the image in the update query
         if (imgBuffer) {
             query += `, img = ?`;
             values.push(imgBuffer);
@@ -284,4 +306,270 @@ const leaveClub = async (req, res) => {
     }
 };
 
-module.exports = { getClubData, createClub, getClubs, updateClub, deleteClub, joinClub, leaveClub };
+const createDiscussion = async (req, res) => {
+    const { clubId } = req.params;
+    const { title, content } = req.body;
+
+    if (!req.user || !req.user.id) {
+        return res.status(401).json({ error: 'User not authenticated' });
+    }
+
+    if (!clubId || !title || !content) {
+        return res.status(400).json({ error: 'All fields are required' });
+    }
+
+    try {
+        const result = await queryAsync(
+            'INSERT INTO discussions (title, content, club_id, created_by) VALUES (?, ?, ?, ?)',
+            [title, content, clubId, req.user.id]
+        );
+
+        res.status(201).json({
+            message: 'Discussion created successfully',
+            discussion: { id: result.insertId, title, content },
+        });
+    } catch (error) {
+        console.error('Error creating discussion:', error);
+        res.status(500).json({ error: 'Server error' });
+    }
+};
+
+const editDiscussion = async (req, res) => {
+    const { clubId, discussionId } = req.params;
+    const { title, content } = req.body;
+
+    if (!req.user || !req.user.id) {
+        return res.status(401).json({ error: 'User not authenticated' });
+    }
+
+    if (!title || !content) {
+        return res.status(400).json({ error: 'Title and content are required' });
+    }
+
+    try {
+        // Check if the discussion exists and get the creator's ID
+        const discussionQuery = 'SELECT * FROM discussions WHERE id = ? AND club_id = ?';
+        const discussion = await queryAsync(discussionQuery, [discussionId, clubId]);
+
+        if (discussion.length === 0) {
+            return res.status(404).json({ error: 'Discussion not found' });
+        }
+
+        const discussionCreatorId = discussion[0].created_by;
+
+        // Check if the user is the creator or an admin
+        const isAdminQuery = 'SELECT role FROM club_memberships WHERE user_id = ? AND club_id = ?';
+        const adminCheck = await queryAsync(isAdminQuery, [req.user.id, clubId]);
+
+        if (req.user.id !== discussionCreatorId && !adminCheck.some(member => member.role === 'admin')) {
+            return res.status(403).json({ error: 'You are not authorized to edit this discussion' });
+        }
+
+        // Update the discussion
+        const updateQuery = 'UPDATE discussions SET title = ?, content = ? WHERE id = ?';
+        await queryAsync(updateQuery, [title, content, discussionId]);
+
+        res.json({ message: 'Discussion updated successfully' });
+    } catch (error) {
+        console.error('Error editing discussion:', error);
+        res.status(500).json({ error: 'Server error' });
+    }
+};
+
+const deleteDiscussion = async (req, res) => {
+    const { clubId, discussionId } = req.params;
+
+    if (!req.user || !req.user.id) {
+        return res.status(401).json({ error: 'User not authenticated' });
+    }
+
+    try {
+        // Check if the discussion exists and get the creator's ID
+        const discussionQuery = 'SELECT * FROM discussions WHERE id = ? AND club_id = ?';
+        const discussion = await queryAsync(discussionQuery, [discussionId, clubId]);
+
+        if (discussion.length === 0) {
+            return res.status(404).json({ error: 'Discussion not found' });
+        }
+
+        const discussionCreatorId = discussion[0].created_by;
+
+        // Check if the user is the creator or an admin
+        const isAdminQuery = 'SELECT role FROM club_memberships WHERE user_id = ? AND club_id = ?';
+        const adminCheck = await queryAsync(isAdminQuery, [req.user.id, clubId]);
+
+        if (req.user.id !== discussionCreatorId && !adminCheck.some(member => member.role === 'admin')) {
+            return res.status(403).json({ error: 'You are not authorized to delete this discussion' });
+        }
+
+        // Delete the discussion
+        const deleteQuery = 'DELETE FROM discussions WHERE id = ?';
+        await queryAsync(deleteQuery, [discussionId]);
+
+        res.json({ message: 'Discussion deleted successfully' });
+    } catch (error) {
+        console.error('Error deleting discussion:', error);
+        res.status(500).json({ error: 'Server error' });
+    }
+};
+
+// Add a member to a club by name
+const addMember = async (req, res) => {
+    const { clubId } = req.params;
+    const { name, role } = req.body;
+
+    if (!req.user || !req.user.id) {
+        return res.status(401).json({ error: 'User not authenticated' });
+    }
+
+    if (!name || !role) {
+        return res.status(400).json({ error: 'User name and role are required' });
+    }
+
+    try {
+        // Validate role
+        const validRoles = ['member', 'club leader', 'admin'];
+        if (!validRoles.includes(role)) {
+            return res.status(400).json({ error: `Invalid role. Valid roles are: ${validRoles.join(', ')}` });
+        }
+
+        // Check if the user exists
+        const userQuery = 'SELECT id FROM users WHERE name = ?';
+        const user = await queryAsync(userQuery, [name]);
+
+        if (user.length === 0) {
+            return res.status(404).json({ error: `User '${name}' not found` });
+        }
+
+        const userId = user[0].id;
+
+        // Check if the user is already a member
+        const membershipQuery = 'SELECT * FROM club_memberships WHERE user_id = ? AND club_id = ?';
+        const existingMembership = await queryAsync(membershipQuery, [userId, clubId]);
+
+        if (existingMembership.length > 0) {
+            return res.status(400).json({ error: `User '${name}' is already a member of the club` });
+        }
+
+        // Add user to the club
+        const addMemberQuery = `
+            INSERT INTO club_memberships (club_id, user_id, status, role)
+            VALUES (?, ?, ?, ?)`;
+        await queryAsync(addMemberQuery, [clubId, userId, 'approved', role]);
+
+        res.status(201).json({ message: `User '${name}' added to the club successfully` });
+    } catch (error) {
+        console.error(`Error adding member '${name}' to club '${clubId}':`, error);
+        res.status(500).json({ error: 'Server error. Please try again later.' });
+    }
+};
+
+// Fetch all discussion messages
+const getDiscussionMessages = async (req, res) => {
+    const { discussionId } = req.params;
+
+    if (!req.user || !req.user.id) {
+        return res.status(401).json({ error: 'User not authenticated' });
+    }
+
+    try {
+        // Query to fetch discussion details
+        const discussionQuery = `
+            SELECT title, content 
+            FROM discussions 
+            WHERE id = ?
+        `;
+        const [discussionDetails] = await queryAsync(discussionQuery, [discussionId]);
+
+        if (!discussionDetails) {
+            return res.status(404).json({ error: 'Discussion not found' });
+        }
+
+        // Query to fetch discussion messages
+        const messagesQuery = `
+            SELECT dm.id, dm.content, dm.timestamp, u.id AS sender_id, u.name AS sender_name
+            FROM discussion_messages dm
+            JOIN users u ON dm.sender_id = u.id
+            WHERE dm.discussion_id = ?
+            ORDER BY dm.timestamp ASC
+        `;
+        const messages = await queryAsync(messagesQuery, [discussionId]);
+
+        if (messages.length === 0) {
+            return res.status(404).json({ error: 'No messages found for this discussion' });
+        }
+
+        res.json({ discussionDetails, messages });
+    } catch (error) {
+        console.error('Error fetching discussion messages:', error);
+        res.status(500).json({ error: 'Server error' });
+    }
+};
+
+// Send a new message to a discussion
+const createDiscussionMessage = async (req, res) => {
+    const { discussionId } = req.params;
+    const { content } = req.body;
+
+    if (!req.user || !req.user.id) {
+        return res.status(401).json({ error: 'User not authenticated' });
+    }
+
+    if (!content) {
+        return res.status(400).json({ error: 'Message content is required' });
+    }
+
+    try {
+        // Insert new message into the database
+        const result = await queryAsync(
+            'INSERT INTO discussion_messages (discussion_id, sender_id, content) VALUES (?, ?, ?)',
+            [discussionId, req.user.id, content]
+        );
+
+        res.status(201).json({
+            message: {
+                id: result.insertId,
+                content,
+                sender_id: req.user.id,
+                sender_name: req.user.name,
+                timestamp: new Date().toISOString(),
+            },
+        });
+    } catch (error) {
+        console.error('Error sending message:', error);
+        res.status(500).json({ error: 'Server error' });
+    }
+};
+
+// Delete a user's message from a discussion
+const deleteDiscussionMessage = async (req, res) => {
+    const { discussionId, messageId } = req.params;
+
+    if (!req.user || !req.user.id) {
+        return res.status(401).json({ error: 'User not authenticated' });
+    }
+
+    try {
+        // Check if the message exists and if the user is the sender
+        const checkQuery = `
+            SELECT id FROM discussion_messages
+            WHERE id = ? AND discussion_id = ? AND sender_id = ?
+        `;
+        const message = await queryAsync(checkQuery, [messageId, discussionId, req.user.id]);
+
+        if (message.length === 0) {
+            return res.status(403).json({ error: 'You are not authorized to delete this message or it does not exist' });
+        }
+
+        // Delete the message
+        const deleteQuery = 'DELETE FROM discussion_messages WHERE id = ?';
+        await queryAsync(deleteQuery, [messageId]);
+
+        res.status(200).json({ message: 'Message deleted successfully' });
+    } catch (error) {
+        console.error('Error deleting discussion message:', error);
+        res.status(500).json({ error: 'Server error' });
+    }
+};
+
+module.exports = { getClubData, createClub, getClubs, updateClub, deleteClub, joinClub, leaveClub, createDiscussion, editDiscussion, deleteDiscussion, addMember, getDiscussionMessages, createDiscussionMessage, deleteDiscussionMessage };

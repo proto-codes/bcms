@@ -47,8 +47,10 @@ const register = async (req, res) => {
             return res.status(400).json({ error: 'Email is already registered' });
         }
 
-        // Hash password and insert user
+        // Hash password
         const hashedPassword = await bcrypt.hash(password, 12);
+
+        // Insert user into database
         const insertResult = await queryAsync(
             'INSERT INTO users (name, email, password) VALUES (?, ?, ?)',
             [name, email, hashedPassword]
@@ -57,7 +59,7 @@ const register = async (req, res) => {
 
         // Generate verification token
         const verificationToken = crypto.randomBytes(32).toString('hex');
-        const expiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000);
+        const expiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000); // 24 hours
         await queryAsync(
             'INSERT INTO verification_tokens (user_id, token, expires_at) VALUES (?, ?, ?)',
             [userId, verificationToken, expiresAt]
@@ -77,16 +79,37 @@ const register = async (req, res) => {
             html: `<p>Please verify your account by clicking the following link:</p><a href="${verificationLink}">${verificationLink}</a>`
         });
 
-        // Generate JWT token
-        const token = jwt.sign({ id: userId, name, email }, process.env.JWT_SECRET, { expiresIn: '1h' });
-        const tokenExpiresAt = new Date(Date.now() + 3600000);
-        await queryAsync(`
-            INSERT INTO active_tokens (user_id, token, expires_at)
-            VALUES (?, ?, ?)
-            ON DUPLICATE KEY UPDATE
-                token = VALUES(token),
-                expires_at = VALUES(expires_at)
-        `, [userId, token, tokenExpiresAt]);
+        // Generate access and refresh tokens
+        const accessToken = jwt.sign(
+            { id: userId, name, email },
+            process.env.JWT_SECRET,
+            { expiresIn: '15m' } // Short-lived access token
+        );
+
+        const refreshToken = jwt.sign(
+            { id: userId },
+            process.env.JWT_REFRESH_SECRET,
+            { expiresIn: '30d' } // Long-lived refresh token
+        );
+
+        const tokenExpiresAt = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000); // 30 days
+        await queryAsync(
+            `INSERT INTO active_tokens (user_id, refresh_token, expires_at) 
+             VALUES (?, ?, ?)
+             ON DUPLICATE KEY UPDATE 
+                 refresh_token = VALUES(refresh_token),
+                 expires_at = VALUES(expires_at)`,
+            [userId, refreshToken, tokenExpiresAt]
+        );
+
+        // Store refresh token securely in HTTP-only cookie (only in production)
+        res.cookie('refreshToken', refreshToken, {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === 'production', // Secure cookie only in production
+            sameSite: process.env.NODE_ENV === 'production' ? 'None' : 'Lax',
+            maxAge: 30 * 24 * 60 * 60 * 1000, // 30 days
+            path: '/',
+        });
 
         // Create a welcome notification (passing user_id, message, type directly)
         await createNotification({
@@ -97,7 +120,7 @@ const register = async (req, res) => {
 
         res.status(201).json({
             message: 'Registration successful! Check your email for a verification link.',
-            token,
+            accessToken, // Provide access token
         });
     } catch (err) {
         console.error('Error registering user:', err);
@@ -108,51 +131,98 @@ const register = async (req, res) => {
 const login = async (req, res) => {
     const { email, password } = req.body;
 
+    // Validate input
     if (!email || !password) {
         return res.status(400).json({ error: 'Please provide both email and password' });
     }
 
     try {
+        // Retrieve user by email
         const results = await queryAsync('SELECT * FROM users WHERE email = ?', [email]);
         if (results.length === 0) {
             return res.status(400).json({ error: 'User not found' });
         }
 
         const user = results[0];
+
+        // Compare hashed password
         const isMatch = await bcrypt.compare(password, user.password);
         if (!isMatch) {
             return res.status(400).json({ error: 'Invalid credentials' });
         }
 
-        const token = jwt.sign(
+        // Generate access token (short-lived)
+        const accessToken = jwt.sign(
             { id: user.id, name: user.name, email: user.email },
             process.env.JWT_SECRET,
-            { expiresIn: '1h' }
-        );
-        const expiresAt = new Date(Date.now() + 3600000);
-        await queryAsync( 
-            `INSERT INTO active_tokens (user_id, token, expires_at) 
-             VALUES (?, ?, ?)
-             ON DUPLICATE KEY UPDATE 
-                 token = VALUES(token), 
-                 expires_at = VALUES(expires_at)`,
-            [user.id, token, expiresAt]
+            { expiresIn: '15m' } // 15 minutes
         );
 
-        res.status(200).json({ message: 'Login successful!', token });
+        // Generate refresh token (long-lived)
+        const refreshToken = jwt.sign(
+            { id: user.id },
+            process.env.JWT_REFRESH_SECRET,
+            { expiresIn: '30d' } // 30 days
+        );
+
+        const expiresAt = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000); // 30 days
+
+        // Store refresh token securely in DB
+        await queryAsync(
+            `INSERT INTO active_tokens (user_id, refresh_token, expires_at) 
+             VALUES (?, ?, ?)
+             ON DUPLICATE KEY UPDATE 
+                 refresh_token = VALUES(refresh_token),
+                 expires_at = VALUES(expires_at)`,
+            [user.id, refreshToken, expiresAt]
+        );
+
+        // Set refresh token in an HTTP-only cookie
+        res.cookie('refreshToken', refreshToken, {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === 'production', // Use HTTPS in production
+            sameSite: process.env.NODE_ENV === 'production' ? 'None' : 'Lax',
+            maxAge: 30 * 24 * 60 * 60 * 1000, // 30 days
+            path: '/', // Available for all routes
+        });
+
+        // Respond with access token
+        res.status(200).json({
+            message: 'Login successful!',
+            accessToken,
+        });
     } catch (error) {
         console.error('Error during login:', error);
         res.status(500).json({ error: 'Server error' });
     }
 };
 
-const logout = (req, res) => {
-    const token = req.headers['authorization'].split(' ')[1];
+const logout = async (req, res) => {
+    const refreshToken = req.cookies?.refreshToken;
 
-    db.query('DELETE FROM active_tokens WHERE token = ?', [token], (err) => {
-        if (err) return res.status(500).send('Server error');
-        res.status(200).json({ message: 'Logged out successfully' });
-    });
+    if (!refreshToken) {
+        return res.status(400).json({ error: 'Refresh token is required' });
+    }
+
+    try {
+        // Delete the token from the database
+        await queryAsync('DELETE FROM active_tokens WHERE refresh_token = ?', [refreshToken]);
+
+        // Clear the cookie
+        res.clearCookie('refreshToken', {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === 'production',
+            sameSite: process.env.NODE_ENV === 'production' ? 'None' : 'Lax',
+            path: '/',
+        });
+
+        // res.clearCookie('refreshToken');
+
+        res.status(200).json({ message: 'Logout successful!' });
+    } catch (error) {
+        console.error('Error during logout:', error);
+        res.status(500).json({ error: 'Server error' });
+    }
 };
 
 const forgotPassword = async (req, res) => {
@@ -298,7 +368,6 @@ const verifyAccount = async (req, res) => {
 };
 
 const requestVerificationToken = async (req, res) => {
-    console.log("Authenticated user:", req.user);
     const email = req.user?.email; // Retrieve email from authenticated user info
 
     if (!email) {

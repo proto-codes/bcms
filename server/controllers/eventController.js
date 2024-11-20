@@ -12,17 +12,34 @@ const queryAsync = (query, params) => {
 
 // Create an event
 const createEvent = async (req, res) => {
-    const { name, date, location, clubId } = req.body;
+    const { title, description, date, location, startTime, endTime } = req.body;
+    const { clubId } = req.params;
 
     if (!req.user || !req.user.id) {
         return res.status(401).json({ error: 'User not authenticated' });
     }
 
+    if (!title || !description || !date || !location || !startTime || !endTime) {
+        return res.status(400).json({ error: 'All fields are required' });
+    }
+
+    if (!clubId) {
+        return res.status(400).json({ error: 'ClubId is required' });
+    }
+
     try {
+        // Validate that the club exists
+        const [club] = await queryAsync('SELECT * FROM clubs WHERE id = ?', [clubId]);
+        if (!club) {
+            return res.status(404).json({ error: 'Club not found' });
+        }
+
+        // Insert the event
         const result = await queryAsync(
-            'INSERT INTO events (name, date, location, club_id, created_by) VALUES (?, ?, ?, ?, ?)',
-            [name, date, location, clubId, req.user.id]
+            'INSERT INTO events (title, description, date, location, club_id, start_time, end_time, created_by) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
+            [title, description, date, location, clubId, startTime, endTime, req.user.id]
         );
+
         res.status(201).json({ message: 'Event created successfully', eventId: result.insertId });
     } catch (error) {
         console.error('Error creating event:', error);
@@ -30,10 +47,18 @@ const createEvent = async (req, res) => {
     }
 };
 
-// Get all events
+// Get all events for a specific club
 const getAllEvents = async (req, res) => {
+    const { clubId } = req.params; // Get the clubId from the URL parameter
+
+    if (!clubId) {
+        return res.status(400).json({ error: 'clubId is required' });
+    }
+
     try {
-        const events = await queryAsync('SELECT * FROM events');
+        // Query to get events for a specific clubId
+        const events = await queryAsync('SELECT * FROM events WHERE club_id = ?', [clubId]);
+
         res.json(events);
     } catch (error) {
         console.error('Error fetching events:', error);
@@ -43,17 +68,25 @@ const getAllEvents = async (req, res) => {
 
 // Update event details
 const updateEvent = async (req, res) => {
-    const { name, date, location } = req.body;
+    const { title, description, date, location, startTime, endTime } = req.body;
     const { id } = req.params;
 
     if (!req.user || !req.user.id) {
         return res.status(401).json({ error: 'User not authenticated' });
     }
 
+    if (!title || !description || !date || !location || !startTime || !endTime) {
+        return res.status(400).json({ error: 'All fields are required' });
+    }
+
+    if (!id) {
+        return res.status(400).json({ error: 'Id is required' });
+    }
+
     try {
         const result = await queryAsync(
-            'UPDATE events SET name = ?, date = ?, location = ? WHERE id = ? AND created_by = ?',
-            [name, date, location, id, req.user.id]
+            'UPDATE events SET title = ?, description = ?, date = ?, location = ?, start_time = ?, end_time = ? WHERE id = ? AND created_by = ?',
+            [title, description, date, location, startTime, endTime, id, req.user.id]
         );
 
         if (result.affectedRows === 0) {
@@ -94,29 +127,39 @@ const deleteEvent = async (req, res) => {
 
 // RSVP to an event
 const toggleRSVP = async (req, res) => {
-    const { id } = req.params;
+    const { id: eventId } = req.params;
 
     if (!req.user || !req.user.id) {
         return res.status(401).json({ error: 'User not authenticated' });
     }
 
     try {
-        const [rsvp] = await queryAsync(
-            'SELECT * FROM event_rsvps WHERE user_id = ? AND event_id = ?',
-            [req.user.id, id]
+        // Check if the event exists
+        const [event] = await queryAsync('SELECT * FROM events WHERE id = ?', [eventId]);
+        if (!event) {
+            return res.status(404).json({ error: 'Event not found' });
+        }
+
+        // Check if the user has already RSVP'd
+        const [existingRSVP] = await queryAsync(
+            'SELECT * FROM rsvps WHERE user_id = ? AND event_id = ?',
+            [req.user.id, eventId]
         );
 
-        if (rsvp) {
-            await queryAsync('DELETE FROM event_rsvps WHERE user_id = ? AND event_id = ?', [req.user.id, id]);
-            res.json({ message: 'RSVP canceled' });
+        if (existingRSVP) {
+            // If an RSVP exists, cancel it
+            await queryAsync('DELETE FROM rsvps WHERE user_id = ? AND event_id = ?', [req.user.id, eventId]);
+            return res.json({ message: 'RSVP canceled' });
         } else {
-            await queryAsync('INSERT INTO event_rsvps (user_id, event_id) VALUES (?, ?)', [req.user.id, id]);
-            res.json({ message: 'RSVP confirmed' });
+            // If no RSVP exists, add a new one
+            await queryAsync('INSERT INTO rsvps (event_id, user_id) VALUES (?, ?)', [eventId, req.user.id]);
+            return res.json({ message: 'RSVP confirmed' });
         }
     } catch (error) {
         console.error('Error toggling RSVP:', error);
         res.status(500).json({ error: 'Server error' });
     }
 };
+
 
 module.exports = { createEvent, getAllEvents, updateEvent, deleteEvent, toggleRSVP };

@@ -13,19 +13,45 @@ const queryAsync = (query, params) => {
 
 // Get User Details
 const getUserDetails = async (req, res) => {
-    // Ensure req.user is defined (comes from the authenticateToken middleware)
     if (!req.user || !req.user.id) {
         return res.status(401).json({ error: 'User not authenticated' });
     }
 
     try {
-        const results = await queryAsync('SELECT id, name, email FROM users WHERE id = ?', [req.user.id]);
+        // Fetch user details along with profile_pics from the profile table
+        const query = `
+            SELECT 
+                u.id, 
+                u.name, 
+                u.email, 
+                p.profile_pics 
+            FROM 
+                users u
+            LEFT JOIN 
+                profile p 
+            ON 
+                u.id = p.user_id 
+            WHERE 
+                u.id = ?
+        `;
+
+        const results = await queryAsync(query, [req.user.id]);
+
         if (results.length === 0) {
             return res.status(404).json({ error: 'User not found' });
         }
-        res.json(results[0]);
+
+        // Convert the profile_pics (if exists) to a base64 string for front-end use
+        const user = {
+            ...results[0],
+            profile_pics: results[0].profile_pics 
+                ? Buffer.from(results[0].profile_pics).toString('base64') 
+                : null,
+        };
+
+        res.json(user);
     } catch (error) {
-        console.error('Error fetching user:', error);
+        console.error('Error fetching user details:', error);
         res.status(500).json({ error: 'Server error' });
     }
 };
@@ -53,10 +79,10 @@ const changePassword = async (req, res) => {
     };
 
     // Check password strength
-    const passwordStrengthError = checkPasswordStrength(newPassword);
-    if (passwordStrengthError) {
-        return res.status(400).json({ error: passwordStrengthError });
-    }
+    // const passwordStrengthError = checkPasswordStrength(newPassword);
+    // if (passwordStrengthError) {
+    //     return res.status(400).json({ error: passwordStrengthError });
+    // }
 
     try {
         // Retrieve the user's current password hash from the database

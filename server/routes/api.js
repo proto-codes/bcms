@@ -9,7 +9,6 @@ const messagesController = require('../controllers/messagesController');
 const eventController = require('../controllers/eventController');
 const notificationsController = require('../controllers/notificationsController');
 const clubController = require('../controllers/clubController');
-const upload = require('../config/multer');
 
 const router = express.Router();
 
@@ -22,7 +21,11 @@ router.post('/request-verification-token', authController.requestVerificationTok
 
 // Token validation route
 router.post('/validate-token', (req, res) => {
-  res.json({ valid: true, user: req.user });
+  const newAccessToken = req.newAccessToken;
+  if (newAccessToken) {
+    return res.status(200).json({ id: req.user.id, newAccessToken });
+  }
+  res.status(200).json({ user: req.user });
 });
 
 // User settings routes
@@ -35,7 +38,7 @@ router.get('/user', userController.getUserDetails);
 
 // Profile routes
 router.get('/profile/:userId', profileController.getProfile);
-router.put('/profile/:userId', upload.single('profile_pics'), profileController.updateProfile);
+router.put('/profile/:userId', profileController.updateProfile);
 
 // Notification preferences
 router.get('/notification-preferences', userController.fetchNotificationPreferences);
@@ -60,21 +63,29 @@ router.delete('/messages/:messageId', messagesController.deleteMessage);
 router.get('/notifications', notificationsController.getNotifications);
 router.delete('/notifications/:id', notificationsController.deleteNotification);
 
-// Get club data by clubId
-router.get('/clubs/:clubId', clubController.getClubData);
 // Club Routes
+router.get('/clubs/:clubId', clubController.getClubData);
 router.post('/clubs', clubController.createClub);
 router.get('/clubs', clubController.getClubs);
 router.put('/clubs/:clubId', clubController.updateClub);
 router.delete('/clubs/:clubId', clubController.deleteClub);
 router.post('/clubs/:clubId/join', clubController.joinClub);
 router.post('/clubs/:clubId/leave', clubController.leaveClub);
+router.post('/clubs/:clubId/add-member', clubController.addMember);
+
+// Discussion Routes
+router.post('/clubs/:clubId/discussions', clubController.createDiscussion);
+router.put('/clubs/:clubId/discussions/:discussionId', clubController.editDiscussion);
+router.delete('/clubs/:clubId/discussions/:discussionId', clubController.deleteDiscussion);
+router.get('/discussion/:discussionId', clubController.getDiscussionMessages);
+router.post('/discussion/:discussionId', clubController.createDiscussionMessage);
+router.delete('/discussion/:discussionId/:messageId', clubController.deleteDiscussionMessage);
 
 // Event Routes
-router.post('/events', eventController.createEvent);
-router.get('/events', eventController.getAllEvents);
+router.post('/events/:clubId', eventController.createEvent);
+router.get('/events/:clubId', eventController.getAllEvents);
 router.put('/events/:id', eventController.updateEvent);
 router.delete('/events/:id', eventController.deleteEvent);
-router.put('/events/rsvp/:id', eventController.toggleRSVP);
+router.post('/events/:id/rsvp', eventController.toggleRSVP);
 
 module.exports = router;
