@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { Link, NavLink, Outlet } from 'react-router-dom';
+import { toast } from 'react-toastify';
 import { FaBars } from 'react-icons/fa';
-import { MdTask, MdBarChart, MdNotifications, MdHelp, MdMail, MdAccountCircle, MdExitToApp, MdSettings, MdSearch, MdGroup, MdVisibility, MdManageAccounts, MdDashboard } from 'react-icons/md';
+import { MdTask, MdBarChart, MdNotifications, MdHelp, MdMail, MdAccountCircle, MdExitToApp, MdSettings, MdSearch, MdGroup, MdDashboard } from 'react-icons/md';
 import { useAuth } from '../context/AuthContext';
 import api from '../api/axios';
 
@@ -9,6 +10,7 @@ function Dashboard() {
   const { userId } = useAuth();
   const [showMenu, setShowMenu] = useState(false);
   const [userName, setUserName] = useState('');
+  const [userProfilePics, setUserProfilePics] = useState(null);
 
   const handleMenuVisibility = () => {
     setShowMenu(!showMenu);
@@ -16,12 +18,13 @@ function Dashboard() {
 
   const handleLogout = async () => {
     try {
-      await api.post('/logout');
-      localStorage.removeItem('token');
+      const response = await api.post('/logout');
+      localStorage.removeItem('accessToken');
+      toast.success(response.data.message);
       // setIsAuthenticated(false);
       window.location.href = '/auth/login';
     } catch (error) {
-      console.error('Logout error:', error);
+      toast.error(error.response?.data?.error || 'Logout error');
     }
   };
 
@@ -30,6 +33,7 @@ function Dashboard() {
       try {
         const response = await api.get('/user');
         setUserName(response.data.name);
+        setUserProfilePics(response.data.profile_pics);
       } catch (error) {
         console.error('Error fetching user details:', error);
       }
@@ -38,12 +42,14 @@ function Dashboard() {
     fetchUserDetails();
   }, []);
 
+  const profileImg = userProfilePics ? `data:image/png;base64,${userProfilePics}` : '/profile-placeholder.png';
+
   return (
     <>
       <div className="row m-0">
         <div className="dashboard-menu vh-100 col-md-3 p-0 bg-purple z-3" style={{ right: showMenu ? '0' : '100%' }}>
           <div className="w-100 p-3 d-none d-md-flex align-items-center gap-2 bg-purple-subtle" style={{ height: '8rem' }}>
-            <img src='/profile-placeholder.png' alt="User img" className='img' />
+            <img src={profileImg} alt={userName} className='rounded-circle object-fit-cover' style={{ width:'5rem', minWidth:'5rem',height:'5rem',minHeight:'5rem' }} />
             <div className="d-flex flex-column">
               <strong className='h5 m-0'>{userName || 'Loading...'}</strong>
               <span className='text-gold fw-bold status-online'>Online</span>
@@ -123,8 +129,8 @@ function Dashboard() {
                 to="/messages"><MdMail size={30} color="#fff" className='icon' />
               </NavLink>
               <div className="dropdown">
-                <button className="btn dropdown-toggle d-flex align-items-center gap-2 p-1 text-light" type='button' id='dropdownMenuButton' data-bs-toggle='dropdown' aria-expanded='false'>                    
-                  <img src='/profile-placeholder.png' alt="" className='img' style={{ width: '2.5rem' }} />
+                <button className="btn dropdown-toggle d-flex align-items-center gap-2 p-1 text-light" type='button' id='dropdownMenuButton' data-bs-toggle='dropdown' aria-expanded='false'>                
+                  <img src={profileImg} alt={userName} className='rounded-circle object-fit-cover' style={{ width:'2.5rem', minWidth:'2.5rem',height:'2.5rem',minHeight:'2.5rem' }} />
                   <span className='d-none d-md-block'>{userName.split(' ')[0] || 'Loading...'}</span>
                 </button>
                 <ul className="dropdown-menu" aria-labelledby='dropdownMenuButton'>

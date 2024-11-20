@@ -57,7 +57,7 @@ const HelpAndSupport = () => {
         <p>
           For detailed instructions on using the platform, you can download our comprehensive User Guide. This guide covers everything from registration to advanced features.
         </p>
-        <a href="/path-to-user-guide.pdf" className="btn btn-gold" target="_blank" rel="noopener noreferrer">Download User Guide</a>
+        <a href="/path-to-user-guide.pdf" className="btn btn-outline-gold" target="_blank" rel="noopener noreferrer">Download User Guide</a>
       </section>
     </div>
   );

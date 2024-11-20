@@ -3,17 +3,21 @@ import axios from 'axios';
 // Create an instance of Axios with default settings
 const api = axios.create({
     baseURL: 'http://localhost:5000/api', // Your API base URL
+    withCredentials: true,
     timeout: 10000, // Request timeout
     headers: {
         'Content-Type': 'application/json',
     },
 });
 
-// Request interceptor to add the token to every request
+// Request interceptor to add the accessToken to every request
 api.interceptors.request.use((config) => {
-    const token = localStorage.getItem('token'); // Get token from localStorage
-    if (token) {
-        config.headers.Authorization = `Bearer ${token}`; // Add the token to the Authorization header
+    const accessToken = localStorage.getItem('accessToken'); // Get accessToken from localStorage
+    if (accessToken) {
+        config.headers = {
+            ...config.headers, // Preserve existing headers
+            Authorization: `Bearer ${accessToken}`,
+        };
     }
     return config;
 }, (error) => {

@@ -81,7 +81,7 @@ function Register() {
       });
 
       toast.success(response.data.message || 'Registration successful! Check your email for a confirmation code.');
-      localStorage.setItem('token', response.data.token);
+      localStorage.setItem('accessToken', response.data.accessToken);
 
       setTimeout(() => {
         window.location.href = '/verify-account';
@@ -199,7 +199,7 @@ function Register() {
           </div>
 
           {/* Register Button */}
-          <button type="submit" className="btn btn-gold w-100" disabled={loading}>
+          <button type="submit" className="btn btn-outline-gold w-100" disabled={loading}>
             {loading ? (
               <>
                 <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>

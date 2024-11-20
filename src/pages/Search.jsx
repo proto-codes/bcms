@@ -77,7 +77,7 @@ const Search = () => {
           />
           <Button
             type="submit"
-            variant="gold"
+            variant="outline-gold"
             style={{ borderTopLeftRadius: '0', borderBottomLeftRadius: '0' }}
           >
             Search
@@ -108,7 +108,7 @@ const Search = () => {
                         <p className="text-muted">Email: {result.email}</p>
                         <div className="d-flex gap-2">
                           <button onClick={() => navigate(`/profile/${result.id}`)} className='btn btn-secondary'>View profile</button>
-                          <button className='btn btn-gold'>Send message</button>
+                          <button className='btn btn-outline-gold'>Send message</button>
                         </div>
                       </Card>
                     </li>

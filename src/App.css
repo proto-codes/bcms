@@ -12,6 +12,10 @@ body {
   color: var(--gold) !important;
 }
 
+.text-purple {   
+  color: var(--purple) !important;
+}
+
 .bg-purple, .btn-purple {
   background-color: var(--purple) !important;
   color: var(--light) !important;
@@ -130,12 +134,6 @@ body {
 
 .active-icon {
     border-bottom: 2px solid #fff !important;
-}
-
-.img {
-    width: 5rem;
-    border-radius: 50%;
-    object-fit: cover;
 }
 
 .cst-height {
