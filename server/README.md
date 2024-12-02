@@ -1,6 +1,6 @@
-# BCMS - Server Side
+# CubPro - Server Side
 
-This is the server-side of **BCMS**, a club management system built with Node.js, Express, and MySQL. The server handles user authentication, club management, event management, and more.
+This is the server-side of **CubPro**, a club management system built with Node.js, Express, and MySQL. The server handles user authentication, club management, event management, and more.
 
 ## Tech Stack
 - **Runtime**: [Node.js](https://nodejs.org/)
@@ -22,7 +22,7 @@ This is the server-side of **BCMS**, a club management system built with Node.js
 1. **Clone the repository**:
 
    ```bash
-   git clone https://github.com/proto-codes/bcms.git
+   git clone https://github.com/proto-codes/clubpro.git
    ```
 
 2. **Navigate to the project directory**:
@@ -38,7 +38,7 @@ This is the server-side of **BCMS**, a club management system built with Node.js
    ```
 
 4. **Set up the database**:
-   - Create a MySQL database named `bcms_db`.
+   - Create a MySQL database named `clubpro_db`.
    - Import the SQL schema from the provided SQL file (if available) or run the command:
    ```bash
    npm run migrate
@@ -51,7 +51,7 @@ This is the server-side of **BCMS**, a club management system built with Node.js
      DB_HOST=localhost
      DB_USER=your_db_user
      DB_PASSWORD=your_db_password
-     DB_NAME=bcms_db
+     DB_NAME=clubpro_db
      JWT_SECRET=your_jwt_secret
 
      PORT=5000

@@ -83,7 +83,7 @@ const register = async (req, res) => {
         const accessToken = jwt.sign(
             { id: userId, name, email },
             process.env.JWT_SECRET,
-            { expiresIn: '15m' } // Short-lived access token
+            { expiresIn: '30d' } // Short-lived access token
         );
 
         const refreshToken = jwt.sign(
@@ -155,7 +155,7 @@ const login = async (req, res) => {
         const accessToken = jwt.sign(
             { id: user.id, name: user.name, email: user.email },
             process.env.JWT_SECRET,
-            { expiresIn: '15m' } // 15 minutes
+            { expiresIn: '30d' } // 15 minutes
         );
 
         // Generate refresh token (long-lived)

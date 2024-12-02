@@ -48,7 +48,7 @@ function App() {
               <Route path="messages" element={<Messages />} />
               <Route path="tasks" element={<Tasks />} />
               <Route path=":clubId/:clubName/overview" element={<ClubOverview />} />
-              <Route path="manage" element={<ClubMange />} />
+              <Route path="clubs" element={<ClubMange />} />
               <Route path="discussion/:discussionId" element={<Discussion />} />
               <Route path="search" element={<Search />} />
               <Route path="statistics" element={<Statistics />} />

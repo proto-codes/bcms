@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import api from '../api/axios';
 import PageLoader from '../components/PageLoader';
+import { toast } from 'react-toastify';
 
 const AuthContext = createContext();
 
@@ -39,7 +40,7 @@ export const AuthProvider = ({ children }) => {
           setUserName(null);
         }
       } catch (error) {
-        console.error('Error validating token:', error);
+        toast.error(error.response?.data?.error || 'Error validating token');
         setIsAuthenticated(false);
         setUserId(null);
         setUserName(null);
@@ -51,11 +52,18 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  const logout = () => {
-    localStorage.removeItem('accessToken');
-    setIsAuthenticated(false);
-    setUserId(null);
-    setUserName(null);
+  const logout = async () => {
+    try {
+      const response = await api.post('/logout');
+      localStorage.removeItem('accessToken');
+      toast.success(response.data.message);
+      setIsAuthenticated(false);
+      setUserId(null);
+      setUserName(null);
+      window.location.href = '/auth/login';
+    } catch (error) {
+      toast.error(error.response?.data?.error || 'Logout error');
+    }
   };
 
   useEffect(() => {
@@ -65,6 +73,18 @@ export const AuthProvider = ({ children }) => {
     };
 
     initializeAuth();
+
+    const handleStorageChange = (event) => {
+      if (event.key === 'accessToken') {
+        checkAuth();
+      }
+    };
+
+    window.addEventListener('storage', handleStorageChange);
+
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+    };
   }, []);
 
   if (loading) {

@@ -1,7 +1,7 @@
 {
   "name": "server",
   "version": "1.0.0",
-  "description": "A Node.js server for bcms",
+  "description": "A Node.js server for clubpro",
   "main": "server.js",
   "scripts": {
     "server": "nodemon server.js",
@@ -9,7 +9,7 @@
     "migrate": "node migration.js"
   },
   "keywords": [
-    "bcms",
+    "clubpro",
     "node",
     "server",
     "express",

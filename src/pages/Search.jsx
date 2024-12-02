@@ -62,6 +62,10 @@ const Search = () => {
     handleSearch(searchQuery);
   };
 
+  const handleSendMessage = (userId) => {
+    navigate(`/messages?receiver=${userId}`);
+  };
+
   return (
     <Container className="my-4">
       <h4 className="text-center mb-4 text-gold">Explore Clubs, People, or More</h4>
@@ -108,7 +112,7 @@ const Search = () => {
                         <p className="text-muted">Email: {result.email}</p>
                         <div className="d-flex gap-2">
                           <button onClick={() => navigate(`/profile/${result.id}`)} className='btn btn-secondary'>View profile</button>
-                          <button className='btn btn-outline-gold'>Send message</button>
+                          <button className='btn btn-outline-gold' onClick={() => handleSendMessage(result.id)}>Send message</button>
                         </div>
                       </Card>
                     </li>

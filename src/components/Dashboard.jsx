@@ -1,13 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { Link, NavLink, Outlet } from 'react-router-dom';
-import { toast } from 'react-toastify';
+import { NavLink, Outlet } from 'react-router-dom';
 import { FaBars } from 'react-icons/fa';
 import { MdTask, MdBarChart, MdNotifications, MdHelp, MdMail, MdAccountCircle, MdExitToApp, MdSettings, MdSearch, MdGroup, MdDashboard } from 'react-icons/md';
 import { useAuth } from '../context/AuthContext';
 import api from '../api/axios';
 
 function Dashboard() {
-  const { userId } = useAuth();
+  const { userId, logout } = useAuth();
   const [showMenu, setShowMenu] = useState(false);
   const [userName, setUserName] = useState('');
   const [userProfilePics, setUserProfilePics] = useState(null);
@@ -16,16 +15,8 @@ function Dashboard() {
     setShowMenu(!showMenu);
   };
 
-  const handleLogout = async () => {
-    try {
-      const response = await api.post('/logout');
-      localStorage.removeItem('accessToken');
-      toast.success(response.data.message);
-      // setIsAuthenticated(false);
-      window.location.href = '/auth/login';
-    } catch (error) {
-      toast.error(error.response?.data?.error || 'Logout error');
-    }
+  const handleLogout = () => {
+    logout(); // Call the logout function
   };
 
   useEffect(() => {
@@ -64,8 +55,8 @@ function Dashboard() {
               <NavLink to="/overview" className={({ isActive }) => isActive ? 'nav-tab text-light fs-4 p-1 d-flex align-items-center gap-2 text-decoration-none active-tab' : 'nav-tab text-light fs-4 p-1 d-flex align-items-center gap-2 text-decoration-none'}>
                 <MdDashboard size={30} color="#fff" /> Overview
               </NavLink>
-              <NavLink to="/manage" className={({ isActive }) => isActive ? 'nav-tab text-light fs-4 p-1 d-flex align-items-center gap-2 text-decoration-none active-tab' : 'nav-tab text-light fs-4 p-1 d-flex align-items-center gap-2 text-decoration-none'}>
-                <MdGroup size={30} color="#fff" /> Club
+              <NavLink to="/clubs" className={({ isActive }) => isActive ? 'nav-tab text-light fs-4 p-1 d-flex align-items-center gap-2 text-decoration-none active-tab' : 'nav-tab text-light fs-4 p-1 d-flex align-items-center gap-2 text-decoration-none'}>
+                <MdGroup size={30} color="#fff" /> Clubs
               </NavLink>
               {/* Dropdown */}
               {/* <div className="dropdown">
@@ -113,7 +104,7 @@ function Dashboard() {
               <button className='btn p-1 d-block d-md-none' onClick={handleMenuVisibility}>
                 <FaBars size={30} color="#fff" />
               </button>
-              <h2 className='bcms m-0 text-gold'>BCMS</h2>
+              <h2 className='clubpro m-0 text-gold'>ClubPro</h2>
             </div>
             <div className="d-flex align-items-center gap-2">
               <NavLink

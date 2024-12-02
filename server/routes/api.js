@@ -53,11 +53,12 @@ router.delete('/tasks/:taskId', taskController.deleteTask);
 router.get('/search', searchController.searchUsers);
 
 // Messaging routes
-router.get('/conversations', messagesController.fetchConversations);
-router.get('/conversations/:conversationId/messages', messagesController.fetchMessages);
 router.post('/messages', messagesController.sendMessage);
-router.put('/messages/:messageId/read', messagesController.updateMessageStatus);
-router.delete('/messages/:messageId', messagesController.deleteMessage);
+router.put('/messages/:messageId/read', messagesController.markMessageAsRead);
+router.delete('/messages/:messageId/delete', messagesController.deleteMessage);
+router.put('/messages/:messageId/edit', messagesController.editMessage);
+router.get('/messages', messagesController.getMessages);
+router.get('/messages/receiver', messagesController.getMessagesForReceiver);
 
 // Notifications route
 router.get('/notifications', notificationsController.getNotifications);
