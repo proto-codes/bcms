@@ -115,6 +115,11 @@ body {
     border-color: var(--gold) !important;
 }
 
+.list-group-item.msg.active {
+  background-color: var(--purple) !important;
+  border-color: var(--purple) !important;
+}
+
 .nav-link:hover {
     color: var(--light) !important;
 }
@@ -142,8 +147,30 @@ body {
 }
 
 .msg-height {
-    max-height: calc(100vh - 20.5rem);
-    overflow: auto;
+  height: calc(100vh - 21rem);
+  overflow: auto;
+}
+
+/* Customize scrollbar */
+.msg-height::-webkit-scrollbar {
+  width: 4px;  /* Set the width of the scrollbar */
+  height: 4px; /* For horizontal scrollbar */
+}
+
+/* Track */
+.msg-height::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+/* Handle (the draggable part of the scrollbar) */
+.msg-height::-webkit-scrollbar-thumb {
+  background: #888;  /* Color of the scrollbar handle */
+  border-radius: 10px;
+}
+
+/* Handle when hovered */
+.msg-height::-webkit-scrollbar-thumb:hover {
+  background: #555;  /* Darker color when hovered */
 }
 
 .icon:hover {
@@ -174,7 +201,7 @@ body {
 }
 
 @media (max-width: 576px) {
-    .bcms {
+    .clubpro {
         font-size: calc(1rem + .9vw) !important;
     }
 }

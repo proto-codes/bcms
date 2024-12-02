@@ -1,6 +1,6 @@
-# BCMS (Bems Club Management System)
+# ClubPro (Bems Club Management System)
 
-**BCMS** is a comprehensive club management system that streamlines the process of managing clubs, events, discussions, and resources for admins, club leaders, and members. It provides user authentication, communication tools, and reporting capabilities to enhance engagement and collaboration within clubs.
+**ClubPro** is a comprehensive club management system that streamlines the process of managing clubs, events, discussions, and resources for admins, club leaders, and members. It provides user authentication, communication tools, and reporting capabilities to enhance engagement and collaboration within clubs.
 
 ## Tech Stack
 - **Client**: React + Vite + Axios
@@ -73,13 +73,13 @@ A flowchart representing user roles and system features can visualize the user j
 1. **Clone the repository**:
 
    ```bash
-   git clone https://github.com/proto-codes/bcms.git
+   git clone https://github.com/proto-codes/clubpro.git
    ```
 
 2. **Navigate to the project directory**:
 
    ```bash
-   cd bcms
+   cd clubpro
    ```
 
 3. **Install dependencies**:
@@ -117,7 +117,7 @@ npm run build
 The build will be located in the `dist` folder, which you can deploy to a static hosting service.
 
 ### Conclusion
-"BCMS" ensures seamless club management with diverse features for admins, leaders, and members, making club engagement efficient and engaging. Built with modern web technologies, it provides a powerful, responsive system for clubs of all sizes.
+"ClubPro" ensures seamless club management with diverse features for admins, leaders, and members, making club engagement efficient and engaging. Built with modern web technologies, it provides a powerful, responsive system for clubs of all sizes.
 """
 
 ## License

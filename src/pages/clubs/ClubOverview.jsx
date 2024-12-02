@@ -226,10 +226,11 @@ const ClubOverview = () => {
   } finally {
     setLoading(false);
   }
-};  
+};
 
-  if (loading) return <Spinner animation="border" role="status"><span className="visually-hidden">Loading...</span></Spinner>;
-  if (error) return <div className="text-danger">{error}</div>;
+  if (loading) return <div className="text-center mt-4"><Spinner animation="border" role="status"><span className="visually-hidden">Loading...</span></Spinner><p>Loading club...</p></div>;
+
+  if (error) return <div className="text-danger text-center mt-4">{error}</div>;
 
   return (
     <div className="container-fluid my-4">

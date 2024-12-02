@@ -14,10 +14,10 @@ function Footer() {
         </div>
 
         {/* Contact Information */}
-        <p className="mb-1">info@bcms.com | +123 456 7890</p>
+        <p className="mb-1">info@clubpro.com | +123 456 7890</p>
 
         {/* Copyright */}
-        <p className="mb-1">&copy; {new Date().getFullYear()} BCMS All Rights Reserved
+        <p className="mb-1">&copy; {new Date().getFullYear()} ClubPro All Rights Reserved
         </p>
         <p className="mb-1">
           Powered by

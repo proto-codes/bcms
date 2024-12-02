@@ -71,6 +71,13 @@ const Discussion = () => {
     );
   }
 
+  const handleKeyPress = (e) => {
+    // Check if the pressed key is Enter (keyCode 13)
+    if (e.key === 'Enter' && !e.shiftKey) {
+      handleSendMessage(e);
+    }
+  };
+
   return (
     <div className="h-100 container-fluid position-relative py-4">
       <Button variant="outline-dark" onClick={handleGoBack} className="mb-3"><MdArrowBack size={20} /></Button>
@@ -88,7 +95,7 @@ const Discussion = () => {
         {messages.length > 0 ? (
           messages.map((message) => (
             <div key={message.id} style={{ display: 'flex', flexDirection: message.sender_name === loggedInUserName ? 'row-reverse' : 'row', marginBottom: '10px' }}>
-              <div className="message-bubble" style={{ backgroundColor: message.sender_name === loggedInUserName ? '#dcf8c6' : '#f1f1f1', padding: '10px 15px', borderRadius: '20px', maxWidth: '70%', wordBreak: 'break-word' }}>
+              <div className="message-bubble" style={{ backgroundColor: message.sender_name === loggedInUserName ? '#D1C4E9' : '#f1f1f1', padding: '10px 15px', borderRadius: '20px', maxWidth: '70%', wordBreak: 'break-word' }}>
                 <strong>{message.sender_name || 'Anonymous'}</strong>: {message.content}
                 <div style={{ fontSize: '0.8em', color: '#888' }}>{message.timestamp ? format(new Date(message.timestamp), 'PPPpp') : 'Invalid date'}</div>
               </div>
@@ -105,7 +112,7 @@ const Discussion = () => {
           <Card.Body>
             <Form onSubmit={handleSendMessage} className="d-flex align-items-center">
               <Form.Group controlId="newMessage" style={{ flex: 1 }}>
-                <Form.Control as="textarea" rows={1} value={newMessage} onChange={(e) => setNewMessage(e.target.value)} placeholder="Type your message here" required style={{ resize: 'none', minHeight: '40px', maxHeight: '120px', overflowY: 'auto' }} />
+                <Form.Control as="textarea" rows={1} value={newMessage} onChange={(e) => setNewMessage(e.target.value)} placeholder="Type your message here" required style={{ resize: 'none', minHeight: '40px', maxHeight: '120px', overflowY: 'auto' }} onKeyDown={handleKeyPress} />
               </Form.Group>
               <Button variant="outline-purple" type="submit" className="d-flex align-items-center" style={{ marginLeft: '10px', height: '40px' }}><MdSend size={20} /></Button>
             </Form>

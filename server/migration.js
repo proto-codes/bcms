@@ -78,8 +78,9 @@ connection.connect((err) => {
       receiver_id INT NOT NULL,
       message TEXT,
       created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-      read_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-      deleted_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+      updated_at TIMESTAMP NULL ON UPDATE CURRENT_TIMESTAMP,
+      read_at TIMESTAMP NULL,
+      deleted_at TIMESTAMP NULL,
       is_read BOOLEAN DEFAULT FALSE,
       FOREIGN KEY (sender_id) REFERENCES users(id) ON DELETE CASCADE,
       FOREIGN KEY (receiver_id) REFERENCES users(id) ON DELETE CASCADE
@@ -177,7 +178,7 @@ connection.connect((err) => {
     CREATE TABLE IF NOT EXISTS club_memberships (
       id INT AUTO_INCREMENT PRIMARY KEY,
       club_id INT NOT NULL,
-      user_id INT NOT NULL UNIQUE,
+      user_id INT NOT NULL,
       status ENUM('pending', 'approved') DEFAULT 'pending',
       role ENUM('member', 'club leader', 'admin') DEFAULT 'member',
       joined_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,

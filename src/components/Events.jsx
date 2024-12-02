@@ -156,11 +156,9 @@ const Events = ({ clubId, loggedInUserId }) => {
       <ListGroup className="mb-4">
         <ListGroup.Item className="d-flex justify-content-between align-items-center">
           <h5>Upcoming Events</h5>
-          {events.map((event) => (
-            loggedInUserId === event.created_by && (
-              <Button key={event.id} variant="outline-dark" size="sm" onClick={() => handleOpenEventModal(event)}>Add event</Button>
-            )
-          ))}
+          {loggedInUserId === events[0]?.created_by && (
+            <Button key={event.id} variant="outline-dark" size="sm" onClick={() => handleOpenEventModal(event)}>Add event</Button>
+          )}
         </ListGroup.Item>
         {events.length === 0 ? (
           <p className='mx-3 my-2'>No events found</p>
