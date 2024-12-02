@@ -1,4 +1,4 @@
-# ClubPro (Bems Club Management System)
+# ClubPro (Club Management System)
 
 **ClubPro** is a comprehensive club management system that streamlines the process of managing clubs, events, discussions, and resources for admins, club leaders, and members. It provides user authentication, communication tools, and reporting capabilities to enhance engagement and collaboration within clubs.
 
