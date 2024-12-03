@@ -3,13 +3,10 @@ import { NavLink, Outlet } from 'react-router-dom';
 import { FaBars } from 'react-icons/fa';
 import { MdTask, MdBarChart, MdNotifications, MdHelp, MdMail, MdAccountCircle, MdExitToApp, MdSettings, MdSearch, MdGroup, MdDashboard } from 'react-icons/md';
 import { useAuth } from '../context/AuthContext';
-import api from '../api/axios';
 
 function Dashboard() {
-  const { userId, logout } = useAuth();
+  const { userId, userName, userProfilePics, logout } = useAuth();
   const [showMenu, setShowMenu] = useState(false);
-  const [userName, setUserName] = useState('');
-  const [userProfilePics, setUserProfilePics] = useState(null);
 
   const handleMenuVisibility = () => {
     setShowMenu(!showMenu);
@@ -18,20 +15,6 @@ function Dashboard() {
   const handleLogout = () => {
     logout(); // Call the logout function
   };
-
-  useEffect(() => {
-    const fetchUserDetails = async () => {
-      try {
-        const response = await api.get('/user');
-        setUserName(response.data.name);
-        setUserProfilePics(response.data.profile_pics);
-      } catch (error) {
-        console.error('Error fetching user details:', error);
-      }
-    };
-
-    fetchUserDetails();
-  }, []);
 
   const profileImg = userProfilePics ? `data:image/png;base64,${userProfilePics}` : '/profile-placeholder.png';
 
@@ -58,31 +41,6 @@ function Dashboard() {
               <NavLink to="/clubs" className={({ isActive }) => isActive ? 'nav-tab text-light fs-4 p-1 d-flex align-items-center gap-2 text-decoration-none active-tab' : 'nav-tab text-light fs-4 p-1 d-flex align-items-center gap-2 text-decoration-none'}>
                 <MdGroup size={30} color="#fff" /> Clubs
               </NavLink>
-              {/* Dropdown */}
-              {/* <div className="dropdown">
-                <a 
-                  href="#" 
-                  className='nav-link dropdown-toggle nav-tab text-light fs-4 p-1 d-flex align-items-center gap-2 text-decoration-none' 
-                  id="dropdownMenuLink" 
-                  role="button" 
-                  data-bs-toggle="dropdown" 
-                  aria-expanded="false"
-                >
-                  <MdGroup size={30} color="#fff" /> Clubs
-                </a>
-                <ul className="dropdown-menu" aria-labelledby="dropdownMenuLink">
-                  <li>
-                    <Link className="dropdown-item fs-5" to="/clubs/overview">
-                      <MdVisibility size={20} className="me-2" /> Overview
-                    </Link>
-                  </li>
-                  <li>
-                    <Link className="dropdown-item fs-5" to="/clubs/manage">
-                      <MdManageAccounts size={20} className="me-2" /> Manage Club
-                    </Link>
-                  </li>
-                </ul>
-              </div> */}
               <NavLink to="/tasks" className={({ isActive }) => isActive ? 'nav-tab text-light fs-4 p-1 d-flex align-items-center gap-2 text-decoration-none active-tab' : 'nav-tab text-light fs-4 p-1 d-flex align-items-center gap-2 text-decoration-none'}>
                 <MdTask size={30} color="#fff" /> Tasks
               </NavLink>
@@ -122,7 +80,7 @@ function Dashboard() {
               <div className="dropdown">
                 <button className="btn dropdown-toggle d-flex align-items-center gap-2 p-1 text-light" type='button' id='dropdownMenuButton' data-bs-toggle='dropdown' aria-expanded='false'>                
                   <img src={profileImg} alt={userName} className='rounded-circle object-fit-cover' style={{ width:'2.5rem', minWidth:'2.5rem',height:'2.5rem',minHeight:'2.5rem' }} />
-                  <span className='d-none d-md-block'>{userName.split(' ')[0] || 'Loading...'}</span>
+                  <span className='d-none d-md-block'>{userName ? userName.split(' ')[0] : 'Loading...'}</span>
                 </button>
                 <ul className="dropdown-menu" aria-labelledby='dropdownMenuButton'>
                   <li>

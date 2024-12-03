@@ -25,16 +25,13 @@ router.post('/validate-token', (req, res) => {
   if (newAccessToken) {
     return res.status(200).json({ id: req.user.id, newAccessToken });
   }
-  res.status(200).json({ user: req.user });
+  res.status(200).json({ user: req.user, profile_pics: req.user.profile_pics });
 });
 
 // User settings routes
 router.put('/change-password', userController.changePassword);
 router.put('/notification-preferences', userController.updateNotificationPreferences);
 router.delete('/delete-account', userController.deleteAccount);
-
-// User routes
-router.get('/user', userController.getUserDetails);
 
 // Profile routes
 router.get('/profile/:userId', profileController.getProfile);

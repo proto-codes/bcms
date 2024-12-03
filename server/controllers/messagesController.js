@@ -1,17 +1,4 @@
-const db = require('../config/db');
-
-// Helper function for Promisified MySQL query
-const queryAsync = (query, params) => {
-    return new Promise((resolve, reject) => {
-        db.query(query, params, (err, results) => {
-            if (err) {
-                console.error('Database Error:', err);
-                return reject(err);
-            }
-            resolve(results);
-        });
-    });
-};
+const { queryAsync } = require('../config/db');
 
 // Function to send a message
 const sendMessage = async (req, res) => {

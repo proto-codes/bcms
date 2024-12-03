@@ -1,16 +1,4 @@
-const db = require('../config/db');
-
-// Helper function for async/await support with db queries
-const queryAsync = (query, params) => {
-  return new Promise((resolve, reject) => {
-    db.query(query, params, (error, results) => {
-      if (error) {
-        return reject(new Error('Database query failed'));
-      }
-      resolve(results);
-    });
-  });
-};
+const { queryAsync } = require('../config/db');
 
 // Fetch notifications for the logged-in user
 const getNotifications = async (req, res) => {

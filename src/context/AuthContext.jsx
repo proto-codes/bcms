@@ -9,6 +9,7 @@ export const AuthProvider = ({ children }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(null);
   const [userId, setUserId] = useState(null);
   const [userName, setUserName] = useState(null);
+  const [userProfilePics, setUserProfilePics] = useState(null);
   const [loading, setLoading] = useState(true);
 
   const isTokenExpired = (token) => {
@@ -31,6 +32,7 @@ export const AuthProvider = ({ children }) => {
           setIsAuthenticated(true);
           setUserId(response.data.user.id);
           setUserName(response.data.user.name);
+          setUserProfilePics(response.data.profile_pics);
           if (response.data.newAccessToken) {
             localStorage.setItem('accessToken', response.data.newAccessToken);
           }
@@ -38,17 +40,20 @@ export const AuthProvider = ({ children }) => {
           setIsAuthenticated(false);
           setUserId(null);
           setUserName(null);
+          setUserProfilePics(null);
         }
       } catch (error) {
         toast.error(error.response?.data?.error || 'Error validating token');
         setIsAuthenticated(false);
         setUserId(null);
         setUserName(null);
+        setUserProfilePics(null);
       }
     } else {
       setIsAuthenticated(false);
       setUserId(null);
       setUserName(null);
+      setUserProfilePics(null);
     }
   };
 
@@ -60,6 +65,7 @@ export const AuthProvider = ({ children }) => {
       setIsAuthenticated(false);
       setUserId(null);
       setUserName(null);
+      setUserProfilePics(null);
       window.location.href = '/auth/login';
     } catch (error) {
       toast.error(error.response?.data?.error || 'Logout error');
@@ -92,7 +98,7 @@ export const AuthProvider = ({ children }) => {
   }
 
   return (
-    <AuthContext.Provider value={{ isAuthenticated, userId, userName, logout }}>
+    <AuthContext.Provider value={{ isAuthenticated, userId, userName, userProfilePics, logout }}>
       {children}
     </AuthContext.Provider>
   );

@@ -1,14 +1,4 @@
-const db = require('../config/db');
-
-// Helper function to query the database
-const queryAsync = (query, params) => {
-    return new Promise((resolve, reject) => {
-        db.query(query, params, (err, results) => {
-            if (err) return reject(err);
-            resolve(results);
-        });
-    });
-};
+const { queryAsync } = require('../config/db');
 
 // Helper function to validate task input
 const validateTaskInput = (title, description, due_date, priority) => {
