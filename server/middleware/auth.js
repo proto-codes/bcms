@@ -1,14 +1,5 @@
 const jwt = require('jsonwebtoken');
-const db = require('../config/db');
-
-const queryAsync = (query, params) => {
-    return new Promise((resolve, reject) => {
-        db.query(query, params, (err, results) => {
-            if (err) return reject(err);
-            resolve(results);
-        });
-    });
-};
+const { queryAsync } = require('../config/db');
 
 const generateTokens = (userId) => {
     const newAccessToken = jwt.sign({ id: userId }, process.env.JWT_SECRET, { expiresIn: '15m' });
@@ -18,70 +9,69 @@ const generateTokens = (userId) => {
 };
 
 const authenticateToken = async (req, res, next) => {
-    try {
-        const authHeader = req.headers['authorization'];
-        const accessToken = authHeader && authHeader.split(' ')[1];
+    const authHeader = req.headers['authorization'];
+    const accessToken = authHeader?.split(' ')[1];
 
-        if (!accessToken) {
-            return res.status(401).json({ error: 'Access token is missing' });
-        }
+    if (!accessToken) return res.status(401).json({ error: 'Access token is missing' });
+
+    try {
+        const user = jwt.verify(accessToken, process.env.JWT_SECRET);
+        req.user = user;
+
+        const userData = await queryAsync(
+            `
+            SELECT p.profile_pics
+            FROM users u
+            LEFT JOIN profile p ON u.id = p.user_id
+            WHERE u.id = ?`,
+            [user.id]
+        );
+
+        req.user.profile_pics = userData[0]?.profile_pics
+            ? Buffer.from(userData[0].profile_pics).toString('base64')
+            : null;
+
+        return next();
+    } catch (err) {
+        if (err.name !== 'TokenExpiredError') return res.status(403).json({ error: 'Token is invalid' });
+
+        const refreshToken = req.cookies?.refreshToken;
+        if (!refreshToken) return res.status(400).json({ error: 'Refresh token is required' });
 
         try {
-            const user = jwt.verify(accessToken, process.env.JWT_SECRET);
-            req.user = user;
+            const { id: userId } = jwt.verify(refreshToken, process.env.JWT_REFRESH_SECRET);
+
+            const results = await queryAsync(
+                `
+                SELECT * FROM active_tokens WHERE user_id = ? AND refresh_token = ? AND expires_at > UTC_TIMESTAMP()`,
+                [userId, refreshToken.trim()]
+            );
+
+            if (!results.length) return res.status(403).json({ error: 'Invalid or expired refresh token' });
+
+            const { newAccessToken, newRefreshToken, newExpiresAt } = generateTokens(userId);
+
+            await queryAsync(
+                `
+                UPDATE active_tokens SET refresh_token = ?, expires_at = ? WHERE user_id = ?`,
+                [newRefreshToken, newExpiresAt, userId]
+            );
+
+            res.cookie('refreshToken', newRefreshToken, {
+                httpOnly: true,
+                secure: process.env.NODE_ENV === 'production',
+                sameSite: process.env.NODE_ENV === 'production' ? 'None' : 'Lax',
+                maxAge: 30 * 24 * 60 * 60 * 1000,
+                path: '/',
+            });
+
+            req.user = { id: userId };
+            req.newAccessToken = newAccessToken;
             return next();
-        } catch (err) {
-            if (err.name === 'TokenExpiredError') {
-                const refreshToken = req.cookies?.refreshToken;
-                if (!refreshToken) {
-                    return res.status(400).json({ error: 'Refresh token is required' });
-                }
-
-                try {
-                    const decoded = jwt.verify(refreshToken, process.env.JWT_REFRESH_SECRET);
-                    const userId = decoded.id;
-
-                    const results = await queryAsync(
-                        `SELECT * FROM active_tokens 
-                         WHERE user_id = ? AND refresh_token = ? AND expires_at > UTC_TIMESTAMP()`,
-                        [userId, refreshToken.trim()]
-                    );
-
-                    if (results.length === 0) {
-                        return res.status(403).json({ error: 'Invalid or expired refresh token' });
-                    }
-
-                    // Generate and set new tokens
-                    const { newAccessToken, newRefreshToken, newExpiresAt } = generateTokens(userId);
-                    await queryAsync(
-                        `UPDATE active_tokens 
-                         SET refresh_token = ?, expires_at = ? 
-                         WHERE user_id = ?`,
-                        [newRefreshToken, newExpiresAt, userId]
-                    );
-
-                    res.cookie('refreshToken', newRefreshToken, {
-                        httpOnly: true,
-                        secure: process.env.NODE_ENV === 'production',
-                        sameSite: process.env.NODE_ENV === 'production' ? 'None' : 'Lax',
-                        maxAge: 30 * 24 * 60 * 60 * 1000,
-                        path: '/',
-                    });
-
-                    req.user = { id: userId };
-                    req.newAccessToken = newAccessToken;
-                    return next();
-                } catch (refreshErr) {
-                    console.error('Error refreshing token:', refreshErr);
-                    return res.status(403).json({ error: 'Invalid or expired refresh token' });
-                }
-            }
-
-            return res.status(403).json({ error: 'Token is invalid' });
+        } catch (refreshErr) {
+            console.error('Error refreshing token:', refreshErr);
+            return res.status(403).json({ error: 'Invalid or expired refresh token' });
         }
-    } catch (err) {
-        console.error('Unexpected error in authenticateToken middleware:', err);
-        return res.status(500).json({ error: 'Internal server error' });
     }
 };
 

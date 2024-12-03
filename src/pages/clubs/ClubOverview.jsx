@@ -145,7 +145,7 @@ const ClubOverview = () => {
     try {
       await api.delete(`/clubs/${clubId}`);
       toast.success('Club deleted successfully.');
-      window.location.href = '/manage';
+      window.location.href = '/clubs';
     } catch (err) {
       toast.error(err.response?.data?.error || 'Failed to delete club.');
     } finally {
@@ -234,7 +234,7 @@ const ClubOverview = () => {
 
   return (
     <div className="container-fluid my-4">
-      <Button variant="outline-dark" className="mb-3" as={Link} to="/manage">
+      <Button variant="outline-dark" className="mb-3" as={Link} to="/clubs">
         <MdArrowBack size={20} />
       </Button>
 

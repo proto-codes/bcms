@@ -1,14 +1,4 @@
-const db = require('../config/db');
-
-// Helper function to query the database
-const queryAsync = (query, params) => {
-    return new Promise((resolve, reject) => {
-        db.query(query, params, (err, results) => {
-            if (err) return reject(err);
-            resolve(results);
-        });
-    });
-};
+const { queryAsync } = require('../config/db');
 
 // Create an event
 const createEvent = async (req, res) => {
